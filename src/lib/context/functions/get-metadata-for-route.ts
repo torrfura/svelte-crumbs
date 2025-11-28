@@ -1,4 +1,4 @@
-import type { MetadataAsyncMap } from '../types';
+import type { MetadataAsyncMap } from '../../types';
 
 const matchDynamicRoute = (metadataMap: MetadataAsyncMap, route: string) => {
   const routeSegments = route.split('/').filter(Boolean);

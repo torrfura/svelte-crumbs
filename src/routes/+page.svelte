@@ -1,5 +1,5 @@
 <script module lang="ts">
-	import type {PageMetaData} from "$lib/context/types";
+	import type {PageMetaData} from "$lib/types";
 	export const metadata: PageMetaData = async () => {
 		return {
 			breadcrumb: {

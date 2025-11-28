@@ -1,10 +1,17 @@
 <script lang="ts">
-	import {PageMetaBreadcrumbs, PageMetaContext} from "$lib/components";
+	import { Breadcrumbs, setMetadataContext } from "$lib";
+	import type { Breadcrumb } from '$lib/types';
+	setMetadataContext();
 
 	let { children } = $props();
 
 </script>
 
-<PageMetaBreadcrumbs />
+<Breadcrumbs />
+<Breadcrumbs>
+	{#snippet breadcrumb(crumb: Breadcrumb )}
+		<a href={crumb.url}>{crumb.label}</a>
+	{/snippet}
+</Breadcrumbs>
 
 {@render children()}

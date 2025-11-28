@@ -1,4 +1,4 @@
-import type { AsyncMetaData, PageMetaData } from '../types';
+import type { AsyncMetaData, PageMetaData } from '../../types';
 
 export function getMetadataAsyncMap() {
   const metadataAsyncMap = new Map<string, AsyncMetaData>();

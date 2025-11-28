@@ -2,7 +2,7 @@ import { page } from '$app/state';
 import { getMetadataAsyncMap } from './functions/get-metadata-async-map';
 import { getMetadataForRoute } from './functions/get-metadata-for-route';
 
-import type {AsyncMetaData, Breadcrumb} from './types';
+import type {AsyncMetaData, Breadcrumb} from '../types';
 
 import {getContext, setContext} from "svelte";
 
