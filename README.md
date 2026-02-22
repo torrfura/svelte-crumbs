@@ -4,6 +4,8 @@ Automatic, SSR-ready breadcrumbs for SvelteKit via route-level metadata exports.
 
 **Svelte 5 + SvelteKit 2 only. Data layer only — bring your own rendering.**
 
+**[Documentation & Live Demo](https://svelte-breadcrumbs.vercel.app/)**
+
 ## Quick Start
 
 ### 1. Install
