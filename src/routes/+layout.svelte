@@ -10,23 +10,29 @@
 </script>
 
 <div class="mx-auto max-w-3xl px-6 py-8 font-sans">
-	<h1 class="text-xl"><a href="/">Svelte Breadcrumbs</a></h1>
-	<h4>SSR + support for Remote Functions</h4>
+	<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+	<h1 class="text-4xl mb-4"><a href="/">Svelte Breadcrumbs</a></h1>
+	<p class="mt-2 text-sm text-gray-600">
+		Automatic, zero-config breadcrumbs for SvelteKit. Define an async resolver per route and the
+		library builds the trail for you — fully SSR-compatible via top-level await and ready for
+		remote functions, so labels can be fetched from APIs or databases without blocking hydration.
+	</p>
 	<hr class="my-5" />
 	<nav
 		aria-label="Breadcrumbs"
 		class="flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-3 text-sm"
 	>
-		{#each crumbs as crumb, i}
+		{#each crumbs as crumb, i (crumb.url)}
 			{#if i > 0}
 				<span aria-hidden="true" class="text-gray-400">/</span>
 			{/if}
 			{#if i < crumbs.length - 1}
-				<a href={crumb.url} class="text-gray-700 hover:text-gray-900 hover:underline"
+				<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+				<a href={crumb.url} class="text-gray-500 hover:text-gray-900 hover:underline"
 					>{crumb.label}</a
 				>
 			{:else}
-				<span class="text-gray-900" aria-current="page">{crumb.label}</span>
+				<span class="text-gray-700" aria-current="page">{crumb.label}</span>
 			{/if}
 		{/each}
 	</nav>

@@ -12,25 +12,7 @@ Automatic, SSR-ready breadcrumbs for SvelteKit via route-level metadata exports.
 npm install svelte-breadcrumbs
 ```
 
-### 2. Enable async support
-
-```js
-// svelte.config.js
-const config = {
-  kit: {
-    experimental: {
-      remoteFunctions: true
-    }
-  },
-  compilerOptions: {
-    experimental: {
-      async: true
-    }
-  }
-};
-```
-
-### 3. Export breadcrumbs from your routes
+### 2. Export breadcrumbs from your routes
 
 ```svelte
 <!-- src/routes/products/+page.svelte -->
@@ -43,7 +25,7 @@ const config = {
 </script>
 ```
 
-### 4. Render in your layout
+### 3. Render in your layout
 
 ```svelte
 <!-- src/routes/+layout.svelte -->
@@ -182,7 +164,8 @@ Since `svelte-breadcrumbs` only provides data, you render however you want:
   {#each crumbs as crumb}
     <li>
       {#if crumb.icon}
-        <svelte:component this={crumb.icon} />
+        {@const Icon = crumb.icon}
+        <Icon />
       {/if}
       <a href={crumb.url}>{crumb.label}</a>
     </li>
@@ -234,9 +217,28 @@ type Breadcrumb = BreadcrumbData & { url: string };
 ## Requirements
 
 - **SvelteKit 2** — relies on `$app/state` and `import.meta.glob`
-- **Svelte 5** — uses runes (`$derived`) and experimental async compiler
-- **Experimental flags** — requires `kit.experimental.remoteFunctions` and `compilerOptions.experimental.async`
+- **Svelte 5** — uses runes (`$derived`)
 - Route groups (`(group)`) are stripped from paths
+
+### Optional: enable async and remote functions
+
+The library works without any experimental flags — you can use load functions or resolve breadcrumbs manually. However, to unlock top-level `await` in components and remote function support, enable these flags:
+
+```js
+// svelte.config.js
+const config = {
+  compilerOptions: {
+    experimental: {
+      async: true // top-level await in components
+    }
+  },
+  kit: {
+    experimental: {
+      remoteFunctions: true // call server functions from breadcrumb resolvers
+    }
+  }
+};
+```
 
 ## License
 
