@@ -1,30 +1,17 @@
+import type { Component } from 'svelte';
 import type { Page } from '@sveltejs/kit';
-import type {Component} from "svelte";
 
-export type MetadataAsyncMap = Map<string, AsyncMetaData>;
+/** What users export from +page.svelte as `breadcrumb` */
+export type BreadcrumbMeta = BreadcrumbResolver | { routes: Record<string, BreadcrumbResolver> };
 
-export type PageMetaData = StaticPageMetaData | DynamicPageMetaData;
+/** Async resolver function that receives the current page and returns breadcrumb data */
+export type BreadcrumbResolver = (page: Page) => Promise<BreadcrumbData | undefined>;
 
-export type PageMetaBreadcrumb = {
-  label: string;
-  icon?: Component
-};
+/** Resolved data for one breadcrumb */
+export type BreadcrumbData = { label: string; icon?: Component<any> };
 
-export type Breadcrumb = {
-  label: string;
-  url?: string;
-  icon?: Component;
-};
+/** Final breadcrumb with its URL */
+export type Breadcrumb = BreadcrumbData & { url: string };
 
-type StaticPageMetaData = AsyncMetaData;
-type DynamicPageMetaData = { routes: Record<string, AsyncMetaData> };
-
-export type AsyncMetaData = (page: Page) => Promise<MetaData>;
-
-export type MetaData = {
-  breadcrumb?: PageMetaBreadcrumb;
-  ai?: {
-    label: string;
-    context: string;
-  };
-};
+/** Internal map from route pattern to resolver */
+export type BreadcrumbMap = Map<string, BreadcrumbResolver>;

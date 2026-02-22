@@ -1,58 +1,243 @@
-# Svelte library
+# svelte-breadcrumbs
 
-Everything you need to build a Svelte library, powered by [`sv`](https://npmjs.com/package/sv).
+Automatic, SSR-ready breadcrumbs for SvelteKit via route-level metadata exports. Zero config, fully reactive, server-rendered with top-level await.
 
-Read more about creating a library [in the docs](https://svelte.dev/docs/kit/packaging).
+**Svelte 5 + SvelteKit 2 only. Data layer only — bring your own rendering.**
 
-## Creating a project
+## Quick Start
 
-If you're seeing this, you've probably already done this step. Congrats!
+### 1. Install
 
-```sh
-# create a new project in the current directory
-npx sv create
-
-# create a new project in my-app
-npx sv create my-app
+```bash
+npm install svelte-breadcrumbs
 ```
 
-## Developing
+### 2. Enable async support
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+```js
+// svelte.config.js
+const config = {
+  kit: {
+    experimental: {
+      remoteFunctions: true
+    }
+  },
+  compilerOptions: {
+    experimental: {
+      async: true
+    }
+  }
+};
 ```
 
-Everything inside `src/lib` is part of your library, everything inside `src/routes` can be used as a showcase or preview app.
+### 3. Export breadcrumbs from your routes
 
-## Building
+```svelte
+<!-- src/routes/products/+page.svelte -->
+<script lang="ts" module>
+  import type { BreadcrumbMeta } from 'svelte-breadcrumbs';
 
-To build your library:
-
-```sh
-npm pack
+  export const breadcrumb: BreadcrumbMeta = async () => ({
+    label: 'Products'
+  });
+</script>
 ```
 
-To create a production version of your showcase app:
+### 4. Render in your layout
 
-```sh
-npm run build
+```svelte
+<!-- src/routes/+layout.svelte -->
+<script lang="ts">
+  import { createBreadcrumbs } from 'svelte-breadcrumbs';
+
+  const getBreadcrumbs = createBreadcrumbs();
+  const crumbs = $derived(await getBreadcrumbs());
+</script>
+
+<nav>
+  {#each crumbs as crumb, i}
+    {#if i > 0} / {/if}
+    <a href={crumb.url}>{crumb.label}</a>
+  {/each}
+</nav>
 ```
 
-You can preview the production build with `npm run preview`.
+No `{#await}` blocks needed. Breadcrumbs resolve during SSR and update reactively on client navigation.
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+## Examples
 
-## Publishing
+### Static breadcrumb
 
-Go into the `package.json` and give your package the desired name through the `"name"` option. Also consider adding a `"license"` field and point it to a `LICENSE` file which you can create from a template (one popular option is the [MIT license](https://opensource.org/license/mit/)).
+```svelte
+<script lang="ts" module>
+  import type { BreadcrumbMeta } from 'svelte-breadcrumbs';
 
-To publish your library to [npm](https://www.npmjs.com):
-
-```sh
-npm publish
+  export const breadcrumb: BreadcrumbMeta = async () => ({
+    label: 'Settings'
+  });
+</script>
 ```
+
+### From load data
+
+The breadcrumb resolver receives the full `page` object, including `page.data`. Use `+layout.server.ts` (not `+page.server.ts`) so the data is available to child routes' breadcrumbs too:
+
+```ts
+// src/routes/products/[id]/+layout.server.ts
+export async function load({ params }) {
+  const product = await db.products.find(params.id);
+  return { product };
+}
+```
+
+```svelte
+<!-- src/routes/products/[id]/+page.svelte -->
+<script lang="ts" module>
+  import type { BreadcrumbMeta } from 'svelte-breadcrumbs';
+
+  export const breadcrumb: BreadcrumbMeta = async (page) => ({
+    label: page.data.product.name
+  });
+</script>
+
+<script lang="ts">
+  let { data } = $props();
+</script>
+
+<h1>{data.product.name}</h1>
+```
+
+> **Why `+layout.server.ts`?** Breadcrumb resolvers run for every segment of the URL. When visiting `/products/42/edit`, the resolver for `/products/[id]` fires too. If you put the load in `+page.server.ts`, `page.data` on child routes won't have `product` — layout data cascades down, page data doesn't.
+
+### From a remote function
+
+Breadcrumb resolvers can call [remote functions](https://svelte.dev/docs/kit/remote-functions) that run on the server:
+
+```ts
+// src/lib/products.remote.ts
+import { query } from '$app/server';
+
+export const getProductName = query('unchecked', async (id: string) => {
+  const product = await db.products.find(id);
+  return product.name;
+});
+```
+
+```svelte
+<!-- src/routes/products/[id]/+page.svelte -->
+<script lang="ts" module>
+  import type { BreadcrumbMeta } from 'svelte-breadcrumbs';
+  import { getProductName } from '$lib/products.remote';
+
+  export const breadcrumb: BreadcrumbMeta = async (page) => ({
+    label: await getProductName(page.params.id ?? '')
+  });
+</script>
+```
+
+### Multi-route breadcrumb
+
+For dynamic routes that map to known paths:
+
+```svelte
+<script lang="ts" module>
+  import type { BreadcrumbMeta } from 'svelte-breadcrumbs';
+
+  export const breadcrumb: BreadcrumbMeta = {
+    routes: {
+      '/docs/getting-started': async () => ({ label: 'Getting Started' }),
+      '/docs/api-reference': async () => ({ label: 'API Reference' })
+    }
+  };
+</script>
+```
+
+### With icon
+
+```svelte
+<script lang="ts" module>
+  import type { BreadcrumbMeta } from 'svelte-breadcrumbs';
+  import HomeIcon from './HomeIcon.svelte';
+
+  export const breadcrumb: BreadcrumbMeta = async () => ({
+    label: 'Home',
+    icon: HomeIcon
+  });
+</script>
+```
+
+### Custom rendering
+
+Since `svelte-breadcrumbs` only provides data, you render however you want:
+
+```svelte
+<script lang="ts">
+  import { createBreadcrumbs } from 'svelte-breadcrumbs';
+
+  const getBreadcrumbs = createBreadcrumbs();
+  const crumbs = $derived(await getBreadcrumbs());
+</script>
+
+<ol class="breadcrumb-list">
+  {#each crumbs as crumb}
+    <li>
+      {#if crumb.icon}
+        <svelte:component this={crumb.icon} />
+      {/if}
+      <a href={crumb.url}>{crumb.label}</a>
+    </li>
+  {/each}
+</ol>
+```
+
+## API Reference
+
+### `createBreadcrumbs()`
+
+Creates a reactive breadcrumb resolver. Returns a getter function `() => Promise<Breadcrumb[]>`.
+
+Call `createBreadcrumbs()` once to set up the reactive state, then use the returned getter inside `$derived(await ...)` to get breadcrumbs that update on navigation and resolve during SSR.
+
+### Types
+
+```typescript
+// What you export from +page.svelte
+type BreadcrumbMeta = BreadcrumbResolver | { routes: Record<string, BreadcrumbResolver> };
+
+// Resolver function
+type BreadcrumbResolver = (page: Page) => Promise<BreadcrumbData | undefined>;
+
+// Data for one breadcrumb
+type BreadcrumbData = { label: string; icon?: Component<any> };
+
+// Resolved breadcrumb with URL
+type Breadcrumb = BreadcrumbData & { url: string };
+```
+
+### Utility exports
+
+- `buildBreadcrumbMap()` — manually build the route-to-resolver map
+- `filePathToRoute(filePath)` — convert glob file path to route
+- `matchDynamicRoute(map, route)` — match a concrete path against dynamic patterns
+- `getResolversForRoute(map, route)` — collect resolvers for a given route path
+
+## How It Works
+
+1. `import.meta.glob` eagerly imports all `+page.svelte` files at build time
+2. Each file's `breadcrumb` export is collected into a `Map<route, resolver>`
+3. Route groups like `(app)` are stripped from paths
+4. On navigation, the root (`/`) resolver is checked first, then each segment is walked from left to right with dynamic `[param]` matching
+5. Matching resolvers run in parallel, producing the final breadcrumb array
+6. On SSR, top-level `await` ensures breadcrumbs are rendered in the initial HTML
+7. On the client, `$derived` re-evaluates when the route changes
+
+## Requirements
+
+- **SvelteKit 2** — relies on `$app/state` and `import.meta.glob`
+- **Svelte 5** — uses runes (`$derived`) and experimental async compiler
+- **Experimental flags** — requires `kit.experimental.remoteFunctions` and `compilerOptions.experimental.async`
+- Route groups (`(group)`) are stripped from paths
+
+## License
+
+MIT
