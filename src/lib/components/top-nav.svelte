@@ -53,7 +53,7 @@
 			{/if}
 		</button>
 		<a
-			href="https://github.com/moment77/svelte-breadcrumbs"
+			href="https://github.com/torrfura/svelte-crumbs"
 			target="_blank"
 			rel="noopener noreferrer"
 			class="rounded-md p-1.5 text-(--color-text-secondary) hover:text-(--color-text-primary) hover:bg-(--color-code-bg)"
