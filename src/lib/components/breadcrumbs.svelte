@@ -33,7 +33,7 @@
 
 <nav
 	aria-label="Breadcrumbs"
-	class="flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-3 text-sm"
+	class="flex items-center gap-2 rounded-lg bg-(--color-code-bg) px-4 py-3 text-sm"
 >
 	{#each crumbs as crumb, i (crumb.url)}
 		<span
@@ -43,18 +43,18 @@
 			animate:flip={{ duration: 200 }}
 		>
 			{#if i > 0}
-				<span aria-hidden="true" class="text-gray-400">▶︎</span>
+				<span aria-hidden="true" class="text-(--color-text-muted)">▶︎</span>
 			{/if}
 			{#if crumb.icon}
 				{@const Icon = crumb.icon}
 				<Icon />
 			{/if}
 			{#if i < crumbs.length - 1 || crumbs.length === 1}
-				<a href={crumb.url} class="text-gray-500 hover:text-gray-900 hover:underline"
+				<a href={crumb.url} class="text-(--color-text-secondary) hover:text-(--color-text-primary) hover:underline"
 					>{crumb.label}</a
 				>
 			{:else}
-				<span class="text-gray-700" aria-current="page">{crumb.label}</span>
+				<span class="text-(--color-text-primary)" aria-current="page">{crumb.label}</span>
 			{/if}
 		</span>
 	{/each}
