@@ -1,11 +1,11 @@
 {
-	"name": "svelte-breadcrumbs",
-	"version": "0.0.1",
+	"name": "sveltekit-breadcrumbs",
+	"version": "1.0.0",
 	"description": "Automatic breadcrumbs for SvelteKit via route-level metadata exports",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/focause/svelte-breadcrumbs.git"
+		"url": "git+https://github.com/focause/sveltekit-breadcrumbs.git"
 	},
 	"scripts": {
 		"dev": "vite dev",
