@@ -8,7 +8,7 @@
 
 <script lang="ts">
 	import { page } from '$app/state';
-	import CodeBlock from '../../../CodeBlock.svelte';
+	import CodeBlock from '$lib/components/code-block.svelte';
 </script>
 
 <h1 class="text-2xl font-bold text-gray-900">Edit Product #{page.params.productId}</h1>

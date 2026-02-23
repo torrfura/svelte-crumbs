@@ -1,5 +1,5 @@
 <script lang="ts">
-	import CodeBlock from '../CodeBlock.svelte';
+	import CodeBlock from '$lib/components/code-block.svelte';
 </script>
 
 <h1 class="text-2xl font-bold text-gray-900">About</h1>

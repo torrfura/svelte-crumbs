@@ -9,7 +9,7 @@
 
 <script lang="ts">
 	import { page } from '$app/state';
-	import CodeBlock from '../../CodeBlock.svelte';
+	import CodeBlock from '$lib/components/code-block.svelte';
 
 	const title = $derived(await getDocTitle(page.params.slug ?? ''));
 </script>

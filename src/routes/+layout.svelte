@@ -1,6 +1,6 @@
 <script lang="ts">
 	import '../app.css';
-	import { createBreadcrumbs } from '$lib/index.js';
+	import { createBreadcrumbs, Breadcrumbs } from '$lib/index.js';
 	import type { Snippet } from 'svelte';
 
 	let { children }: { children: Snippet } = $props();
@@ -18,6 +18,9 @@
 		remote functions, so labels can be fetched from APIs or databases without blocking hydration.
 	</p>
 	<hr class="my-5" />
+	<h3 class="text-xl mb-2">Animated example</h3>
+	<Breadcrumbs {crumbs} />
+	<h3 class="text-xl my-2">Simple (static) example</h3>
 	<nav
 		aria-label="Breadcrumbs"
 		class="flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-3 text-sm"
@@ -26,10 +29,10 @@
 			{#if i > 0}
 				<span aria-hidden="true" class="text-gray-400">/</span>
 			{/if}
-			{#if i < crumbs.length - 1}
+			{#if i < crumbs.length - 1 || crumbs.length === 1}
 				<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 				<a href={crumb.url} class="text-gray-500 hover:text-gray-900 hover:underline"
-					>{crumb.label}</a
+				>{crumb.label}</a
 				>
 			{:else}
 				<span class="text-gray-700" aria-current="page">{crumb.label}</span>
