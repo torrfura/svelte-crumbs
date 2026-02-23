@@ -1,5 +1,18 @@
 # svelte-crumbs
 
+## [1.2.0](https://github.com/torrfura/svelte-crumbs/compare/svelte-crumbs-v1.1.0...svelte-crumbs-v1.2.0) (2026-02-23)
+
+
+### Features
+
+* implement global theme support and migrate Tailwind classes to CSS variables ([907a9d7](https://github.com/torrfura/svelte-crumbs/commit/907a9d78461f58b3682942160c4c05252e2308b6))
+* inject app version as global constant and refactor version display ([e3e3c00](https://github.com/torrfura/svelte-crumbs/commit/e3e3c00e4e3e263385295a599c98fcdad8e7c62a))
+
+
+### Bug Fixes
+
+* update GitHub URL in `TopNav` component link ([26a8a46](https://github.com/torrfura/svelte-crumbs/commit/26a8a461e17bc250a1bd3716e4bb78c57bfaa89d))
+
 ## [1.1.0](https://github.com/torrfura/svelte-crumbs/compare/svelte-crumbs-v1.0.3...svelte-crumbs-v1.1.0) (2026-02-23)
 
 
