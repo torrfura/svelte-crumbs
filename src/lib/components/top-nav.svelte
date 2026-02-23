@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { toggleTheme, getTheme } from '$lib/stores/theme.svelte.js';
-	import { version } from '../../../package.json';
+
+	const appVersion: string = __APP_VERSION__;
 
 	let { onToggleSidebar }: { onToggleSidebar: () => void } = $props();
 
@@ -24,7 +25,7 @@
 		</button>
 		<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 		<a href="/" class="text-lg font-semibold text-(--color-text-primary)">svelte-crumbs</a>
-		<span class="rounded-full bg-(--color-code-bg) px-2 py-0.5 text-xs text-(--color-text-muted)">v{version}</span>
+		<span class="rounded-full bg-(--color-code-bg) px-2 py-0.5 text-xs text-(--color-text-muted)">v{appVersion}</span>
 	</div>
 
 	<div class="flex items-center gap-2">
