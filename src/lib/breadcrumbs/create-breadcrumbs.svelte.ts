@@ -21,7 +21,7 @@ async function resolve(resolvers: ReturnType<typeof getResolversForRoute>): Prom
  * Usage:
  * ```svelte
  * <script lang="ts">
- *   import { createBreadcrumbs } from 'svelte-breadcrumbs';
+ *   import { createBreadcrumbs } from 'svelte-crumbs';
  *   const getBreadcrumbs = createBreadcrumbs();
  *   const crumbs = $derived(await getBreadcrumbs());
  * </script>

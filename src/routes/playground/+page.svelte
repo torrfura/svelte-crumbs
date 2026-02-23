@@ -60,7 +60,6 @@ export const breadcrumb: BreadcrumbMeta = async () => ({
 </p>
 <CodeBlock
 	code={`function update(value: string) {
-  input = value;
   setNickname(value).updates(getNickname().withOverride(() => value || 'Visitor'));
 }`}
 	lang="ts"

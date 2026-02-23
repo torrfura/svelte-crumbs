@@ -11,7 +11,7 @@
 
 <div class="mx-auto max-w-3xl px-6 py-8 font-sans">
 	<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-	<h1 class="text-4xl mb-4"><a href="/">Svelte Breadcrumbs</a></h1>
+	<h1 class="text-4xl mb-4"><a href="/">svelte-crumbs</a></h1>
 	<p class="mt-2 text-sm text-gray-600">
 		Automatic, zero-config breadcrumbs for SvelteKit. Define an async resolver per route and the
 		library builds the trail for you — fully SSR-compatible via top-level await and ready for

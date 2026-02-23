@@ -31,7 +31,7 @@
 	It scans all <code class="rounded bg-gray-100 px-1 text-sm">+page.svelte</code> files for
 	<code class="rounded bg-gray-100 px-1 text-sm">breadcrumb</code> exports and resolves them reactively.
 </p>
-<CodeBlock lang="svelte" code={`import { createBreadcrumbs } from 'svelte-breadcrumbs';
+<CodeBlock lang="svelte" code={`import { createBreadcrumbs } from 'svelte-crumbs';
 
 const getBreadcrumbs = createBreadcrumbs();
 const crumbs = $derived(await getBreadcrumbs());`} />
