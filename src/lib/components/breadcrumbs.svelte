@@ -2,7 +2,7 @@
 	import { fly } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
 	import { onMount } from 'svelte';
-	import type { Breadcrumb } from '../types.js';
+	import type { Breadcrumb } from '../breadcrumbs/types.js';
 
 	let { crumbs }: { crumbs: Breadcrumb[] } = $props();
 

@@ -1,7 +1,7 @@
 import { page } from '$app/state';
-import { buildBreadcrumbMap } from '../routing/build-breadcrumb-map.js';
-import { getResolversForRoute } from '../routing/get-resolvers-for-route.js';
-import type { Breadcrumb } from '../types.js';
+import { buildBreadcrumbMap } from './routing/build-breadcrumb-map.js';
+import { getResolversForRoute } from './routing/get-resolvers-for-route.js';
+import type { Breadcrumb } from './types.js';
 
 async function resolve(resolvers: ReturnType<typeof getResolversForRoute>): Promise<Breadcrumb[]> {
 	const promises = Array.from(resolvers).map(async ([url, resolver]) => {
