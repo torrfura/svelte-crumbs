@@ -1,17 +1,17 @@
-# sveltekit-breadcrumbs
+# svelte-crumbs
 
 Automatic, SSR-ready breadcrumbs for SvelteKit via route-level metadata exports. Zero config, fully reactive, server-rendered with top-level await.
 
 **Svelte 5 + SvelteKit 2 only. Data layer only — bring your own rendering.**
 
-**[Documentation & Live Demo](https://sveltekit-breadcrumbs.vercel.app/)**
+**[Documentation & Live Demo](https://svelte-crumbs.vercel.app/)**
 
 ## Quick Start
 
 ### 1. Install
 
 ```bash
-npm install sveltekit-breadcrumbs
+npm install svelte-crumbs
 ```
 
 ### 2. Export breadcrumbs from your routes
@@ -19,7 +19,7 @@ npm install sveltekit-breadcrumbs
 ```svelte
 <!-- src/routes/products/+page.svelte -->
 <script lang="ts" module>
-  import type { BreadcrumbMeta } from 'sveltekit-breadcrumbs';
+  import type { BreadcrumbMeta } from 'svelte-crumbs';
 
   export const breadcrumb: BreadcrumbMeta = async () => ({
     label: 'Products'
@@ -32,7 +32,7 @@ npm install sveltekit-breadcrumbs
 ```svelte
 <!-- src/routes/+layout.svelte -->
 <script lang="ts">
-  import { createBreadcrumbs } from 'sveltekit-breadcrumbs';
+  import { createBreadcrumbs } from 'svelte-crumbs';
 
   const getBreadcrumbs = createBreadcrumbs();
   const crumbs = $derived(await getBreadcrumbs());
@@ -54,7 +54,7 @@ No `{#await}` blocks needed. Breadcrumbs resolve during SSR and update reactivel
 
 ```svelte
 <script lang="ts" module>
-  import type { BreadcrumbMeta } from 'sveltekit-breadcrumbs';
+  import type { BreadcrumbMeta } from 'svelte-crumbs';
 
   export const breadcrumb: BreadcrumbMeta = async () => ({
     label: 'Settings'
@@ -77,7 +77,7 @@ export async function load({ params }) {
 ```svelte
 <!-- src/routes/products/[id]/+page.svelte -->
 <script lang="ts" module>
-  import type { BreadcrumbMeta } from 'sveltekit-breadcrumbs';
+  import type { BreadcrumbMeta } from 'svelte-crumbs';
 
   export const breadcrumb: BreadcrumbMeta = async (page) => ({
     label: page.data.product.name
@@ -110,7 +110,7 @@ export const getProductName = query('unchecked', async (id: string) => {
 ```svelte
 <!-- src/routes/products/[id]/+page.svelte -->
 <script lang="ts" module>
-  import type { BreadcrumbMeta } from 'sveltekit-breadcrumbs';
+  import type { BreadcrumbMeta } from 'svelte-crumbs';
   import { getProductName } from '$lib/products.remote';
 
   export const breadcrumb: BreadcrumbMeta = async (page) => ({
@@ -125,7 +125,7 @@ For dynamic routes that map to known paths:
 
 ```svelte
 <script lang="ts" module>
-  import type { BreadcrumbMeta } from 'sveltekit-breadcrumbs';
+  import type { BreadcrumbMeta } from 'svelte-crumbs';
 
   export const breadcrumb: BreadcrumbMeta = {
     routes: {
@@ -140,7 +140,7 @@ For dynamic routes that map to known paths:
 
 ```svelte
 <script lang="ts" module>
-  import type { BreadcrumbMeta } from 'sveltekit-breadcrumbs';
+  import type { BreadcrumbMeta } from 'svelte-crumbs';
   import HomeIcon from './HomeIcon.svelte';
 
   export const breadcrumb: BreadcrumbMeta = async () => ({
@@ -152,11 +152,11 @@ For dynamic routes that map to known paths:
 
 ### Custom rendering
 
-Since `sveltekit-breadcrumbs` only provides data, you render however you want:
+Since `svelte-crumbs` only provides data, you render however you want:
 
 ```svelte
 <script lang="ts">
-  import { createBreadcrumbs } from 'sveltekit-breadcrumbs';
+  import { createBreadcrumbs } from 'svelte-crumbs';
 
   const getBreadcrumbs = createBreadcrumbs();
   const crumbs = $derived(await getBreadcrumbs());
