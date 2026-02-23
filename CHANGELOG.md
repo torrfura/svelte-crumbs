@@ -1,5 +1,11 @@
 # svelte-crumbs
 
+## 1.0.2
+
+### Patch Changes
+
+- Fixed faulty references to old project name
+
 ## 1.0.1
 
 ### Patch Changes

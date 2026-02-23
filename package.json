@@ -1,6 +1,6 @@
 {
 	"name": "svelte-crumbs",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "Automatic breadcrumbs for SvelteKit via route-level metadata exports",
 	"license": "MIT",
 	"homepage": "https://svelte-crumbs.vercel.app",
