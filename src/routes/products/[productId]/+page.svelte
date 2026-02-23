@@ -7,7 +7,7 @@
 </script>
 
 <script lang="ts">
-	import CodeBlock from '../../CodeBlock.svelte';
+	import CodeBlock from '$lib/components/code-block.svelte';
 
 	let { data } = $props();
 </script>
