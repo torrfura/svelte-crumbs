@@ -2,10 +2,16 @@ import { page } from '$app/state';
 import type { Page } from '@sveltejs/kit';
 import { buildBreadcrumbMap } from './routing/build-breadcrumb-map.js';
 import { getResolversForRoute } from './routing/get-resolvers-for-route.js';
-import type { Breadcrumb, BreadcrumbMap } from './types.js';
+import type {
+	Breadcrumb,
+	BreadcrumbMap,
+	BreadcrumbPage,
+	CreateBreadcrumbsOptions,
+	OptionalPageField
+} from './types.js';
 
 /** Calls each resolver in parallel and filters out undefined results. */
-async function resolve(resolvers: BreadcrumbMap, snap: Page): Promise<Breadcrumb[]> {
+async function resolve(resolvers: BreadcrumbMap, snap: BreadcrumbPage): Promise<Breadcrumb[]> {
 	const results = await Promise.all(
 		Array.from(resolvers, async ([url, resolver]) => {
 			const data = await resolver(snap, url);
@@ -17,20 +23,24 @@ async function resolve(resolvers: BreadcrumbMap, snap: Page): Promise<Breadcrumb
 
 /**
  * Captures a plain-object snapshot of `page` state.
- * Resolvers receive this instead of the live proxy so they can be called
- * outside the SSR rendering context (i.e. after an `await` boundary).
+ * Only reads core fields (`url`, `params`, `route`, `data`) by default.
+ * Optional fields (`status`, `error`, `form`, `state`) are only read when
+ * explicitly opted in via `include`, avoiding unnecessary Svelte reactive
+ * dependencies on rarely-used page properties.
  */
-function snapshotPage(p: Page): Page {
-	return {
+function snapshotPage(p: Page, include: OptionalPageField[]): BreadcrumbPage {
+	const snap: BreadcrumbPage = {
 		url: new URL(p.url.href) as Page['url'],
 		params: { ...p.params },
 		route: { id: p.route.id },
-		status: p.status,
-		error: p.error,
-		data: p.data,
-		form: p.form,
-		state: p.state
+		data: p.data
 	};
+
+	for (const field of include) {
+		(snap as Record<string, unknown>)[field] = p[field];
+	}
+
+	return snap;
 }
 
 /**
@@ -50,7 +60,8 @@ function snapshotPage(p: Page): Page {
  * {/each}
  * ```
  */
-export function createBreadcrumbs() {
+export function createBreadcrumbs(options?: CreateBreadcrumbsOptions) {
+	const include = options?.include ?? [];
 	const { ready, lookup } = buildBreadcrumbMap();
 
 	let loaded = $state(false);
@@ -59,7 +70,7 @@ export function createBreadcrumbs() {
 	// synchronously (before any await) inside the returned function, which
 	// pins them to the SSR rendering context and caches them for later reads.
 	const pathname = $derived(page.url.pathname);
-	const pageSnapshot = $derived(snapshotPage(page));
+	const pageSnapshot = $derived(snapshotPage(page, include));
 
 	// Sync derived — re-evaluates when the pathname changes or modules finish
 	// loading. Reads `pathname` (cached) rather than `page.url` directly so it
