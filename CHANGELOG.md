@@ -1,5 +1,18 @@
 # svelte-crumbs
 
+## [1.3.0](https://github.com/torrfura/svelte-crumbs/compare/svelte-crumbs-v1.2.1...svelte-crumbs-v1.3.0) (2026-02-25)
+
+
+### Features
+
+* **breadcrumbs:** introduce optional page fields and enhance snapshot handling ([632b4bf](https://github.com/torrfura/svelte-crumbs/commit/632b4bf1cadaffc7f0d60aee6e09f2a2adf131af))
+
+
+### Bug Fixes
+
+* **breadcrumbs:** add support for spread routes and improve resolver API ([a3efd78](https://github.com/torrfura/svelte-crumbs/commit/a3efd78d19ee53b7d8efead2f720a9f853cbec7f))
+* **breadcrumbs:** enhance comments and documentation, cleanup obsolete code ([32ca60f](https://github.com/torrfura/svelte-crumbs/commit/32ca60fb0c20b04480599f39bbd6087b6dc1e77f))
+
 ## [1.2.1](https://github.com/torrfura/svelte-crumbs/compare/svelte-crumbs-v1.2.0...svelte-crumbs-v1.2.1) (2026-02-25)
 
 
