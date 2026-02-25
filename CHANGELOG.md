@@ -1,5 +1,12 @@
 # svelte-crumbs
 
+## [1.2.1](https://github.com/torrfura/svelte-crumbs/compare/svelte-crumbs-v1.2.0...svelte-crumbs-v1.2.1) (2026-02-25)
+
+
+### Bug Fixes
+
+* **breadcrumbs:** improve type definitions and streamline resolver logic ([aa932e7](https://github.com/torrfura/svelte-crumbs/commit/aa932e7ce5b0f5d15ac2703b78cd1300c0fedb19))
+
 ## [1.2.0](https://github.com/torrfura/svelte-crumbs/compare/svelte-crumbs-v1.1.0...svelte-crumbs-v1.2.0) (2026-02-23)
 
 
