@@ -35,22 +35,21 @@ export class BreadcrumbLookup {
  * @returns `lookup` for sync route resolution, `ready` to await initial load.
  */
 export function buildBreadcrumbMap(): { ready: Promise<void>; lookup: BreadcrumbLookup } {
-	const pageModules = import.meta.glob<{ breadcrumb?: BreadcrumbMeta }>(
-		'/src/routes/**/+page.svelte'
-	);
+	const pageModules = import.meta.glob<BreadcrumbMeta>('/src/routes/**/+page.svelte', {
+		import: 'breadcrumb'
+	});
 
 	const resolvers = new Map<string, BreadcrumbResolver>();
 	const lookup = new BreadcrumbLookup(resolvers);
 
 	const ready = Promise.all(
 		Object.entries(pageModules).map(async ([filePath, loader]) => {
-			const module = await (loader as PageModuleLoader)();
-			if (!module?.breadcrumb) return;
+			const meta = await (loader as PageModuleLoader)();
+			if (!meta) return;
 
 			const route = filePathToRoute(filePath);
-			const meta = module.breadcrumb;
 			const routes: Record<string, BreadcrumbResolver> =
-				'routes' in meta ? meta.routes : { [route]: meta as BreadcrumbResolver };
+				typeof meta === 'function' ? { [route]: meta } : meta.routes;
 
 			for (const [routeKey, resolver] of Object.entries(routes)) {
 				resolvers.set(routeKey, resolver);
