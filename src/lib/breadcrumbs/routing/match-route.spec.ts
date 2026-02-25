@@ -1,8 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { filePathToRoute, matchDynamicRoute } from './match-route.js';
-import type { BreadcrumbMap, BreadcrumbResolver } from '../types.js';
-
-const dummyResolver: BreadcrumbResolver = async () => ({ label: 'test' });
+import { filePathToRoute, matchDynamicRoutePattern } from './match-route.js';
 
 describe('filePathToRoute', () => {
 	it('converts basic path', () => {
@@ -28,40 +25,34 @@ describe('filePathToRoute', () => {
 	it('handles deeply nested paths', () => {
 		expect(filePathToRoute('/src/routes/a/b/c/d/+page.svelte')).toBe('/a/b/c/d');
 	});
+
+	it('handles layout reset +page@.svelte', () => {
+		expect(filePathToRoute('/src/routes/products/+page@.svelte')).toBe('/products');
+	});
+
+	it('handles named layout reset +page@layout.svelte', () => {
+		expect(filePathToRoute('/src/routes/products/+page@admin.svelte')).toBe('/products');
+	});
 });
 
-describe('matchDynamicRoute', () => {
+describe('matchDynamicRoutePattern', () => {
 	it('matches static route exactly', () => {
-		const map: BreadcrumbMap = new Map([['/products', dummyResolver]]);
-		expect(matchDynamicRoute(map, '/products')).toBe(dummyResolver);
+		expect(matchDynamicRoutePattern('/products', '/products')).toBe(true);
 	});
 
 	it('matches dynamic segment', () => {
-		const map: BreadcrumbMap = new Map([['/products/[id]', dummyResolver]]);
-		expect(matchDynamicRoute(map, '/products/42')).toBe(dummyResolver);
+		expect(matchDynamicRoutePattern('/products/[id]', '/products/42')).toBe(true);
 	});
 
-	it('returns undefined for segment count mismatch', () => {
-		const map: BreadcrumbMap = new Map([['/products/[id]', dummyResolver]]);
-		expect(matchDynamicRoute(map, '/products')).toBeUndefined();
+	it('returns false for segment count mismatch', () => {
+		expect(matchDynamicRoutePattern('/products/[id]', '/products')).toBe(false);
 	});
 
-	it('returns undefined for no match', () => {
-		const map: BreadcrumbMap = new Map([['/users/[id]', dummyResolver]]);
-		expect(matchDynamicRoute(map, '/products/42')).toBeUndefined();
+	it('returns false for no match', () => {
+		expect(matchDynamicRoutePattern('/users/[id]', '/products/42')).toBe(false);
 	});
 
 	it('matches multiple dynamic segments', () => {
-		const map: BreadcrumbMap = new Map([['/org/[orgId]/project/[projectId]', dummyResolver]]);
-		expect(matchDynamicRoute(map, '/org/abc/project/xyz')).toBe(dummyResolver);
-	});
-
-	it('returns first match when multiple patterns exist', () => {
-		const resolver2: BreadcrumbResolver = async () => ({ label: 'second' });
-		const map: BreadcrumbMap = new Map([
-			['/products/[id]', dummyResolver],
-			['/products/[slug]', resolver2]
-		]);
-		expect(matchDynamicRoute(map, '/products/42')).toBe(dummyResolver);
+		expect(matchDynamicRoutePattern('/org/[orgId]/project/[projectId]', '/org/abc/project/xyz')).toBe(true);
 	});
 });

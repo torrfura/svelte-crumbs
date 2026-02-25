@@ -1,15 +1,18 @@
-import { matchDynamicRoute } from './match-route.js';
+import type { LazyBreadcrumbMap } from './build-breadcrumb-map.js';
 import type { BreadcrumbMap } from '../types.js';
 
 /**
  * Walks route segments from root to leaf, collecting ordered resolvers.
  * For `/products/123/edit`, checks `/`, `/products`, `/products/123`, `/products/123/edit`.
  */
-export function getResolversForRoute(map: BreadcrumbMap, route: string): BreadcrumbMap {
+export async function getResolversForRoute(
+	map: LazyBreadcrumbMap,
+	route: string
+): Promise<BreadcrumbMap> {
 	const resolvers: BreadcrumbMap = new Map();
 
 	// Always check root first
-	const rootResolver = map.get('/');
+	const rootResolver = await map.get('/');
 	if (rootResolver) {
 		resolvers.set('/', rootResolver);
 	}
@@ -19,7 +22,7 @@ export function getResolversForRoute(map: BreadcrumbMap, route: string): Breadcr
 
 	for (const segment of segments) {
 		currentRoute += `/${segment}`;
-		const resolver = map.get(currentRoute) ?? matchDynamicRoute(map, currentRoute);
+		const resolver = await map.get(currentRoute);
 
 		if (!resolver) continue;
 

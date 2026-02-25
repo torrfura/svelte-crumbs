@@ -13,5 +13,8 @@ export type BreadcrumbData = { label: string; icon?: Component<any> };
 /** Final breadcrumb with its URL */
 export type Breadcrumb = BreadcrumbData & { url: string };
 
+/** Loader function returned by non-eager import.meta.glob */
+export type PageModuleLoader = () => Promise<{ breadcrumb?: BreadcrumbMeta }>;
+
 /** Internal map from route pattern to resolver */
 export type BreadcrumbMap = Map<string, BreadcrumbResolver>;
