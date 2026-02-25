@@ -1,36 +1,52 @@
 import { describe, it, expect } from 'vitest';
-import { filePathToRoute } from './match-route.js';
+import { BreadcrumbLookup } from './build-breadcrumb-map.js';
+import type { BreadcrumbResolver } from '../types.js';
 
-describe('buildBreadcrumbMap - filePathToRoute helper', () => {
-	it('strips /src/routes prefix', () => {
-		expect(filePathToRoute('/src/routes/dashboard/+page.svelte')).toBe('/dashboard');
+const makeResolver = (label: string): BreadcrumbResolver => async () => ({ label });
+
+function buildLookup(entries: [string, BreadcrumbResolver][]): BreadcrumbLookup {
+	return new BreadcrumbLookup(new Map(entries));
+}
+
+describe('BreadcrumbLookup', () => {
+	it('returns exact match', () => {
+		const resolver = makeResolver('Products');
+		const lookup = buildLookup([['/products', resolver]]);
+		expect(lookup.get('/products')).toBe(resolver);
 	});
 
-	it('strips +page.svelte suffix', () => {
-		expect(filePathToRoute('/src/routes/settings/+page.svelte')).toBe('/settings');
+	it('returns undefined for unknown route', () => {
+		const lookup = buildLookup([['/products', makeResolver('Products')]]);
+		expect(lookup.get('/unknown')).toBeUndefined();
 	});
 
-	it('strips single route group', () => {
-		expect(filePathToRoute('/src/routes/(app)/dashboard/+page.svelte')).toBe('/dashboard');
+	it('matches dynamic [param] segment', () => {
+		const resolver = makeResolver('Product');
+		const lookup = buildLookup([['/products/[id]', resolver]]);
+		expect(lookup.get('/products/42')).toBe(resolver);
 	});
 
-	it('strips multiple route groups', () => {
-		expect(filePathToRoute('/src/routes/(app)/(admin)/users/+page.svelte')).toBe('/users');
+	it('matches [...spread] route', () => {
+		const resolver = makeResolver('Catch-all');
+		const lookup = buildLookup([['/docs/[...slug]', resolver]]);
+		expect(lookup.get('/docs/a/b/c')).toBe(resolver);
 	});
 
-	it('handles route group at leaf level', () => {
-		expect(filePathToRoute('/src/routes/settings/(tabs)/profile/+page.svelte')).toBe(
-			'/settings/profile'
-		);
+	it('prefers exact match over dynamic pattern', () => {
+		const exact = makeResolver('Exact');
+		const dynamic = makeResolver('Dynamic');
+		const lookup = buildLookup([
+			['/products/[id]', dynamic],
+			['/products/featured', exact]
+		]);
+		expect(lookup.get('/products/featured')).toBe(exact);
 	});
 
-	it('returns / for root page', () => {
-		expect(filePathToRoute('/src/routes/+page.svelte')).toBe('/');
-	});
-
-	it('preserves [param] segments', () => {
-		expect(filePathToRoute('/src/routes/users/[userId]/posts/[postId]/+page.svelte')).toBe(
-			'/users/[userId]/posts/[postId]'
-		);
+	it('skips non-dynamic patterns during fallback scan', () => {
+		const lookup = buildLookup([
+			['/products', makeResolver('Products')],
+			['/about', makeResolver('About')]
+		]);
+		expect(lookup.get('/contact')).toBeUndefined();
 	});
 });

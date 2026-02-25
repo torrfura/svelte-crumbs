@@ -4,18 +4,22 @@ import { buildBreadcrumbMap } from './routing/build-breadcrumb-map.js';
 import { getResolversForRoute } from './routing/get-resolvers-for-route.js';
 import type { Breadcrumb, BreadcrumbMap } from './types.js';
 
-async function resolve(resolvers: BreadcrumbMap, pageSnapshot: Page): Promise<Breadcrumb[]> {
-	const promises = Array.from(resolvers).map(async ([url, resolver]) => {
-		const data = await resolver(pageSnapshot, url);
-		if (!data) return undefined;
-		return { ...data, url } as Breadcrumb;
-	});
-
-	const results = await Promise.all(promises);
+/** Calls each resolver in parallel and filters out undefined results. */
+async function resolve(resolvers: BreadcrumbMap, snap: Page): Promise<Breadcrumb[]> {
+	const results = await Promise.all(
+		Array.from(resolvers, async ([url, resolver]) => {
+			const data = await resolver(snap, url);
+			return data ? ({ ...data, url } as Breadcrumb) : undefined;
+		})
+	);
 	return results.filter((b): b is Breadcrumb => b !== undefined);
 }
 
-/** Capture a plain-object snapshot of page state so resolvers can read it outside component context. */
+/**
+ * Captures a plain-object snapshot of `page` state.
+ * Resolvers receive this instead of the live proxy so they can be called
+ * outside the SSR rendering context (i.e. after an `await` boundary).
+ */
 function snapshotPage(p: Page): Page {
 	return {
 		url: new URL(p.url.href) as Page['url'],
@@ -30,13 +34,13 @@ function snapshotPage(p: Page): Page {
 }
 
 /**
- * Creates a reactive breadcrumb resolver that automatically tracks the current route.
- * Uses top-level await with SvelteKit's async experimental compiler option for SSR support.
+ * Creates a reactive breadcrumb resolver that tracks the current route.
  *
- * Usage:
+ * @example
  * ```svelte
  * <script lang="ts">
  *   import { createBreadcrumbs } from 'svelte-crumbs';
+ *
  *   const getBreadcrumbs = createBreadcrumbs();
  *   const crumbs = $derived(await getBreadcrumbs());
  * </script>
@@ -51,38 +55,32 @@ export function createBreadcrumbs() {
 
 	let loaded = $state(false);
 
-	// $derived values that read the reactive page proxy.
-	// These are read synchronously (before any await) inside the returned
-	// function, which caches them in the rendering context on SSR.
+	// Derived values that read the live `page` proxy. They are evaluated
+	// synchronously (before any await) inside the returned function, which
+	// pins them to the SSR rendering context and caches them for later reads.
 	const pathname = $derived(page.url.pathname);
 	const pageSnapshot = $derived(snapshotPage(page));
 
-	// Sync $derived — exactly like the original pre-lazy pattern.
-	// Re-evaluates when pathname changes or when modules finish loading.
-	// Reads `pathname` (not page.url directly) so it uses the cached value
-	// after an await boundary on SSR.
+	// Sync derived — re-evaluates when the pathname changes or modules finish
+	// loading. Reads `pathname` (cached) rather than `page.url` directly so it
+	// stays safe after an await boundary on the server.
 	const resolversForRoute = $derived(
 		loaded ? getResolversForRoute(lookup, pathname) : (new Map() as BreadcrumbMap)
 	);
 
 	return async () => {
-		// Read derived values synchronously — caches them in the SSR rendering
-		// context so subsequent reads (after await) use cached values.
+		// Evaluate derived values synchronously — this caches them inside the
+		// SSR rendering context so reads after the await use cached values.
 		const snap = pageSnapshot;
 		void pathname;
 
-		// On first call (SSR), wait for all modules to load.
 		if (!loaded) {
 			await ready;
 			loaded = true;
 		}
 
-		// Sync read of $derived — establishes reactive tracking.
-		// When queries like getNickname() are called inside resolve(),
-		// their signals are tracked because there is no await before this point
-		// on subsequent calls (loaded === true).
-		const resolvers = resolversForRoute;
-
-		return resolve(resolvers, snap);
+		// Sync read — no await between here and resolve(), so Svelte's
+		// reactive tracking reaches into resolver calls (e.g. queries).
+		return resolve(resolversForRoute, snap);
 	};
 }
