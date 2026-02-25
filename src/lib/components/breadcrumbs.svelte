@@ -11,8 +11,7 @@
 		mounted = true;
 	});
 
-	// eslint-disable-next-line svelte/prefer-writable-derived -- intentionally stale: out-transitions need the previous count
-	let prevCount = $state(crumbs.length);
+	let prevCount = $derived(crumbs.length);
 	$effect(() => {
 		prevCount = crumbs.length;
 	});
