@@ -1,6 +1,6 @@
 {
 	"name": "svelte-crumbs",
-	"version": "1.2.1",
+	"version": "1.3.0",
 	"description": "Automatic, SSR-ready breadcrumbs for SvelteKit — zero config, async resolvers, remote function support",
 	"license": "MIT",
 	"homepage": "https://svelte-crumbs.vercel.app",
