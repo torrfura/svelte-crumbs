@@ -25,6 +25,7 @@ export const navigation: NavSection[] = [
 			{ label: 'Nested Static', href: '/products/42/edit' },
 			{ label: 'Remote Function', href: '/docs/getting-started' },
 			{ label: 'Optimistic Update', href: '/playground' },
+			{ label: 'Dynamic routing', href: '/spread' },
 			{ label: 'No Breadcrumb', href: '/about' }
 		]
 	},

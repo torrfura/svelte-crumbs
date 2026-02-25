@@ -2,75 +2,24 @@ import { filePathToRoute, matchDynamicRoutePattern } from './match-route.js';
 import type { BreadcrumbMeta, BreadcrumbResolver, PageModuleLoader } from '../types.js';
 
 /**
- * Lazy breadcrumb map that stores loader functions from import.meta.glob
- * and only resolves modules when a specific route is requested.
- * This avoids eagerly importing every +page.svelte at dev server startup.
+ * Sync breadcrumb lookup built from eagerly-loaded modules.
+ * Supports exact, dynamic [param], and [...spread] route matching.
  */
-export class LazyBreadcrumbMap {
-	#loaders: Map<string, PageModuleLoader[]>;
-	#resolved = new Map<string, BreadcrumbResolver | null>();
+export class BreadcrumbLookup {
+	/** All route→resolver entries (mutated during async init, then stable). */
+	readonly resolvers: Map<string, BreadcrumbResolver>;
 
-	constructor(pageModules: Record<string, PageModuleLoader>) {
-		this.#loaders = new Map();
-
-		for (const [filePath, loader] of Object.entries(pageModules)) {
-			const route = filePathToRoute(filePath);
-			const existing = this.#loaders.get(route) ?? [];
-			existing.push(loader);
-			this.#loaders.set(route, existing);
-		}
+	constructor(resolvers: Map<string, BreadcrumbResolver>) {
+		this.resolvers = resolvers;
 	}
 
-	async get(route: string): Promise<BreadcrumbResolver | undefined> {
-		if (this.#resolved.has(route)) {
-			return this.#resolved.get(route) ?? undefined;
-		}
-
-		const loaders = this.#findLoaders(route);
-		if (!loaders) return undefined;
-
-		for (const loader of loaders) {
-			const module = await loader();
-			if (!module?.breadcrumb) continue;
-
-			const meta: BreadcrumbMeta = module.breadcrumb;
-
-			// Meta can be a single resolver or a { routes: Record<string, BreadcrumbResolver> }
-			if ('routes' in meta) {
-				// Cache all route resolvers from this module
-				for (const [routeKey, resolver] of Object.entries(meta.routes)) {
-					this.#resolved.set(routeKey, resolver);
-				}
-
-				if (this.#resolved.has(route)) {
-					return this.#resolved.get(route) ?? undefined;
-				}
-			} else {
-				const resolver = meta as BreadcrumbResolver;
-				this.#resolved.set(route, resolver);
-				return resolver;
-			}
-		}
-
-		// Mark as resolved with no result to avoid re-loading
-		this.#resolved.set(route, null);
-		return undefined;
-	}
-
-	/**
-	 * Find loaders for a route, supporting both exact matches
-	 * and dynamic [param] segments.
-	 */
-	#findLoaders(route: string): PageModuleLoader[] | undefined {
-		// Exact match first
-		const exact = this.#loaders.get(route);
+	/** Sync lookup: exact match → dynamic pattern → spread pattern. */
+	get(route: string): BreadcrumbResolver | undefined {
+		const exact = this.resolvers.get(route);
 		if (exact) return exact;
 
-		// Try dynamic pattern matching
-		for (const [pattern, loaders] of this.#loaders) {
-			if (matchDynamicRoutePattern(pattern, route)) {
-				return loaders;
-			}
+		for (const [pattern, resolver] of this.resolvers) {
+			if (matchDynamicRoutePattern(pattern, route)) return resolver;
 		}
 
 		return undefined;
@@ -78,13 +27,34 @@ export class LazyBreadcrumbMap {
 }
 
 /**
- * Scans all +page.svelte files via import.meta.glob (lazy) for `breadcrumb` exports
- * and returns a LazyBreadcrumbMap that resolves modules on demand.
+ * Loads all +page.svelte modules in parallel and builds a sync BreadcrumbLookup.
+ * Uses non-eager import.meta.glob so full component code is not bundled into
+ * the breadcrumb map — only the module-level `breadcrumb` export is read.
  */
-export function buildBreadcrumbMap(): LazyBreadcrumbMap {
+export function buildBreadcrumbMap(): { ready: Promise<void>; lookup: BreadcrumbLookup } {
 	const pageModules = import.meta.glob<{ breadcrumb?: BreadcrumbMeta }>(
 		'/src/routes/**/+page.svelte'
 	);
 
-	return new LazyBreadcrumbMap(pageModules as Record<string, PageModuleLoader>);
+	const resolvers = new Map<string, BreadcrumbResolver>();
+	const lookup = new BreadcrumbLookup(resolvers);
+
+	const ready = Promise.all(
+		Object.entries(pageModules).map(async ([filePath, loader]) => {
+			const module = await (loader as PageModuleLoader)();
+			if (!module?.breadcrumb) return;
+
+			const route = filePathToRoute(filePath);
+			const meta = module.breadcrumb;
+
+			const routes: Record<string, BreadcrumbResolver> =
+				'routes' in meta ? meta.routes : { [route]: meta as BreadcrumbResolver };
+
+			for (const [routeKey, resolver] of Object.entries(routes)) {
+				resolvers.set(routeKey, resolver);
+			}
+		})
+	).then(() => {});
+
+	return { ready, lookup };
 }
