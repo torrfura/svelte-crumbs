@@ -2,9 +2,11 @@
 	import type { BreadcrumbMeta } from '$lib/index.js';
 	import { getNickname } from '$lib/demo/greeting.remote.js';
 
-	export const breadcrumb: BreadcrumbMeta = async () => ({
-		label: await getNickname()
-	});
+	export const breadcrumb: BreadcrumbMeta = async () => {
+		return {
+			label: await getNickname()
+		}
+	}
 </script>
 
 <script lang="ts">
