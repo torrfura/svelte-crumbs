@@ -13,7 +13,6 @@
 
 	const getBreadcrumbs = createBreadcrumbs();
 	const crumbs = $derived(await getBreadcrumbs());
-	$inspect(crumbs);
 	let sidebarOpen = $state(false);
 
 	onMount(() => {

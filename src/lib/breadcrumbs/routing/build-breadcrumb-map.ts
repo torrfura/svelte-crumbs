@@ -2,24 +2,25 @@ import { filePathToRoute, matchDynamicRoutePattern } from './match-route.js';
 import type { BreadcrumbMeta, BreadcrumbResolver, PageModuleLoader } from '../types.js';
 
 /**
- * Sync breadcrumb lookup built from eagerly-loaded modules.
- * Supports exact, dynamic [param], and [...spread] route matching.
+ * Synchronous breadcrumb resolver lookup.
+ * Supports exact, dynamic `[param]`, and `[...spread]` route matching.
  */
 export class BreadcrumbLookup {
-	/** All route→resolver entries (mutated during async init, then stable). */
-	readonly resolvers: Map<string, BreadcrumbResolver>;
+	#resolvers: Map<string, BreadcrumbResolver>;
 
 	constructor(resolvers: Map<string, BreadcrumbResolver>) {
-		this.resolvers = resolvers;
+		this.#resolvers = resolvers;
 	}
 
-	/** Sync lookup: exact match → dynamic pattern → spread pattern. */
+	/** Looks up a resolver by exact match, then dynamic/spread pattern match. */
 	get(route: string): BreadcrumbResolver | undefined {
-		const exact = this.resolvers.get(route);
+		const exact = this.#resolvers.get(route);
 		if (exact) return exact;
 
-		for (const [pattern, resolver] of this.resolvers) {
-			if (matchDynamicRoutePattern(pattern, route)) return resolver;
+		for (const [pattern, resolver] of this.#resolvers) {
+			if (pattern.includes('[') && matchDynamicRoutePattern(pattern, route)) {
+				return resolver;
+			}
 		}
 
 		return undefined;
@@ -27,9 +28,11 @@ export class BreadcrumbLookup {
 }
 
 /**
- * Loads all +page.svelte modules in parallel and builds a sync BreadcrumbLookup.
- * Uses non-eager import.meta.glob so full component code is not bundled into
- * the breadcrumb map — only the module-level `breadcrumb` export is read.
+ * Scans all `+page.svelte` files for `breadcrumb` exports using non-eager
+ * `import.meta.glob`. Modules are loaded in parallel on first access;
+ * after that, all lookups are synchronous.
+ *
+ * @returns `lookup` for sync route resolution, `ready` to await initial load.
  */
 export function buildBreadcrumbMap(): { ready: Promise<void>; lookup: BreadcrumbLookup } {
 	const pageModules = import.meta.glob<{ breadcrumb?: BreadcrumbMeta }>(
@@ -46,7 +49,6 @@ export function buildBreadcrumbMap(): { ready: Promise<void>; lookup: Breadcrumb
 
 			const route = filePathToRoute(filePath);
 			const meta = module.breadcrumb;
-
 			const routes: Record<string, BreadcrumbResolver> =
 				'routes' in meta ? meta.routes : { [route]: meta as BreadcrumbResolver };
 

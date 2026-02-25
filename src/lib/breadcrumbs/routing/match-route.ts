@@ -1,7 +1,9 @@
 /**
- * Converts a file path from import.meta.glob to a clean route.
- * `/src/routes/(group)/products/+page.svelte` → `/products`
- * `/src/routes/(group)/products/+page@.svelte` → `/products`
+ * Converts a file path from `import.meta.glob` to a clean route pattern.
+ *
+ * @example
+ * filePathToRoute('/src/routes/(group)/products/+page.svelte')  // → '/products'
+ * filePathToRoute('/src/routes/products/+page@admin.svelte')    // → '/products'
  */
 export function filePathToRoute(filePath: string): string {
 	return (
@@ -13,9 +15,13 @@ export function filePathToRoute(filePath: string): string {
 }
 
 /**
- * Checks whether a dynamic route pattern matches a concrete route.
- * `/products/[id]` matches `/products/123`
- * `/spread/[...rest]` matches `/spread/a/b/c`
+ * Tests whether a route pattern matches a concrete URL path.
+ * Supports static segments, dynamic `[param]` segments, and `[...rest]` spread segments.
+ *
+ * @example
+ * matchDynamicRoutePattern('/products/[id]', '/products/42')           // → true
+ * matchDynamicRoutePattern('/docs/[...slug]', '/docs/a/b/c')           // → true
+ * matchDynamicRoutePattern('/docs/[...slug]', '/docs')                 // → false
  */
 export function matchDynamicRoutePattern(pattern: string, route: string): boolean {
 	const routeSegments = route.split('/').filter(Boolean);
@@ -24,18 +30,12 @@ export function matchDynamicRoutePattern(pattern: string, route: string): boolea
 	for (let i = 0; i < patternSegments.length; i++) {
 		const seg = patternSegments[i];
 
-		// Spread segment matches all remaining route segments
 		if (seg.startsWith('[...') && seg.endsWith(']')) {
-			return routeSegments.length >= i + 1;
+			return routeSegments.length > i;
 		}
 
-		// Not enough route segments
 		if (i >= routeSegments.length) return false;
-
-		// Dynamic segment matches anything
 		if (seg.startsWith('[') && seg.endsWith(']')) continue;
-
-		// Static segment must match exactly
 		if (seg !== routeSegments[i]) return false;
 	}
 
