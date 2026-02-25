@@ -1,12 +1,16 @@
 export { createBreadcrumbs } from './breadcrumbs/create-breadcrumbs.svelte.js';
 
-export { buildBreadcrumbMap } from './breadcrumbs/routing/build-breadcrumb-map.js';
-export { filePathToRoute, matchDynamicRoute } from './breadcrumbs/routing/match-route.js';
+export {
+	buildBreadcrumbMap,
+	LazyBreadcrumbMap
+} from './breadcrumbs/routing/build-breadcrumb-map.js';
+export { filePathToRoute, matchDynamicRoutePattern } from './breadcrumbs/routing/match-route.js';
 export { getResolversForRoute } from './breadcrumbs/routing/get-resolvers-for-route.js';
 export type {
 	Breadcrumb,
 	BreadcrumbData,
 	BreadcrumbMap,
 	BreadcrumbMeta,
-	BreadcrumbResolver
+	BreadcrumbResolver,
+	PageModuleLoader
 } from './breadcrumbs/types.js';
