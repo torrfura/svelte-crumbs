@@ -9,5 +9,8 @@ export type {
 	BreadcrumbData,
 	BreadcrumbMap,
 	BreadcrumbMeta,
-	BreadcrumbResolver
+	BreadcrumbPage,
+	BreadcrumbResolver,
+	CreateBreadcrumbsOptions,
+	OptionalPageField
 } from './breadcrumbs/types.js';
