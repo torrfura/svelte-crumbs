@@ -4,8 +4,8 @@ import type { Page } from '@sveltejs/kit';
 /** What users export from +page.svelte as `breadcrumb` */
 export type BreadcrumbMeta = BreadcrumbResolver | { routes: Record<string, BreadcrumbResolver> };
 
-/** Async resolver function that receives the current page and returns breadcrumb data */
-export type BreadcrumbResolver = (page: Page) => Promise<BreadcrumbData | undefined>;
+/** Async resolver function that receives the current page and the breadcrumb's own URL */
+export type BreadcrumbResolver = (page: Page, url: string) => Promise<BreadcrumbData | undefined>;
 
 /** Resolved data for one breadcrumb */
 export type BreadcrumbData = { label: string; icon?: Component<any> };

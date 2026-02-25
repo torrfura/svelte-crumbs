@@ -55,4 +55,20 @@ describe('matchDynamicRoutePattern', () => {
 	it('matches multiple dynamic segments', () => {
 		expect(matchDynamicRoutePattern('/org/[orgId]/project/[projectId]', '/org/abc/project/xyz')).toBe(true);
 	});
+
+	it('matches spread route with single segment', () => {
+		expect(matchDynamicRoutePattern('/spread/[...rest]', '/spread/users')).toBe(true);
+	});
+
+	it('matches spread route with multiple segments', () => {
+		expect(matchDynamicRoutePattern('/spread/[...rest]', '/spread/users/42/settings')).toBe(true);
+	});
+
+	it('returns false when spread route has no remaining segments', () => {
+		expect(matchDynamicRoutePattern('/spread/[...rest]', '/spread')).toBe(false);
+	});
+
+	it('returns false when spread prefix does not match', () => {
+		expect(matchDynamicRoutePattern('/spread/[...rest]', '/other/users')).toBe(false);
+	});
 });

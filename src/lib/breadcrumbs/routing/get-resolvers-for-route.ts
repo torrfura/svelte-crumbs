@@ -1,18 +1,15 @@
-import type { LazyBreadcrumbMap } from './build-breadcrumb-map.js';
+import type { BreadcrumbLookup } from './build-breadcrumb-map.js';
 import type { BreadcrumbMap } from '../types.js';
 
 /**
  * Walks route segments from root to leaf, collecting ordered resolvers.
  * For `/products/123/edit`, checks `/`, `/products`, `/products/123`, `/products/123/edit`.
  */
-export async function getResolversForRoute(
-	map: LazyBreadcrumbMap,
-	route: string
-): Promise<BreadcrumbMap> {
+export function getResolversForRoute(map: BreadcrumbLookup, route: string): BreadcrumbMap {
 	const resolvers: BreadcrumbMap = new Map();
 
 	// Always check root first
-	const rootResolver = await map.get('/');
+	const rootResolver = map.get('/');
 	if (rootResolver) {
 		resolvers.set('/', rootResolver);
 	}
@@ -22,7 +19,7 @@ export async function getResolversForRoute(
 
 	for (const segment of segments) {
 		currentRoute += `/${segment}`;
-		const resolver = await map.get(currentRoute);
+		const resolver = map.get(currentRoute);
 
 		if (!resolver) continue;
 
