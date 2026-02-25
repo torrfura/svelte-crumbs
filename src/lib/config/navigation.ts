@@ -18,6 +18,13 @@ export const navigation: NavSection[] = [
 		]
 	},
 	{
+		title: 'Rendering',
+		items: [
+			{ label: 'Animated', href: '/docs/rendering/animated' },
+			{ label: 'Static', href: '/docs/rendering/static' }
+		]
+	},
+	{
 		title: 'Patterns',
 		items: [
 			{ label: 'Static Label', href: '/products' },

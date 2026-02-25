@@ -35,26 +35,26 @@
 	}}
 >
 	<div>
-		<label for="nickname" class="block text-sm font-medium text-(--color-text-primary)">Your name</label>
+		<label for="nickname" class="block font-medium text-(--color-text-primary)">Your name</label>
 		<input
 			id="nickname"
 			type="text"
 			bind:value={input}
 			placeholder="Visitor"
 			autocomplete="off"
-			class="mt-1 w-full max-w-xs rounded-md border border-(--color-border) bg-(--color-bg) px-3 py-2 text-sm text-(--color-text-primary) shadow-sm focus:border-(--color-accent) focus:ring-1 focus:ring-(--color-accent) focus:outline-none"
+			class="mt-1 w-full max-w-xs rounded-md border border-(--color-border) bg-(--color-bg) px-3 py-2 text-(--color-text-primary) shadow-sm focus:border-(--color-accent) focus:ring-1 focus:ring-(--color-accent) focus:outline-none"
 		/>
 	</div>
 	<button
 		type="submit"
-		class="rounded-md bg-(--color-accent) px-4 py-2 text-sm font-medium text-white shadow-sm hover:opacity-90 focus:ring-2 focus:ring-(--color-accent) focus:ring-offset-2 focus:outline-none"
+		class="rounded-md bg-(--color-accent) px-4 py-2 font-medium text-white shadow-sm hover:opacity-90 focus:ring-2 focus:ring-(--color-accent) focus:ring-offset-2 focus:outline-none"
 	>
 		Save
 	</button>
 </form>
 
 <h2 class="mt-8 text-lg font-semibold text-(--color-text-primary)">Breadcrumb reads from a remote query</h2>
-<p class="mt-1 text-sm text-(--color-text-secondary)">
+<p class="mt-1 text-(--color-text-secondary)">
 	The breadcrumb calls <code class="rounded bg-(--color-code-bg) px-1 text-sm">getNickname()</code> — a
 	server-side query faking a database read.
 </p>
@@ -67,7 +67,7 @@ export const breadcrumb: BreadcrumbMeta = async () => ({
 />
 
 <h2 class="mt-6 text-lg font-semibold text-(--color-text-primary)">Optimistic update via command</h2>
-<p class="mt-1 text-sm text-(--color-text-secondary)">
+<p class="mt-1 text-(--color-text-secondary)">
 	On save, a <code class="rounded bg-(--color-code-bg) px-1 text-sm">command</code> writes to the server
 	while
 	<code class="rounded bg-(--color-code-bg) px-1 text-sm">.withOverride()</code> updates the breadcrumb instantly

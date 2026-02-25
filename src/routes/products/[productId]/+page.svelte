@@ -19,7 +19,7 @@
 </p>
 
 <h2 class="mt-8 text-lg font-semibold text-(--color-text-primary)">Dynamic breadcrumb from load data</h2>
-<p class="mt-1 text-sm text-(--color-text-secondary)">The label is pulled from <code class="rounded bg-(--color-code-bg) px-1 text-sm">page.data</code> populated by the layout's load function.</p>
+<p class="mt-1 text-(--color-text-secondary)">The label is pulled from <code class="rounded bg-(--color-code-bg) px-1 text-sm">page.data</code> populated by the layout's load function.</p>
 <CodeBlock code={`export const breadcrumb: BreadcrumbMeta = async (page) => ({
   label: page.data.product.name
 });`} />
