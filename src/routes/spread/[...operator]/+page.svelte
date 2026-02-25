@@ -19,7 +19,7 @@
 	const segments = $derived((page.params.operator ?? '').split('/').filter(Boolean));
 </script>
 <h1 class="text-2xl font-bold text-(--color-text-primary)">Spread Routes</h1>
-<p class="mt-2 text-sm text-(--color-text-secondary)">
+<p class="mt-2 text-(--color-text-secondary)">
 	A <code class="rounded bg-(--color-code-bg) px-1 text-sm">[...operator]</code> catch-all route that handles arbitrary depth.
 	The breadcrumb label is derived from the last segment of the path.
 </p>
@@ -33,13 +33,13 @@
 </ul>
 
 {#if segments.length}
-	<p class="mt-4 text-sm text-(--color-text-secondary)">
+	<p class="mt-4 text-(--color-text-secondary)">
 		Current path: <code class="rounded bg-(--color-code-bg) px-1 text-sm">{segments.join(' / ')}</code>
 	</p>
 {/if}
 
 <h2 class="mt-8 text-lg font-semibold text-(--color-text-primary)">Multi-route breadcrumb from a single page</h2>
-<p class="mt-1 text-sm text-(--color-text-secondary)">
+<p class="mt-1 text-(--color-text-secondary)">
 	Instead of exporting a single resolver, the <code class="rounded bg-(--color-code-bg) px-1 text-sm">breadcrumb</code> export uses the
 	<code class="rounded bg-(--color-code-bg) px-1 text-sm">{"{ routes }"}</code> form to define resolvers for multiple route patterns from one file.
 </p>
@@ -55,7 +55,7 @@
 };`} />
 
 <h2 class="mt-8 text-lg font-semibold text-(--color-text-primary)">How it works</h2>
-<p class="mt-1 text-sm text-(--color-text-secondary)">
+<p class="mt-1 text-(--color-text-secondary)">
 	A <code class="rounded bg-(--color-code-bg) px-1 text-sm">[...operator]</code> spread route matches paths of any depth.
 	The resolver receives the breadcrumb's own URL as the second argument, so each segment gets the correct label
 	(e.g. the breadcrumb at <code class="rounded bg-(--color-code-bg) px-1 text-sm">/spread/users/42</code> receives that exact path,

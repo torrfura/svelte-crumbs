@@ -10,8 +10,9 @@
 	import CodeBlock from '$lib/components/code-block.svelte';
 </script>
 
+<img src="/svelte-crumbs.svg" alt="svelte-crumbs" class="h-60 center align-center mx-auto my-20" />
 <h1 class="text-2xl font-bold text-(--color-text-primary)">How svelte-crumbs works</h1>
-<p class="mt-2 text-sm text-(--color-text-secondary)">
+<p class="mt-2 text-(--color-text-secondary)">
 	A deep dive into the internals so you know exactly what runs, when it runs, and why it is safe.
 </p>
 
@@ -20,13 +21,13 @@
 <h2 class="mt-10 text-xl font-bold text-(--color-text-primary)">Architecture</h2>
 
 <h3 class="mt-6 text-lg font-semibold text-(--color-text-primary)">1. Module scanning</h3>
-<p class="mt-1 text-sm text-(--color-text-secondary)">
+<p class="mt-1 text-md text-(--color-text-secondary)">
 	At startup, <code class="rounded bg-(--color-code-bg) px-1 text-sm">buildBreadcrumbMap()</code>
 	calls <code class="rounded bg-(--color-code-bg) px-1 text-sm">import.meta.glob('/src/routes/**/+page.svelte')</code>
 	in <strong>non-eager</strong> mode. Vite returns a record of lazy loader functions — one per page file.
 	No component code is imported at this point; only the file paths are known.
 </p>
-<p class="mt-2 text-sm text-(--color-text-secondary)">
+<p class="mt-2 text-(--color-text-secondary)">
 	All loaders are then invoked in parallel via <code class="rounded bg-(--color-code-bg) px-1 text-sm">Promise.all</code>.
 	Each loader resolves to the page module, and only the module-level
 	<code class="rounded bg-(--color-code-bg) px-1 text-sm">breadcrumb</code> export is read.
@@ -36,7 +37,7 @@
 </p>
 
 <h3 class="mt-6 text-lg font-semibold text-(--color-text-primary)">2. Route matching</h3>
-<p class="mt-1 text-sm text-(--color-text-secondary)">
+<p class="mt-1 text-(--color-text-secondary)">
 	When the URL changes, <code class="rounded bg-(--color-code-bg) px-1 text-sm">getResolversForRoute()</code>
 	walks path segments from root to leaf. For
 	<code class="rounded bg-(--color-code-bg) px-1 text-sm">/products/42/edit</code> it checks
@@ -51,7 +52,7 @@
 </p>
 
 <h3 class="mt-6 text-lg font-semibold text-(--color-text-primary)">3. Resolution</h3>
-<p class="mt-1 text-sm text-(--color-text-secondary)">
+<p class="mt-1 text-(--color-text-secondary)">
 	The collected resolvers are called in parallel. Each receives a snapshot of
 	<code class="rounded bg-(--color-code-bg) px-1 text-sm">page</code> state (params, data, url)
 	and the breadcrumb's own URL path. They return
@@ -62,13 +63,13 @@
 <!-- ───────────────────────────── SSR SAFETY ───────────────────────────── -->
 
 <h2 class="mt-10 text-xl font-bold text-(--color-text-primary)">SSR safety</h2>
-<p class="mt-2 text-sm text-(--color-text-secondary)">
+<p class="mt-2 text-(--color-text-secondary)">
 	SvelteKit's <code class="rounded bg-(--color-code-bg) px-1 text-sm">page</code> proxy
 	is tied to the current request via component context. Reading it after an
 	<code class="rounded bg-(--color-code-bg) px-1 text-sm">await</code> on the server throws
 	because the rendering context is gone. svelte-crumbs handles this in two ways:
 </p>
-<ul class="mt-2 space-y-2 text-sm text-(--color-text-secondary)">
+<ul class="mt-2 space-y-2 text-(--color-text-secondary)">
 	<li>
 		<strong>Snapshot before await</strong> —
 		<code class="rounded bg-(--color-code-bg) px-1 text-sm">page</code> state is captured
@@ -84,7 +85,7 @@
 		the cached value without re-reading the proxy.
 	</li>
 </ul>
-<p class="mt-2 text-sm text-(--color-text-secondary)">
+<p class="mt-2 text-(--color-text-secondary)">
 	The result: full SSR support with no
 	<code class="rounded bg-(--color-code-bg) px-1 text-sm">"Cannot read page.params outside rendering"</code> errors,
 	and no leaked state between requests.
@@ -93,7 +94,7 @@
 <!-- ──────────────────────────── REACTIVITY ───────────────────────────── -->
 
 <h2 class="mt-10 text-xl font-bold text-(--color-text-primary)">Reactive tracking</h2>
-<p class="mt-2 text-sm text-(--color-text-secondary)">
+<p class="mt-2 text-(--color-text-secondary)">
 	The resolver map is built once (async), then kept in a
 	<code class="rounded bg-(--color-code-bg) px-1 text-sm">$state</code>-gated
 	<code class="rounded bg-(--color-code-bg) px-1 text-sm">$derived</code>.
@@ -113,7 +114,7 @@
 <h2 class="mt-10 text-xl font-bold text-(--color-text-primary)">Performance impact</h2>
 
 <h3 class="mt-6 text-lg font-semibold text-(--color-text-primary)">Bundle size</h3>
-<p class="mt-1 text-sm text-(--color-text-secondary)">
+<p class="mt-1 text-(--color-text-secondary)">
 	<code class="rounded bg-(--color-code-bg) px-1 text-sm">import.meta.glob</code> runs in
 	<strong>non-eager</strong> mode. Vite code-splits each page module separately — the
 	breadcrumb map only pulls in the thin module-level
@@ -122,7 +123,7 @@
 </p>
 
 <h3 class="mt-6 text-lg font-semibold text-(--color-text-primary)">Runtime cost</h3>
-<ul class="mt-2 space-y-2 text-sm text-(--color-text-secondary)">
+<ul class="mt-2 space-y-2 text-(--color-text-secondary)">
 	<li>
 		<strong>Startup</strong> — all page modules are loaded in parallel via
 		<code class="rounded bg-(--color-code-bg) px-1 text-sm">Promise.all</code>.
@@ -146,7 +147,7 @@
 <h2 class="mt-10 text-xl font-bold text-(--color-text-primary)">Quick start</h2>
 
 <h3 class="mt-6 text-lg font-semibold text-(--color-text-primary)">Root layout</h3>
-<p class="mt-1 text-sm text-(--color-text-secondary)">
+<p class="mt-1 text-(--color-text-secondary)">
 	Call <code class="rounded bg-(--color-code-bg) px-1 text-sm">createBreadcrumbs()</code> once
 	in your root layout. It scans all pages, resolves the matching breadcrumbs for the
 	current route, and returns a reactive array.
@@ -164,7 +165,7 @@
 {/each}`} />
 
 <h3 class="mt-6 text-lg font-semibold text-(--color-text-primary)">Page breadcrumb</h3>
-<p class="mt-1 text-sm text-(--color-text-secondary)">
+<p class="mt-1 text- text-(--color-text-secondary)">
 	Export a <code class="rounded bg-(--color-code-bg) px-1 text-sm">breadcrumb</code> from
 	any <code class="rounded bg-(--color-code-bg) px-1 text-sm">+page.svelte</code> module script.
 	The resolver receives the current
@@ -180,7 +181,7 @@
 <h2 class="mt-10 text-xl font-bold text-(--color-text-primary)">Patterns</h2>
 
 <h3 class="mt-6 text-lg font-semibold text-(--color-text-primary)">Static label</h3>
-<p class="mt-1 text-sm text-(--color-text-secondary)">
+<p class="mt-1 text-(--color-text-secondary)">
 	The simplest pattern — return a fixed label. Used on
 	<a href="/products" class="text-(--color-accent) hover:underline">Products</a>,
 	<a href="/docs" class="text-(--color-accent) hover:underline">Docs</a>, and this page.
@@ -190,7 +191,7 @@
 });`} />
 
 <h3 class="mt-8 text-lg font-semibold text-(--color-text-primary)">Dynamic from load data</h3>
-<p class="mt-1 text-sm text-(--color-text-secondary)">
+<p class="mt-1 text-(--color-text-secondary)">
 	Read the label from <code class="rounded bg-(--color-code-bg) px-1 text-sm">page.data</code>
 	populated by a layout's load function.
 	See <a href="/products/42" class="text-(--color-accent) hover:underline">Product #42</a>.
@@ -200,7 +201,7 @@
 });`} />
 
 <h3 class="mt-8 text-lg font-semibold text-(--color-text-primary)">Remote function</h3>
-<p class="mt-1 text-sm text-(--color-text-secondary)">
+<p class="mt-1 text-(--color-text-secondary)">
 	Call a server-side function inside the resolver — runs on the server, works with SSR.
 	See <a href="/docs/getting-started" class="text-(--color-accent) hover:underline">Getting Started</a>.
 </p>
@@ -211,7 +212,7 @@ export const breadcrumb: BreadcrumbMeta = async (page) => ({
 });`} />
 
 <h3 class="mt-8 text-lg font-semibold text-(--color-text-primary)">Optimistic update</h3>
-<p class="mt-1 text-sm text-(--color-text-secondary)">
+<p class="mt-1 text-(--color-text-secondary)">
 	Combine a <code class="rounded bg-(--color-code-bg) px-1 text-sm">query</code> with a
 	<code class="rounded bg-(--color-code-bg) px-1 text-sm">command</code> +
 	<code class="rounded bg-(--color-code-bg) px-1 text-sm">.withOverride()</code> for instant
@@ -226,7 +227,7 @@ export const breadcrumb: BreadcrumbMeta = async (page) => ({
 setNickname(value).updates(getNickname().withOverride(() => value));`} />
 
 <h3 class="mt-8 text-lg font-semibold text-(--color-text-primary)">Spread / catch-all routes</h3>
-<p class="mt-1 text-sm text-(--color-text-secondary)">
+<p class="mt-1 text-(--color-text-secondary)">
 	Use the <code class="rounded bg-(--color-code-bg) px-1 text-sm">{`{ routes }`}</code> form to
 	define breadcrumbs for multiple route patterns from a single
 	<code class="rounded bg-(--color-code-bg) px-1 text-sm">[...rest]</code> page.
@@ -244,7 +245,7 @@ setNickname(value).updates(getNickname().withOverride(() => value));`} />
 };`} />
 
 <h3 class="mt-8 text-lg font-semibold text-(--color-text-primary)">No breadcrumb</h3>
-<p class="mt-1 text-sm text-(--color-text-secondary)">
+<p class="mt-1 text-(--color-text-secondary)">
 	Omit the export entirely — the route is silently skipped in the breadcrumb trail.
 	See <a href="/about" class="text-(--color-accent) hover:underline">About</a>.
 </p>
