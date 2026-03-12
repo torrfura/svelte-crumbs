@@ -1,5 +1,13 @@
 # svelte-crumbs
 
+## [1.4.0](https://github.com/torrfura/svelte-crumbs/compare/svelte-crumbs-v1.3.0...svelte-crumbs-v1.4.0) (2026-03-12)
+
+
+### Features
+
+* **breadcrumbs:** refactor reactive logic, add e2e tests, and upgrade dependencies ([fe0b6ae](https://github.com/torrfura/svelte-crumbs/commit/fe0b6aebbf87742812cd838c0ec542afa7ec8d8d))
+* **docs:** add new rendering page and enhance breadcrumb animations ([7ae6f05](https://github.com/torrfura/svelte-crumbs/commit/7ae6f05a04ca6cc7e9ef56eda2e0f081a7a24bef))
+
 ## [1.3.0](https://github.com/torrfura/svelte-crumbs/compare/svelte-crumbs-v1.2.1...svelte-crumbs-v1.3.0) (2026-02-25)
 
 
