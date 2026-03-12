@@ -64,7 +64,7 @@ export function createBreadcrumbs(options?: CreateBreadcrumbsOptions) {
 	const include = options?.include ?? [];
 	const { ready, lookup } = buildBreadcrumbMap();
 
-	let loaded = $state(false);
+	let loaded = false;
 
 	// Derived values that read the live `page` proxy. They are evaluated
 	// synchronously (before any await) inside the returned function, which
@@ -72,26 +72,18 @@ export function createBreadcrumbs(options?: CreateBreadcrumbsOptions) {
 	const pathname = $derived(page.url.pathname);
 	const pageSnapshot = $derived(snapshotPage(page, include));
 
-	// Sync derived — re-evaluates when the pathname changes or modules finish
-	// loading. Reads `pathname` (cached) rather than `page.url` directly so it
-	// stays safe after an await boundary on the server.
-	const resolversForRoute = $derived(
-		loaded ? getResolversForRoute(lookup, pathname) : (new Map() as BreadcrumbMap)
-	);
-
 	return async () => {
 		// Evaluate derived values synchronously — this caches them inside the
 		// SSR rendering context so reads after the await use cached values.
 		const snap = pageSnapshot;
-		void pathname;
+		const path = pathname;
 
 		if (!loaded) {
 			await ready;
 			loaded = true;
 		}
 
-		// Sync read — no await between here and resolve(), so Svelte's
-		// reactive tracking reaches into resolver calls (e.g. queries).
-		return resolve(resolversForRoute, snap);
+		const resolvers = getResolversForRoute(lookup, path);
+		return resolve(resolvers, snap);
 	};
 }

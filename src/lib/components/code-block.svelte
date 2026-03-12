@@ -14,12 +14,16 @@
 		return '<' + 'script module lang="ts">\n' + indented + '\n</' + 'script>';
 	}
 
-	const html = $derived(
-		await codeToHtml(raw ? code : wrap(code), {
-			lang,
-			theme: theme === 'dark' ? 'github-dark' : 'github-light'
-		})
-	);
+	const input = $derived(raw ? code : wrap(code));
+	const shikiTheme = $derived(theme === 'dark' ? 'github-dark' : 'github-light');
+
+	let html = $state('');
+
+	$effect(() => {
+		codeToHtml(input, { lang, theme: shikiTheme }).then((result) => {
+			html = result;
+		});
+	});
 </script>
 
 <div class="mt-4 overflow-x-auto rounded-lg border border-(--color-border) text-sm [&_pre]:p-4">
