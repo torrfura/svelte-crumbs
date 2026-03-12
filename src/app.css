@@ -14,6 +14,18 @@
 	--color-code-bg: #f3f4f6;
 }
 
+html .shiki,
+html .shiki span {
+	color: var(--shiki-light);
+	background-color: var(--shiki-light-bg);
+}
+
+html.dark .shiki,
+html.dark .shiki span {
+	color: var(--shiki-dark);
+	background-color: var(--shiki-dark-bg);
+}
+
 .dark {
 	--color-bg: #0a0a0a;
 	--color-bg-sidebar: #111111;
