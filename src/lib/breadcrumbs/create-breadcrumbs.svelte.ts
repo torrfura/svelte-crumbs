@@ -64,7 +64,7 @@ export function createBreadcrumbs(options?: CreateBreadcrumbsOptions) {
 	const include = options?.include ?? [];
 	const { ready, lookup } = buildBreadcrumbMap();
 
-	let loaded = false;
+	let loaded = $state(false);
 
 	// Derived values that read the live `page` proxy. They are evaluated
 	// synchronously (before any await) inside the returned function, which
