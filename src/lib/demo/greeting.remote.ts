@@ -1,4 +1,4 @@
-import { command, query } from '$app/server';
+import { command, query, requested } from '$app/server';
 
 let currentNickname = 'Visitor';
 
@@ -14,4 +14,6 @@ export const setNickname = command('unchecked', async (name: string) => {
 	await new Promise((resolve) => setTimeout(resolve, 50));
 
 	currentNickname = name.trim() || 'Visitor';
+
+	await requested(getNickname, 1).refreshAll();
 });
