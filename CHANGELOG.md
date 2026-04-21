@@ -1,5 +1,12 @@
 # svelte-crumbs
 
+## [1.4.1](https://github.com/torrfura/svelte-crumbs/compare/svelte-crumbs-v1.4.0...svelte-crumbs-v1.4.1) (2026-04-21)
+
+
+### Bug Fixes
+
+* **breadcrumbs:** make loaded flag reactive so crumbs refresh after async ready ([f363e0c](https://github.com/torrfura/svelte-crumbs/commit/f363e0ce6d0fdfd2a9aef05c212d8d60d63975c9))
+
 ## [1.4.0](https://github.com/torrfura/svelte-crumbs/compare/svelte-crumbs-v1.3.0...svelte-crumbs-v1.4.0) (2026-03-12)
 
 
