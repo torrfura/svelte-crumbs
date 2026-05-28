@@ -21,16 +21,16 @@ This library relies on Svelte's experimental `async` compiler option for top-lev
 ```js
 // svelte.config.js
 const config = {
-    kit: {
-        experimental: {
-          remoteFunctions: true
-        }
-    },
-    compilerOptions: {
-        experimental: {
-          async: true
-        }
-    }
+	kit: {
+		experimental: {
+			remoteFunctions: true
+		}
+	},
+	compilerOptions: {
+		experimental: {
+			async: true
+		}
+	}
 };
 ```
 
@@ -41,11 +41,11 @@ const config = {
 ```svelte
 <!-- src/routes/products/+page.svelte -->
 <script lang="ts" module>
-  import type { BreadcrumbMeta } from 'svelte-crumbs';
+	import type { BreadcrumbMeta } from 'svelte-crumbs';
 
-  export const breadcrumb: BreadcrumbMeta = async () => ({
-    label: 'Products'
-  });
+	export const breadcrumb: BreadcrumbMeta = async () => ({
+		label: 'Products'
+	});
 </script>
 ```
 
@@ -54,17 +54,19 @@ const config = {
 ```svelte
 <!-- src/routes/+layout.svelte -->
 <script lang="ts">
-  import { createBreadcrumbs } from 'svelte-crumbs';
+	import { createBreadcrumbs } from 'svelte-crumbs';
 
-  const getBreadcrumbs = createBreadcrumbs();
-  const crumbs = $derived(await getBreadcrumbs());
+	const getBreadcrumbs = createBreadcrumbs();
+	const crumbs = $derived(await getBreadcrumbs());
 </script>
 
 <nav>
-  {#each crumbs as crumb, i}
-    {#if i > 0} / {/if}
-    <a href={crumb.url}>{crumb.label}</a>
-  {/each}
+	{#each crumbs as crumb, i}
+		{#if i > 0}
+			/
+		{/if}
+		<a href={crumb.url}>{crumb.label}</a>
+	{/each}
 </nav>
 ```
 
@@ -76,11 +78,11 @@ No `{#await}` blocks needed. Breadcrumbs resolve during SSR and update reactivel
 
 ```svelte
 <script lang="ts" module>
-  import type { BreadcrumbMeta } from 'svelte-crumbs';
+	import type { BreadcrumbMeta } from 'svelte-crumbs';
 
-  export const breadcrumb: BreadcrumbMeta = async () => ({
-    label: 'Settings'
-  });
+	export const breadcrumb: BreadcrumbMeta = async () => ({
+		label: 'Settings'
+	});
 </script>
 ```
 
@@ -91,23 +93,23 @@ The breadcrumb resolver receives the full `page` object, including `page.data`. 
 ```ts
 // src/routes/products/[id]/+layout.server.ts
 export async function load({ params }) {
-  const product = await db.products.find(params.id);
-  return { product };
+	const product = await db.products.find(params.id);
+	return { product };
 }
 ```
 
 ```svelte
 <!-- src/routes/products/[id]/+page.svelte -->
 <script lang="ts" module>
-  import type { BreadcrumbMeta } from 'svelte-crumbs';
+	import type { BreadcrumbMeta } from 'svelte-crumbs';
 
-  export const breadcrumb: BreadcrumbMeta = async (page) => ({
-    label: page.data.product.name
-  });
+	export const breadcrumb: BreadcrumbMeta = async (page) => ({
+		label: page.data.product.name
+	});
 </script>
 
 <script lang="ts">
-  let { data } = $props();
+	let { data } = $props();
 </script>
 
 <h1>{data.product.name}</h1>
@@ -124,20 +126,20 @@ Breadcrumb resolvers can call [remote functions](https://svelte.dev/docs/kit/rem
 import { query } from '$app/server';
 
 export const getProductName = query('unchecked', async (id: string) => {
-  const product = await db.products.find(id);
-  return product.name;
+	const product = await db.products.find(id);
+	return product.name;
 });
 ```
 
 ```svelte
 <!-- src/routes/products/[id]/+page.svelte -->
 <script lang="ts" module>
-  import type { BreadcrumbMeta } from 'svelte-crumbs';
-  import { getProductName } from '$lib/products.remote';
+	import type { BreadcrumbMeta } from 'svelte-crumbs';
+	import { getProductName } from '$lib/products.remote';
 
-  export const breadcrumb: BreadcrumbMeta = async (page) => ({
-    label: await getProductName(page.params.id ?? '')
-  });
+	export const breadcrumb: BreadcrumbMeta = async (page) => ({
+		label: await getProductName(page.params.id ?? '')
+	});
 </script>
 ```
 
@@ -147,14 +149,14 @@ For dynamic routes that map to known paths:
 
 ```svelte
 <script lang="ts" module>
-  import type { BreadcrumbMeta } from 'svelte-crumbs';
+	import type { BreadcrumbMeta } from 'svelte-crumbs';
 
-  export const breadcrumb: BreadcrumbMeta = {
-    routes: {
-      '/docs/getting-started': async () => ({ label: 'Getting Started' }),
-      '/docs/api-reference': async () => ({ label: 'API Reference' })
-    }
-  };
+	export const breadcrumb: BreadcrumbMeta = {
+		routes: {
+			'/docs/getting-started': async () => ({ label: 'Getting Started' }),
+			'/docs/api-reference': async () => ({ label: 'API Reference' })
+		}
+	};
 </script>
 ```
 
@@ -162,13 +164,13 @@ For dynamic routes that map to known paths:
 
 ```svelte
 <script lang="ts" module>
-  import type { BreadcrumbMeta } from 'svelte-crumbs';
-  import HomeIcon from './HomeIcon.svelte';
+	import type { BreadcrumbMeta } from 'svelte-crumbs';
+	import HomeIcon from './HomeIcon.svelte';
 
-  export const breadcrumb: BreadcrumbMeta = async () => ({
-    label: 'Home',
-    icon: HomeIcon
-  });
+	export const breadcrumb: BreadcrumbMeta = async () => ({
+		label: 'Home',
+		icon: HomeIcon
+	});
 </script>
 ```
 
@@ -178,22 +180,22 @@ Since `svelte-crumbs` only provides data, you render however you want:
 
 ```svelte
 <script lang="ts">
-  import { createBreadcrumbs } from 'svelte-crumbs';
+	import { createBreadcrumbs } from 'svelte-crumbs';
 
-  const getBreadcrumbs = createBreadcrumbs();
-  const crumbs = $derived(await getBreadcrumbs());
+	const getBreadcrumbs = createBreadcrumbs();
+	const crumbs = $derived(await getBreadcrumbs());
 </script>
 
 <ol class="breadcrumb-list">
-  {#each crumbs as crumb}
-    <li>
-      {#if crumb.icon}
-        {@const Icon = crumb.icon}
-        <Icon />
-      {/if}
-      <a href={crumb.url}>{crumb.label}</a>
-    </li>
-  {/each}
+	{#each crumbs as crumb}
+		<li>
+			{#if crumb.icon}
+				{@const Icon = crumb.icon}
+				<Icon />
+			{/if}
+			<a href={crumb.url}>{crumb.label}</a>
+		</li>
+	{/each}
 </ol>
 ```
 
@@ -225,7 +227,7 @@ type Breadcrumb = BreadcrumbData & { url: string };
 
 - `buildBreadcrumbMap()` — manually build the route-to-resolver map
 - `filePathToRoute(filePath)` — convert glob file path to route
-- `matchDynamicRoute(map, route)` — match a concrete path against dynamic patterns
+- `matchDynamicRoutePattern(pattern, route)` — match a concrete path against a dynamic route pattern
 - `getResolversForRoute(map, route)` — collect resolvers for a given route path
 
 ## How It Works
