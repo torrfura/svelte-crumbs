@@ -1,5 +1,17 @@
 # svelte-crumbs
 
+## [1.5.0](https://github.com/torrfura/svelte-crumbs/compare/svelte-crumbs-v1.4.1...svelte-crumbs-v1.5.0) (2026-05-28)
+
+
+### Features
+
+* **demo:** figtree font, brand-mark component, redesigned landing ([2a5ba78](https://github.com/torrfura/svelte-crumbs/commit/2a5ba78d577d279f171ab0d72a6fb8e296bb4f2a))
+
+
+### Performance Improvements
+
+* **breadcrumbs:** memoize map, isolate errors, faster lookup ([eb98110](https://github.com/torrfura/svelte-crumbs/commit/eb981105ecc0e3b8870c0dce9222d761489e5429))
+
 ## [1.4.1](https://github.com/torrfura/svelte-crumbs/compare/svelte-crumbs-v1.4.0...svelte-crumbs-v1.4.1) (2026-04-21)
 
 
