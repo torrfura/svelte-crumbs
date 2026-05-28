@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '../app.css';
 	import { createBreadcrumbs } from '$lib/index.js';
-import { initTheme } from '$lib/stores/theme.svelte.js';
+	import { initTheme } from '$lib/stores/theme.svelte.js';
 	import TopNav from '$lib/components/top-nav.svelte';
 	import Sidebar from '$lib/components/sidebar.svelte';
 	import Footer from '$lib/components/footer.svelte';

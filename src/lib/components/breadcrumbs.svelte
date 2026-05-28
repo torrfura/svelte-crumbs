@@ -33,7 +33,10 @@
 			const i = parseInt(node.getAttribute('data-i') ?? '0');
 			const outTotal = (prevCount - 1) * STAGGER + DURATION;
 			const delay = intro ? outTotal + i * STAGGER : Math.max(0, prevCount - 1 - i) * STAGGER;
-			return fly(node, intro ? { x: IN_X, duration: DURATION, delay } : { y: OUT_Y, duration: DURATION, delay });
+			return fly(
+				node,
+				intro ? { x: IN_X, duration: DURATION, delay } : { y: OUT_Y, duration: DURATION, delay }
+			);
 		}
 	});
 </script>
@@ -61,7 +64,9 @@
 					<Icon />
 				{/if}
 				{#if i < crumbs.length - 1 || crumbs.length === 1}
-					<a href={crumb.url} class="text-(--color-text-secondary) hover:text-(--color-text-primary) hover:underline"
+					<a
+						href={crumb.url}
+						class="text-(--color-text-secondary) hover:text-(--color-text-primary) hover:underline"
 						>{crumb.label}</a
 					>
 				{:else}
@@ -71,10 +76,7 @@
 		{/each}
 	</nav>
 {:else}
-	<nav
-		aria-label="Breadcrumbs"
-		class="flex items-center gap-2 rounded-lg px-4 py-3 text-sm"
-	>
+	<nav aria-label="Breadcrumbs" class="flex items-center gap-2 rounded-lg px-4 py-3 text-sm">
 		{#each crumbs as crumb, i (crumb.url)}
 			{#if i > 0}
 				<span aria-hidden="true" class="text-(--color-text-muted)">▶︎</span>
@@ -85,7 +87,9 @@
 			{/if}
 			{#if i < crumbs.length - 1 || crumbs.length === 1}
 				<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-				<a href={crumb.url} class="text-(--color-text-secondary) hover:text-(--color-text-primary) hover:underline"
+				<a
+					href={crumb.url}
+					class="text-(--color-text-secondary) hover:text-(--color-text-primary) hover:underline"
 					>{crumb.label}</a
 				>
 			{:else}

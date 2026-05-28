@@ -2,7 +2,11 @@
 	import { page } from '$app/state';
 	import { navigation } from '$lib/config/navigation.js';
 
-	let { open = false, onClose, animated = $bindable(true) }: { open?: boolean; onClose: () => void; animated?: boolean } = $props();
+	let {
+		open = false,
+		onClose,
+		animated = $bindable(true)
+	}: { open?: boolean; onClose: () => void; animated?: boolean } = $props();
 
 	function isActive(href: string): boolean {
 		return page.url.pathname === href;
@@ -51,7 +55,9 @@
 			{/each}
 		</div>
 		<div class="border-t border-(--color-border) pt-4">
-			<label class="flex items-center gap-2 px-3 text-sm text-(--color-text-secondary) cursor-pointer">
+			<label
+				class="flex items-center gap-2 px-3 text-sm text-(--color-text-secondary) cursor-pointer"
+			>
 				<input type="checkbox" bind:checked={animated} class="accent-(--color-accent)" />
 				Animate breadcrumbs
 			</label>

@@ -18,9 +18,9 @@
 	transitions using Svelte's built-in
 	<code class="rounded bg-(--color-code-bg) px-1 text-sm">crossfade</code>,
 	<code class="rounded bg-(--color-code-bg) px-1 text-sm">fly</code>, and
-	<code class="rounded bg-(--color-code-bg) px-1 text-sm">flip</code>.
-	This is exactly what powers the breadcrumb bar in this demo site — toggle "Animate breadcrumbs"
-	in the sidebar to see it in action.
+	<code class="rounded bg-(--color-code-bg) px-1 text-sm">flip</code>. This is exactly what powers
+	the breadcrumb bar in this demo site — toggle "Animate breadcrumbs" in the sidebar to see it in
+	action.
 </p>
 
 <h2 class="mt-8 text-lg font-semibold text-(--color-text-primary)">Full example</h2>
@@ -30,10 +30,13 @@
 	reposition crumbs that stay visible, while
 	<code class="rounded bg-(--color-code-bg) px-1 text-sm">crossfade</code> pairs entering and
 	leaving crumbs. A staggered
-	<code class="rounded bg-(--color-code-bg) px-1 text-sm">fly</code> fallback handles crumbs that
-	have no matching counterpart.
+	<code class="rounded bg-(--color-code-bg) px-1 text-sm">fly</code> fallback handles crumbs that have
+	no matching counterpart.
 </p>
-<CodeBlock lang="svelte" code={`<` + `script lang="ts">
+<CodeBlock
+	lang="svelte"
+	code={`<` +
+		`script lang="ts">
   import { crossfade, fly } from 'svelte/transition';
   import { flip } from 'svelte/animate';
   import { onMount } from 'svelte';
@@ -69,7 +72,8 @@
         : { y: 4, duration: DURATION, delay });
     }
   });
-</` + `script>
+</` +
+		`script>
 
 <nav
   aria-label="Breadcrumbs"
@@ -95,27 +99,28 @@
       {/if}
     </span>
   {/each}
-</nav>`} />
+</nav>`}
+/>
 
 <h2 class="mt-8 text-lg font-semibold text-(--color-text-primary)">How it works</h2>
 <ul class="mt-2 space-y-2 text-(--color-text-secondary)">
 	<li>
 		<strong>Grid layout</strong> — each crumb is pinned to a grid column, so
-		<code class="rounded bg-(--color-code-bg) px-1 text-sm">flip</code> can animate position changes
-		when crumbs are added or removed.
+		<code class="rounded bg-(--color-code-bg) px-1 text-sm">flip</code> can animate position changes when
+		crumbs are added or removed.
 	</li>
 	<li>
-		<strong>Crossfade</strong> — when a crumb exists in both the old and new trail, crossfade
-		morphs it in place. For crumbs without a match, the fallback
+		<strong>Crossfade</strong> — when a crumb exists in both the old and new trail, crossfade morphs
+		it in place. For crumbs without a match, the fallback
 		<code class="rounded bg-(--color-code-bg) px-1 text-sm">fly</code> transition kicks in.
 	</li>
 	<li>
-		<strong>Staggered timing</strong> — outgoing crumbs fly out with a reverse stagger (last
-		crumb first), then incoming crumbs fly in sequentially. This creates a smooth cascading effect.
+		<strong>Staggered timing</strong> — outgoing crumbs fly out with a reverse stagger (last crumb first),
+		then incoming crumbs fly in sequentially. This creates a smooth cascading effect.
 	</li>
 	<li>
 		<strong>SSR safe</strong> — the
-		<code class="rounded bg-(--color-code-bg) px-1 text-sm">mounted</code> guard ensures
-		transitions only run client-side.
+		<code class="rounded bg-(--color-code-bg) px-1 text-sm">mounted</code> guard ensures transitions only
+		run client-side.
 	</li>
 </ul>
