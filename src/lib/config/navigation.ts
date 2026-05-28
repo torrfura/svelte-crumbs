@@ -14,7 +14,8 @@ export const navigation: NavSection[] = [
 		items: [
 			{ label: 'Introduction', href: '/' },
 			{ label: 'Installation', href: '/docs/getting-started' },
-			{ label: 'API Reference', href: '/docs/api-reference' }
+			{ label: 'API Reference', href: '/docs/api-reference' },
+			{ label: 'How it works', href: '/docs/internals' }
 		]
 	},
 	{

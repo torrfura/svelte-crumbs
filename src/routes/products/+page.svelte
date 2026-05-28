@@ -18,6 +18,8 @@
 
 <h2 class="mt-8 text-lg font-semibold text-(--color-text-primary)">Static breadcrumb</h2>
 <p class="mt-1 text-(--color-text-secondary)">Fixed label, same as the home page pattern.</p>
-<CodeBlock code={`export const breadcrumb: BreadcrumbMeta = async () => ({
+<CodeBlock
+	code={`export const breadcrumb: BreadcrumbMeta = async () => ({
   label: 'Products'
-});`} />
+});`}
+/>

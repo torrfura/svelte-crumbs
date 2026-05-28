@@ -1,6 +1,23 @@
 @import 'tailwindcss';
+@import url('https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap');
 
 @custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+	--font-sans:
+		'Figtree', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+		'Helvetica Neue', Arial, sans-serif;
+}
+
+html {
+	font-family: var(--font-sans);
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	text-rendering: optimizeLegibility;
+	font-feature-settings:
+		'ss01' on,
+		'cv11' on;
+}
 
 :root {
 	--color-bg: #ffffff;
@@ -12,6 +29,12 @@
 	--color-border: #e5e7eb;
 	--color-accent: #2563eb;
 	--color-code-bg: #f3f4f6;
+
+	--logo-bg: transparent;
+	--logo-frame: transparent;
+	--logo-dot: #303c4e;
+	--logo-primary: #ec7f3c;
+	--logo-secondary: #e27d5a;
 }
 
 html .shiki,
@@ -26,6 +49,66 @@ html.dark .shiki span {
 	background-color: var(--shiki-dark-bg);
 }
 
+.docs-prose {
+	font-size: 1.0625rem;
+	line-height: 1.8;
+	letter-spacing: -0.005em;
+}
+
+.docs-prose h1 {
+	font-size: 2.5rem;
+	line-height: 1.15;
+	letter-spacing: -0.028em;
+	font-weight: 700;
+	margin-top: 0.5rem;
+	margin-bottom: 1.25rem;
+}
+
+.docs-prose h2 {
+	font-size: 1.625rem;
+	line-height: 1.3;
+	letter-spacing: -0.018em;
+	font-weight: 600;
+	margin-top: 3.25rem;
+	margin-bottom: 0.5rem;
+}
+
+.docs-prose h3 {
+	font-size: 1.25rem;
+	line-height: 1.4;
+	letter-spacing: -0.012em;
+	font-weight: 600;
+	margin-top: 2.25rem;
+	margin-bottom: 0.25rem;
+}
+
+.docs-prose p {
+	margin-top: 1.25rem;
+	line-height: 1.85;
+}
+
+.docs-prose ul {
+	margin-top: 1.25rem;
+	line-height: 1.85;
+}
+
+.docs-prose ul li {
+	margin-bottom: 0.5rem;
+}
+
+.docs-prose ul li + li {
+	margin-top: 0.5rem;
+}
+
+.docs-prose code {
+	font-size: 0.9em;
+	font-feature-settings: normal;
+}
+
+.docs-prose a {
+	text-underline-offset: 3px;
+}
+
 .dark {
 	--color-bg: #0a0a0a;
 	--color-bg-sidebar: #111111;
@@ -36,4 +119,10 @@ html.dark .shiki span {
 	--color-border: #27272a;
 	--color-accent: #60a5fa;
 	--color-code-bg: #18181b;
+
+	--logo-bg: #1f1d1b;
+	--logo-frame: #1f1d1b;
+	--logo-dot: #fdf8f5;
+	--logo-primary: #f08c4e;
+	--logo-secondary: #e89478;
 }

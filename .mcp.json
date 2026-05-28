@@ -1,8 +1,8 @@
 {
-  "mcpServers": {
-    "svelte-docs": {
-      "command": "npx",
-      "args": ["-y", "sv-mcp"]
-    }
-  }
+	"mcpServers": {
+		"svelte-docs": {
+			"command": "npx",
+			"args": ["-y", "sv-mcp"]
+		}
+	}
 }
