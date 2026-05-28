@@ -10,12 +10,21 @@ import type {
 	OptionalPageField
 } from './types.js';
 
-/** Calls each resolver in parallel and filters out undefined results. */
+/**
+ * Calls each resolver in parallel, filters out undefined results, and
+ * isolates errors per resolver — a single throwing resolver is logged
+ * and skipped instead of taking down the entire breadcrumb trail.
+ */
 async function resolve(resolvers: BreadcrumbMap, snap: BreadcrumbPage): Promise<Breadcrumb[]> {
 	const results = await Promise.all(
 		Array.from(resolvers, async ([url, resolver]) => {
-			const data = await resolver(snap, url);
-			return data ? ({ ...data, url } as Breadcrumb) : undefined;
+			try {
+				const data = await resolver(snap, url);
+				return data ? ({ ...data, url } as Breadcrumb) : undefined;
+			} catch (err) {
+				console.warn(`[svelte-crumbs] resolver for "${url}" threw:`, err);
+				return undefined;
+			}
 		})
 	);
 	return results.filter((b): b is Breadcrumb => b !== undefined);
