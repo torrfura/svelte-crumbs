@@ -75,9 +75,7 @@ describe('matchDynamicRoutePattern', () => {
 	});
 
 	it('matches spread route with multiple segments', () => {
-		expect(matchDynamicRoutePattern('/spread/[...rest]', '/spread/users/42/settings')).toBe(
-			true
-		);
+		expect(matchDynamicRoutePattern('/spread/[...rest]', '/spread/users/42/settings')).toBe(true);
 	});
 
 	it('returns false when spread has no remaining segments', () => {
