@@ -3,7 +3,9 @@ import { getResolversForRoute } from './get-resolvers-for-route.js';
 import { BreadcrumbLookup } from './build-breadcrumb-map.js';
 import type { BreadcrumbResolver } from '../types.js';
 
-const makeResolver = (label: string): BreadcrumbResolver => async () => ({ label });
+const makeResolver =
+	(label: string): BreadcrumbResolver =>
+	async () => ({ label });
 
 /** Helper: builds a BreadcrumbLookup from route → resolver entries */
 function buildTestMap(entries: [string, BreadcrumbResolver][]): BreadcrumbLookup {
