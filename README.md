@@ -199,13 +199,50 @@ Since `svelte-crumbs` only provides data, you render however you want:
 </ol>
 ```
 
+### Localized paths (Paraglide & friends)
+
+With i18n routing, `page.url.pathname` carries a locale prefix (`/nl/products/42`) while your route tree does not. Pass `transformPath` to strip it before matching:
+
+```svelte
+<script lang="ts">
+	import { createBreadcrumbs } from 'svelte-crumbs';
+	import { deLocalizeHref, localizeHref } from '$lib/paraglide/runtime';
+
+	const getBreadcrumbs = createBreadcrumbs({
+		transformPath: ({ pathname }) => deLocalizeHref(pathname)
+	});
+	const crumbs = $derived(await getBreadcrumbs());
+</script>
+
+{#each crumbs as crumb}
+	<a href={localizeHref(crumb.url)}>{crumb.label}</a>
+{/each}
+```
+
+The transform runs before route matching, so resolvers also see the de-localized path — `page.url.pathname` and `page.url.href` inside a resolver are `/products/42` and `http://…/products/42`, with `search` and `hash` preserved. Resolved `crumb.url` values are de-localized too, which is why the example re-localizes them at render time.
+
+The second field, `url`, is the untransformed page URL — useful when the locale lives somewhere other than the path:
+
+```ts
+const getBreadcrumbs = createBreadcrumbs({
+	transformPath: ({ pathname, url }) => (url.searchParams.has('embed') ? '/' : pathname)
+});
+```
+
+Return values are normalized to a leading-slash path (`''` becomes `/`). If the transform throws, the error is logged and the raw pathname is used, so a broken transform degrades the trail instead of breaking the page.
+
 ## API Reference
 
-### `createBreadcrumbs()`
+### `createBreadcrumbs(options?)`
 
 Creates a reactive breadcrumb resolver. Returns a getter function `() => Promise<Breadcrumb[]>`.
 
 Call `createBreadcrumbs()` once to set up the reactive state, then use the returned getter inside `$derived(await ...)` to get breadcrumbs that update on navigation and resolve during SSR.
+
+| Option          | Type                                 | Description                                                                                                                                                                       |
+| --------------- | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `include`       | `OptionalPageField[]`                | Extra `page` fields to expose to resolvers: `'status'`, `'error'`, `'form'`, `'state'`. Off by default so breadcrumbs don't take reactive dependencies on rarely-used properties. |
+| `transformPath` | `(ctx: { pathname, url }) => string` | Rewrites the current pathname before route matching. See below.                                                                                                                   |
 
 ### Types
 
@@ -221,6 +258,14 @@ type BreadcrumbData = { label: string; icon?: Component<any> };
 
 // Resolved breadcrumb with URL
 type Breadcrumb = BreadcrumbData & { url: string };
+
+// createBreadcrumbs options
+type CreateBreadcrumbsOptions = {
+	include?: OptionalPageField[];
+	transformPath?: PathTransform;
+};
+
+type PathTransform = (context: { pathname: string; url: URL }) => string;
 ```
 
 ### Utility exports

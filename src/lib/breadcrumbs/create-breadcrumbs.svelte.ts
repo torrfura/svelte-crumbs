@@ -7,7 +7,8 @@ import type {
 	BreadcrumbMap,
 	BreadcrumbPage,
 	CreateBreadcrumbsOptions,
-	OptionalPageField
+	OptionalPageField,
+	PathTransform
 } from './types.js';
 
 /**
@@ -31,15 +32,45 @@ async function resolve(resolvers: BreadcrumbMap, snap: BreadcrumbPage): Promise<
 }
 
 /**
+ * Runs the user's `transformPath` over the current pathname and normalises the
+ * result to a leading-slash path. Errors are isolated the same way resolver
+ * errors are — a throwing transform is logged and the raw pathname is used, so
+ * a broken transform degrades the trail instead of breaking the page.
+ */
+function transformPathname(url: URL, transformPath: PathTransform | undefined): string {
+	if (!transformPath) return url.pathname;
+
+	let next: string;
+	try {
+		next = transformPath({ pathname: url.pathname, url });
+	} catch (err) {
+		console.warn(`[svelte-crumbs] transformPath threw for "${url.pathname}":`, err);
+		return url.pathname;
+	}
+
+	if (!next) return '/';
+	return next.charCodeAt(0) === 47 /* '/' */ ? next : `/${next}`;
+}
+
+/**
  * Captures a plain-object snapshot of `page` state.
  * Only reads core fields (`url`, `params`, `route`, `data`) by default.
  * Optional fields (`status`, `error`, `form`, `state`) are only read when
  * explicitly opted in via `include`, avoiding unnecessary Svelte reactive
  * dependencies on rarely-used page properties.
+ *
+ * `pathname` is the already-transformed path. When it differs from the live
+ * one, the clone is rebuilt around it so `href`, `pathname`, and everything
+ * derived from them stay consistent with what resolvers are matched against.
  */
-function snapshotPage(p: Page, include: OptionalPageField[]): BreadcrumbPage {
+function snapshotPage(p: Page, include: OptionalPageField[], pathname: string): BreadcrumbPage {
+	const url =
+		pathname === p.url.pathname
+			? new URL(p.url.href)
+			: new URL(`${pathname}${p.url.search}${p.url.hash}`, p.url.origin);
+
 	const snap: BreadcrumbPage = {
-		url: new URL(p.url.href) as Page['url'],
+		url: url as Page['url'],
 		params: { ...p.params },
 		route: { id: p.route.id },
 		data: p.data
@@ -68,9 +99,19 @@ function snapshotPage(p: Page, include: OptionalPageField[]): BreadcrumbPage {
  *   <a href={crumb.url}>{crumb.label}</a>
  * {/each}
  * ```
+ *
+ * @example Stripping an i18n prefix (Paraglide, i18n-routing, …)
+ * ```ts
+ * import { deLocalizeHref } from '$lib/paraglide/runtime';
+ *
+ * const getBreadcrumbs = createBreadcrumbs({
+ *   transformPath: ({ pathname }) => deLocalizeHref(pathname)
+ * });
+ * ```
  */
 export function createBreadcrumbs(options?: CreateBreadcrumbsOptions) {
 	const include = options?.include ?? [];
+	const transformPath = options?.transformPath;
 	const { ready, lookup } = buildBreadcrumbMap();
 
 	let loaded = $state(false);
@@ -78,8 +119,8 @@ export function createBreadcrumbs(options?: CreateBreadcrumbsOptions) {
 	// Derived values that read the live `page` proxy. They are evaluated
 	// synchronously (before any await) inside the returned function, which
 	// pins them to the SSR rendering context and caches them for later reads.
-	const pathname = $derived(page.url.pathname);
-	const pageSnapshot = $derived(snapshotPage(page, include));
+	const pathname = $derived(transformPathname(page.url, transformPath));
+	const pageSnapshot = $derived(snapshotPage(page, include, pathname));
 
 	return async () => {
 		// Evaluate derived values synchronously — this caches them inside the

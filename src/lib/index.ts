@@ -15,5 +15,7 @@ export type {
 	BreadcrumbPage,
 	BreadcrumbResolver,
 	CreateBreadcrumbsOptions,
-	OptionalPageField
+	OptionalPageField,
+	PathTransform,
+	PathTransformContext
 } from './breadcrumbs/types.js';
