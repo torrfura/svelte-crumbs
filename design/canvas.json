@@ -1,0 +1,38 @@
+{
+	"artboards": [
+		{ "file": "Main.dc.html", "x": 0, "y": 0, "w": 1440, "h": 1500, "title": "Landing — desktop" },
+		{
+			"file": "Mobile.dc.html",
+			"x": 1560,
+			"y": 0,
+			"w": 390,
+			"h": 1520,
+			"title": "Landing — mobile"
+		},
+		{
+			"file": "Component.dc.html",
+			"x": 2070,
+			"y": 0,
+			"w": 1000,
+			"h": 640,
+			"title": "Trail component"
+		}
+	],
+	"annotations": [
+		{
+			"id": "note-main",
+			"x": 0,
+			"y": -140,
+			"w": 460,
+			"text": "Dark, mono-forward.\nMono for chrome, labels and code; Figtree bold for display. One accent (logo orange). Hairline grid instead of cards.\nTweak chips: theme (dark default, light mirrors app.css tokens) + accent."
+		},
+		{
+			"id": "note-comp",
+			"x": 2070,
+			"y": -140,
+			"w": 420,
+			"text": "Two rows marked PROPOSED are new API — the shipped component hardcodes the separator and has no collapse logic."
+		}
+	],
+	"launch": { "view": "canvas" }
+}

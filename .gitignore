@@ -1,5 +1,8 @@
 node_modules
 
+# Agent scratch space (git worktrees are full repo copies)
+.claude/
+
 # Output
 .output
 .vercel
@@ -25,3 +28,6 @@ Thumbs.db
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Design canvas (generated 2.4 MB payload — artboard sources are tracked)
+design/svelte-crumbs-redesign.html

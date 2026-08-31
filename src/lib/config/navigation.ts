@@ -29,27 +29,15 @@ export const navigation: NavSection[] = [
 		]
 	},
 	{
-		title: 'Patterns',
-		items: [
-			{ label: 'Static Label', href: resolve('/products') },
-			{
-				label: 'Dynamic from Load Data',
-				href: resolve('/products/[productId]', { productId: '42' })
-			},
-			{ label: 'Nested Static', href: resolve('/products/[productId]/edit', { productId: '42' }) },
-			{ label: 'Remote Function', href: resolve('/docs/[slug]', { slug: 'getting-started' }) },
-			{ label: 'Optimistic Update', href: resolve('/playground') },
-			// A rest parameter with an empty value resolves to the bare `/spread` path.
-			{ label: 'Dynamic routing', href: resolve('/spread/[...operator]', { operator: '' }) },
-			{ label: 'No Breadcrumb', href: resolve('/about') }
-		]
-	},
-	{
-		title: 'Examples',
+		title: 'Live examples',
 		items: [
 			{ label: 'Products', href: resolve('/products') },
-			{ label: 'Documentation', href: resolve('/docs') },
-			{ label: 'Reactive Updates', href: resolve('/playground') }
+			{ label: 'Product #42', href: resolve('/products/[productId]', { productId: '42' }) },
+			{ label: 'Edit product', href: resolve('/products/[productId]/edit', { productId: '42' }) },
+			{ label: 'Playground', href: resolve('/playground') },
+			// A rest parameter with an empty value resolves to the bare `/spread` path.
+			{ label: 'Spread routes', href: resolve('/spread/[...operator]', { operator: '' }) },
+			{ label: 'About', href: resolve('/about') }
 		]
 	}
 ];

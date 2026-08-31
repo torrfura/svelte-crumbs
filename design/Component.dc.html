@@ -1,0 +1,346 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<script src="./support.js"></script>
+	</head>
+	<body>
+		<x-dc>
+			<helmet>
+				<link
+					rel="stylesheet"
+					href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&display=swap"
+				/>
+				<style>
+					body {
+						margin: 0;
+					}
+					.sheet {
+						--bg: #0a0a0a;
+						--panel: #111111;
+						--text-1: #f3f4f6;
+						--text-2: #9ca3af;
+						--text-3: #6b7280;
+						--border: #27272a;
+						--accent: #f08c4e;
+						--sep: #3f3f46;
+						--skeleton: #1f1f23;
+						--chip: #18181b;
+						--l-bg: #ffffff;
+						--l-text-1: #111827;
+						--l-text-2: #9ca3af;
+						--l-sep: #d1d5db;
+					}
+					a {
+						color: var(--text-3);
+						text-decoration: none;
+					}
+					a:hover {
+						color: var(--accent);
+					}
+					.mono {
+						font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+					}
+					.lbl {
+						width: 190px;
+						flex: none;
+						font-size: 12px;
+						color: var(--text-3);
+						padding-top: 3px;
+					}
+					.row {
+						display: flex;
+						align-items: flex-start;
+						gap: 32px;
+						padding: 22px 0;
+						border-top: 1px solid var(--border);
+					}
+					.sep {
+						color: var(--sep);
+						display: flex;
+					}
+					.tag {
+						font-size: 10px;
+						letter-spacing: 0.06em;
+						text-transform: uppercase;
+						color: var(--accent);
+					}
+				</style>
+			</helmet>
+			<div
+				class="sheet"
+				style="
+					background: var(--bg);
+					font-family: Figtree, ui-sans-serif, system-ui, sans-serif;
+					color: var(--text-1);
+					padding: 40px 44px;
+				"
+			>
+				<div
+					style="
+						display: flex;
+						align-items: baseline;
+						justify-content: space-between;
+						padding-bottom: 26px;
+					"
+				>
+					<div style="font-size: 20px; font-weight: 700; letter-spacing: -0.02em">
+						Breadcrumb trail — states
+					</div>
+					<div class="mono" style="font-size: 11px; color: var(--text-3)">
+						proposed spec: 14px type · 10px gap · 14px chevron
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="lbl">Default</div>
+					<div style="display: flex; align-items: center; gap: 10px; font-size: 14px">
+						<a href="#">Home</a>
+						<span class="sep"
+							><svg
+								width="14"
+								height="14"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.8"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							>
+								<path d="m9 18 6-6-6-6"></path></svg
+						></span>
+						<a href="#">Products</a>
+						<span class="sep"
+							><svg
+								width="14"
+								height="14"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.8"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							>
+								<path d="m9 18 6-6-6-6"></path></svg
+						></span>
+						<span style="font-weight: 600">Nike Air Max 90</span>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="lbl">Slash separator <span class="tag">proposed</span></div>
+					<div style="display: flex; align-items: center; gap: 10px; font-size: 14px">
+						<a href="#">Home</a>
+						<span class="mono" style="color: var(--sep)">/</span>
+						<a href="#">Docs</a>
+						<span class="mono" style="color: var(--sep)">/</span>
+						<span style="font-weight: 600">Getting started</span>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="lbl">Resolving (client nav)</div>
+					<div style="display: flex; align-items: center; gap: 10px; font-size: 14px">
+						<a href="#">Home</a>
+						<span class="sep"
+							><svg
+								width="14"
+								height="14"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.8"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							>
+								<path d="m9 18 6-6-6-6"></path></svg
+						></span>
+						<a href="#">Products</a>
+						<span class="sep"
+							><svg
+								width="14"
+								height="14"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.8"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							>
+								<path d="m9 18 6-6-6-6"></path></svg
+						></span>
+						<span
+							style="
+								display: block;
+								width: 116px;
+								height: 13px;
+								border-radius: 4px;
+								background: var(--skeleton);
+							"
+						></span>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="lbl">Collapsed deep route <span class="tag">proposed</span></div>
+					<div style="display: flex; align-items: center; gap: 10px; font-size: 14px">
+						<a href="#">Home</a>
+						<span class="sep"
+							><svg
+								width="14"
+								height="14"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.8"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							>
+								<path d="m9 18 6-6-6-6"></path></svg
+						></span>
+						<span
+							style="
+								display: flex;
+								align-items: center;
+								justify-content: center;
+								height: 22px;
+								padding: 0 8px;
+								border-radius: 6px;
+								background: var(--chip);
+								color: var(--text-3);
+								font-size: 13px;
+							"
+							>…</span
+						>
+						<span class="sep"
+							><svg
+								width="14"
+								height="14"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.8"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							>
+								<path d="m9 18 6-6-6-6"></path></svg
+						></span>
+						<a href="#">Settings</a>
+						<span class="sep"
+							><svg
+								width="14"
+								height="14"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.8"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							>
+								<path d="m9 18 6-6-6-6"></path></svg
+						></span>
+						<span style="font-weight: 600">Billing</span>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="lbl">With icon</div>
+					<div style="display: flex; align-items: center; gap: 10px; font-size: 14px">
+						<span style="display: flex; align-items: center; gap: 7px; color: var(--text-3)">
+							<svg
+								width="15"
+								height="15"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.7"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							>
+								<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z"></path>
+							</svg>
+							<a href="#">Home</a>
+						</span>
+						<span class="sep"
+							><svg
+								width="14"
+								height="14"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.8"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							>
+								<path d="m9 18 6-6-6-6"></path></svg
+						></span>
+						<a href="#">Playground</a>
+						<span class="sep"
+							><svg
+								width="14"
+								height="14"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.8"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							>
+								<path d="m9 18 6-6-6-6"></path></svg
+						></span>
+						<span style="font-weight: 600">Optimistic</span>
+					</div>
+				</div>
+
+				<div class="row" style="align-items: center">
+					<div class="lbl">On light</div>
+					<div
+						style="
+							display: flex;
+							align-items: center;
+							gap: 10px;
+							padding: 16px 20px;
+							border-radius: 12px;
+							background: var(--l-bg);
+							font-size: 14px;
+							color: var(--l-text-1);
+						"
+					>
+						<span style="color: var(--l-text-2)">Home</span>
+						<span style="display: flex; color: var(--l-sep)"
+							><svg
+								width="14"
+								height="14"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.8"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							>
+								<path d="m9 18 6-6-6-6"></path></svg
+						></span>
+						<span style="color: var(--l-text-2)">Products</span>
+						<span style="display: flex; color: var(--l-sep)"
+							><svg
+								width="14"
+								height="14"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.8"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							>
+								<path d="m9 18 6-6-6-6"></path></svg
+						></span>
+						<span style="font-weight: 600">Nike Air Max 90</span>
+					</div>
+				</div>
+			</div>
+		</x-dc>
+		<script data-dc-script data-props='{"$preview":{"width":1000,"height":640}}'>
+			class Component extends DCLogic {}
+		</script>
+	</body>
+</html>
