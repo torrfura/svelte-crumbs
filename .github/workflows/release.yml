@@ -4,12 +4,27 @@ on:
   push:
     branches:
       - master
+  # Manual publish of an already-tagged version. Used to backfill releases
+  # whose automatic publish failed, and to publish a version whose release
+  # commit has already landed on master (release-please will not re-emit it).
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Git tag to build and publish from
+        required: true
+        type: string
+      dist_tag:
+        description: npm dist-tag to publish under. Use `latest` only for the newest version.
+        required: true
+        default: legacy
+        type: string
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
   release-please:
     name: Release
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -19,7 +34,7 @@ jobs:
     steps:
       - name: Create Release PR or GitHub Release
         id: release
-        uses: googleapis/release-please-action@v4
+        uses: googleapis/release-please-action@v5
         with:
           manifest-file: .release-please-manifest.json
           config-file: release-please-config.json
@@ -33,22 +48,69 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         with:
           version: 10
 
-      - uses: actions/setup-node@v4
+      # No registry-url on purpose: it makes setup-node write an
+      # `_authToken=${NODE_AUTH_TOKEN}` line into .npmrc, and npm then treats
+      # auth as already configured and never performs the OIDC exchange.
+      # The default registry is registry.npmjs.org anyway.
+      # Caching is off because npm advises against restoring caches in a job
+      # that holds publish rights.
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
-          cache: pnpm
-          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+
+      # Trusted publishing needs npm >= 11.5.1; Node 22 ships npm 10.x.
+      - name: Upgrade npm for trusted publishing
+        run: npm install --global npm@latest
 
       - run: pnpm install --frozen-lockfile
 
       - run: pnpm run build
 
+      # Authenticates over OIDC using the id-token permission above, against
+      # the trusted publisher configured for svelte-crumbs on npmjs.com.
+      # Provenance attestations are generated automatically. No NPM_TOKEN.
       - run: npm publish
+
+  backfill:
+    name: Publish ${{ inputs.ref }} as ${{ inputs.dist_tag }}
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      # Builds from the requested tag, not from master. The workflow itself is
+      # always the one on the default branch, so old tags do not need this job.
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          package-manager-cache: false
+
+      - name: Upgrade npm for trusted publishing
+        run: npm install --global npm@latest
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm run build
+
+      # dist_tag goes through the environment rather than into the command
+      # line, so the input cannot be spliced into the shell.
+      - name: Publish
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          DIST_TAG: ${{ inputs.dist_tag }}
+        run: npm publish --tag "$DIST_TAG"
