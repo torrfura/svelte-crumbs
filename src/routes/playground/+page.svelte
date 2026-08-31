@@ -22,9 +22,8 @@
 
 <h1 class="text-2xl font-bold text-(--color-text-primary)">Reactive Updates</h1>
 <p class="mt-2 text-(--color-text-secondary)">
-	Type a name and press Save — the breadcrumb updates via optimistic update.
-	<br /><br />
-	Try changing the name and make a hard reload of the page.
+	Type a name and press Save — the breadcrumb updates before the server replies. Hard-reload to see
+	the stored value.
 </p>
 
 <form
@@ -47,7 +46,7 @@
 	</div>
 	<button
 		type="submit"
-		class="rounded-md bg-(--color-accent) px-4 py-2 font-medium text-white shadow-sm hover:opacity-90 focus:ring-2 focus:ring-(--color-accent) focus:ring-offset-2 focus:outline-none"
+		class="rounded-md bg-(--color-accent-solid) px-4 py-2 font-medium text-(--color-on-accent) shadow-sm hover:opacity-90 focus:ring-2 focus:ring-(--color-accent) focus:ring-offset-2 focus:outline-none"
 	>
 		Save
 	</button>
@@ -78,8 +77,15 @@ export const breadcrumb: BreadcrumbMeta = async () => ({
 	instantly — no round-trip.
 </p>
 <CodeBlock
-	code={`function save() {
-  setNickname(input).updates(getNickname().withOverride(() => input || 'Visitor'));
-}`}
-	lang="ts"
+	lang="svelte"
+	raw
+	code={`<` +
+		`script lang="ts">
+  function save() {
+    setNickname(input).updates(
+      getNickname().withOverride(() => input || 'Visitor')
+    );
+  }
+</` +
+		`script>`}
 />

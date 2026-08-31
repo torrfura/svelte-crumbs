@@ -46,14 +46,46 @@
 	base path. Passing it through `resolve()` would prefix the base a second time.
 -->
 <!-- eslint-disable svelte/no-navigation-without-resolve -->
+
+{#snippet separator()}
+	<svg
+		aria-hidden="true"
+		width="14"
+		height="14"
+		viewBox="0 0 24 24"
+		fill="none"
+		stroke="currentColor"
+		stroke-width="1.8"
+		stroke-linecap="round"
+		stroke-linejoin="round"
+		class="text-(--color-border)"
+	>
+		<path d="m9 18 6-6-6-6" />
+	</svg>
+{/snippet}
+
+{#snippet crumbLabel(crumb: Breadcrumb, isLast: boolean)}
+	{#if crumb.icon}
+		{@const Icon = crumb.icon}
+		<Icon />
+	{/if}
+	{#if isLast}
+		<span class="font-semibold text-(--color-text-primary)" aria-current="page">{crumb.label}</span>
+	{:else}
+		<a href={crumb.url} class="text-(--color-text-muted) hover:text-(--color-accent)"
+			>{crumb.label}</a
+		>
+	{/if}
+{/snippet}
+
 {#if animated}
 	<nav
 		aria-label="Breadcrumbs"
-		class="grid auto-cols-auto justify-center items-center gap-2 rounded-lg px-4 py-3 text-sm"
+		class="grid auto-cols-auto items-center justify-center gap-2.5 py-3 text-sm"
 	>
 		{#each crumbs as crumb, i (crumb.url)}
 			<span
-				class="inline-flex items-center gap-2"
+				class="inline-flex items-center gap-2.5"
 				data-i={i}
 				style:grid-column={i + 1}
 				style:grid-row="1"
@@ -62,43 +94,19 @@
 				animate:flip={{ duration: FLIP_DURATION, delay: FLIP_DELAY }}
 			>
 				{#if i > 0}
-					<span aria-hidden="true" class="text-(--color-text-muted)">▶︎</span>
+					{@render separator()}
 				{/if}
-				{#if crumb.icon}
-					{@const Icon = crumb.icon}
-					<Icon />
-				{/if}
-				{#if i < crumbs.length - 1 || crumbs.length === 1}
-					<a
-						href={crumb.url}
-						class="text-(--color-text-secondary) hover:text-(--color-text-primary) hover:underline"
-						>{crumb.label}</a
-					>
-				{:else}
-					<span class="text-(--color-text-primary)" aria-current="page">{crumb.label}</span>
-				{/if}
+				{@render crumbLabel(crumb, i === crumbs.length - 1 && crumbs.length > 1)}
 			</span>
 		{/each}
 	</nav>
 {:else}
-	<nav aria-label="Breadcrumbs" class="flex items-center gap-2 rounded-lg px-4 py-3 text-sm">
+	<nav aria-label="Breadcrumbs" class="flex items-center gap-2.5 py-3 text-sm">
 		{#each crumbs as crumb, i (crumb.url)}
 			{#if i > 0}
-				<span aria-hidden="true" class="text-(--color-text-muted)">▶︎</span>
+				{@render separator()}
 			{/if}
-			{#if crumb.icon}
-				{@const Icon = crumb.icon}
-				<Icon />
-			{/if}
-			{#if i < crumbs.length - 1 || crumbs.length === 1}
-				<a
-					href={crumb.url}
-					class="text-(--color-text-secondary) hover:text-(--color-text-primary) hover:underline"
-					>{crumb.label}</a
-				>
-			{:else}
-				<span class="text-(--color-text-primary)" aria-current="page">{crumb.label}</span>
-			{/if}
+			{@render crumbLabel(crumb, i === crumbs.length - 1 && crumbs.length > 1)}
 		{/each}
 	</nav>
 {/if}

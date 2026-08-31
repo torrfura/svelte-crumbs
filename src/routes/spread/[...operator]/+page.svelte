@@ -22,8 +22,8 @@
 
 <h1 class="text-2xl font-bold text-(--color-text-primary)">Spread Routes</h1>
 <p class="mt-2 text-(--color-text-secondary)">
-	A <code class="rounded bg-(--color-code-bg) px-1 text-sm">[...operator]</code> catch-all route that
-	handles arbitrary depth. The breadcrumb label is derived from the last segment of the path.
+	A <code class="rounded bg-(--color-code-bg) px-1 text-sm">[...operator]</code> catch-all route of any
+	depth. Each label comes from the last segment of its own path.
 </p>
 
 <h3 class="mt-6 text-base font-semibold text-(--color-text-primary)">Try these routes</h3>
@@ -66,12 +66,13 @@
 	Multi-route breadcrumb from a single page
 </h2>
 <p class="mt-1 text-(--color-text-secondary)">
-	Instead of exporting a single resolver, the <code
-		class="rounded bg-(--color-code-bg) px-1 text-sm">breadcrumb</code
-	>
-	export uses the
-	<code class="rounded bg-(--color-code-bg) px-1 text-sm">{'{ routes }'}</code> form to define resolvers
-	for multiple route patterns from one file.
+	The <code class="rounded bg-(--color-code-bg) px-1 text-sm">{'{ routes }'}</code> form defines a
+	resolver per route pattern from one file. Each resolver receives the breadcrumb's own URL as its
+	second argument — the crumb at
+	<code class="rounded bg-(--color-code-bg) px-1 text-sm">/spread/users/42</code>
+	gets that exact path, not the full
+	<code class="rounded bg-(--color-code-bg) px-1 text-sm">page.params</code>. Use it when depth
+	isn't known ahead of time: file browsers, nested categories, operator trees.
 </p>
 <CodeBlock
 	code={`export const breadcrumb: BreadcrumbMeta = {
@@ -85,15 +86,3 @@
   }
 };`}
 />
-
-<h2 class="mt-8 text-lg font-semibold text-(--color-text-primary)">How it works</h2>
-<p class="mt-1 text-(--color-text-secondary)">
-	A <code class="rounded bg-(--color-code-bg) px-1 text-sm">[...operator]</code> spread route
-	matches paths of any depth. The resolver receives the breadcrumb's own URL as the second argument,
-	so each segment gets the correct label (e.g. the breadcrumb at
-	<code class="rounded bg-(--color-code-bg) px-1 text-sm">/spread/users/42</code>
-	receives that exact path, not the full
-	<code class="rounded bg-(--color-code-bg) px-1 text-sm">page.params</code>). This is useful for
-	routes where the depth is not known ahead of time — file browsers, nested categories, or operator
-	trees.
-</p>

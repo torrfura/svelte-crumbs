@@ -9,6 +9,7 @@
 
 <script lang="ts">
 	import { page } from '$app/state';
+	import { resolve } from '$app/paths';
 	import CodeBlock from '$lib/components/code-block.svelte';
 
 	const title = $derived(await getDocTitle(page.params.slug ?? ''));
@@ -19,20 +20,24 @@
 
 {#if slug === 'getting-started'}
 	<h2 class="mt-8 text-lg font-semibold text-(--color-text-primary)">Installation</h2>
-	<p class="mt-1 text-(--color-text-secondary)">
-		Install <code class="rounded bg-(--color-code-bg) px-1 text-sm">svelte-crumbs</code> as a dependency:
-	</p>
+	<p class="mt-1 text-(--color-text-secondary)">Install the package:</p>
 	<CodeBlock lang="bash" raw code="pnpm install svelte-crumbs" />
 	<h3 class="mt-6 text-lg font-semibold text-(--color-text-primary)">Root layout</h3>
 	<p class="mt-1 text-(--color-text-secondary)">
-		Call <code class="rounded bg-(--color-code-bg) px-1 text-sm">getCrumbs()</code> in your root
-		layout. It matches the current route against your pages and returns the resolved breadcrumb
-		trail as a reactive array.
+		Call <code class="rounded bg-(--color-code-bg) px-1 text-sm">createBreadcrumbs()</code> once in your
+		root layout. It scans your pages and returns a reactive array of crumbs for the current route.
 	</p>
 	<CodeBlock
 		lang="svelte"
-		code={`import { getCrumbs } from 'svelte-crumbs';
-const crumbs = $derived(await getCrumbs());`}
+		raw
+		code={`<` +
+			`script lang="ts">
+  import { createBreadcrumbs } from 'svelte-crumbs';
+
+  const getBreadcrumbs = createBreadcrumbs();
+  const crumbs = $derived(await getBreadcrumbs());
+</` +
+			`script>`}
 	/>
 	<p class="mt-4 text-(--color-text-secondary)">
 		Source code and issues on
@@ -46,16 +51,15 @@ const crumbs = $derived(await getCrumbs());`}
 {:else if slug === 'api-reference'}
 	<h2 class="mt-8 text-lg font-semibold text-(--color-text-primary)">BreadcrumbMeta</h2>
 	<p class="mt-1 text-(--color-text-secondary)">
-		Each <code class="rounded bg-(--color-code-bg) px-1 text-sm">+page.svelte</code> can export a
-		<code class="rounded bg-(--color-code-bg) px-1 text-sm">breadcrumb</code> constant of type
-		<code class="rounded bg-(--color-code-bg) px-1 text-sm">BreadcrumbMeta</code>. It's an async
-		function that receives the current
-		<code class="rounded bg-(--color-code-bg) px-1 text-sm">page</code> and returns a
-		<code class="rounded bg-(--color-code-bg) px-1 text-sm">{'{label, icon?}'}</code> object.
+		Any <code class="rounded bg-(--color-code-bg) px-1 text-sm">+page.svelte</code> can export a
+		<code class="rounded bg-(--color-code-bg) px-1 text-sm">breadcrumb</code> of type
+		<code class="rounded bg-(--color-code-bg) px-1 text-sm">BreadcrumbMeta</code>: an async function
+		that takes the current <code class="rounded bg-(--color-code-bg) px-1 text-sm">page</code> and
+		returns <code class="rounded bg-(--color-code-bg) px-1 text-sm">{'{label, icon?}'}</code>.
 	</p>
 
 	<h3 class="mt-6 text-base font-semibold text-(--color-text-primary)">Static label</h3>
-	<p class="mt-1 text-(--color-text-secondary)">Return a fixed string — the simplest pattern.</p>
+	<p class="mt-1 text-(--color-text-secondary)">Return a fixed string.</p>
 	<CodeBlock
 		code={`export const breadcrumb: BreadcrumbMeta = async () => ({
   label: 'Products'
@@ -64,8 +68,12 @@ const crumbs = $derived(await getCrumbs());`}
 
 	<h3 class="mt-6 text-base font-semibold text-(--color-text-primary)">Dynamic from load data</h3>
 	<p class="mt-1 text-(--color-text-secondary)">
-		Read the label from <code class="rounded bg-(--color-code-bg) px-1 text-sm">page.data</code> populated
-		by a layout or page load function.
+		Read the label from <code class="rounded bg-(--color-code-bg) px-1 text-sm">page.data</code>,
+		populated by a layout or page load. See
+		<a
+			href={resolve('/products/[productId]', { productId: '42' })}
+			class="text-(--color-accent) hover:underline">Product #42</a
+		>.
 	</p>
 	<CodeBlock
 		code={`export const breadcrumb: BreadcrumbMeta = async (page) => ({
@@ -75,8 +83,7 @@ const crumbs = $derived(await getCrumbs());`}
 
 	<h3 class="mt-6 text-base font-semibold text-(--color-text-primary)">Remote function</h3>
 	<p class="mt-1 text-(--color-text-secondary)">
-		Call a server-side remote function inside the resolver — works with SSR and doesn't block
-		hydration.
+		Call a remote function inside the resolver. SSR-safe, and it doesn't block hydration.
 	</p>
 	<CodeBlock
 		code={`import { getDocTitle } from '$lib/docs.remote.js';
@@ -88,10 +95,11 @@ export const breadcrumb: BreadcrumbMeta = async (page) => ({
 
 	<h3 class="mt-6 text-base font-semibold text-(--color-text-primary)">Optimistic update</h3>
 	<p class="mt-1 text-(--color-text-secondary)">
-		Combine a <code class="rounded bg-(--color-code-bg) px-1 text-sm">query</code> with a
+		Pair a <code class="rounded bg-(--color-code-bg) px-1 text-sm">query</code> with a
 		<code class="rounded bg-(--color-code-bg) px-1 text-sm">command</code> and
-		<code class="rounded bg-(--color-code-bg) px-1 text-sm">.withOverride()</code> for instant client-side
-		updates.
+		<code class="rounded bg-(--color-code-bg) px-1 text-sm">.withOverride()</code> — the label
+		changes before the server answers. See
+		<a href={resolve('/playground')} class="text-(--color-accent) hover:underline">Playground</a>.
 	</p>
 	<CodeBlock
 		code={`import { getNickname, setNickname } from '$lib/greeting.remote.js';
@@ -105,16 +113,44 @@ export const breadcrumb: BreadcrumbMeta = async () => ({
 setNickname(value).updates(getNickname().withOverride(() => value));`}
 	/>
 
+	<h3 class="mt-6 text-base font-semibold text-(--color-text-primary)">
+		Spread / catch-all routes
+	</h3>
+	<p class="mt-1 text-(--color-text-secondary)">
+		The <code class="rounded bg-(--color-code-bg) px-1 text-sm">{`{ routes }`}</code> form defines
+		breadcrumbs for several route patterns from one
+		<code class="rounded bg-(--color-code-bg) px-1 text-sm">[...rest]</code> page. The second
+		argument (<code class="rounded bg-(--color-code-bg) px-1 text-sm">url</code>) is the
+		breadcrumb's own path, not the full URL. See
+		<a
+			href={resolve('/spread/[...operator]', { operator: 'users/42/settings' })}
+			class="text-(--color-accent) hover:underline">Spread routes</a
+		>.
+	</p>
+	<CodeBlock
+		code={`export const breadcrumb: BreadcrumbMeta = {
+  routes: {
+    '/spread': async () => ({ label: 'Spread' }),
+    '/spread/[...rest]': async (_page, url) => ({
+      label: url.split('/').pop() ?? 'overview'
+    })
+  }
+};`}
+	/>
+
 	<h3 class="mt-6 text-base font-semibold text-(--color-text-primary)">No breadcrumb</h3>
 	<p class="mt-1 text-(--color-text-secondary)">
-		Omit the export entirely — the route is simply skipped in the breadcrumb trail.
+		Omit the export — the segment is skipped. See <a
+			href={resolve('/about')}
+			class="text-(--color-accent) hover:underline">About</a
+		>.
 	</p>
 {/if}
 
 <h2 class="mt-8 text-lg font-semibold text-(--color-text-primary)">Remote function breadcrumb</h2>
 <p class="mt-1 text-(--color-text-secondary)">
-	The label for this page is fetched server-side via a remote function — useful when the title isn't
-	available in load data.
+	The crumb for this page — up in the trail above — comes from a remote function, for titles that
+	never reach load data.
 </p>
 <CodeBlock
 	code={`import { getDocTitle } from '$lib/demo/docs.remote.js';

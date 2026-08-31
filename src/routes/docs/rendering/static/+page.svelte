@@ -12,20 +12,18 @@
 
 <h1 class="text-2xl font-bold text-(--color-text-primary)">Static breadcrumbs</h1>
 <p class="mt-2 text-(--color-text-secondary)">
-	svelte-crumbs is headless — it gives you a reactive
-	<code class="rounded bg-(--color-code-bg) px-1 text-sm">crumbs</code> array and leaves rendering
-	entirely up to you. The simplest approach is a plain
-	<code class="rounded bg-(--color-code-bg) px-1 text-sm">&#123;#each&#125;</code> loop with no transitions.
-	Toggle "Animate breadcrumbs" in the sidebar to compare with the animated version.
+	The simplest rendering: an
+	<code class="rounded bg-(--color-code-bg) px-1 text-sm">&#123;#each&#125;</code> loop, no transitions.
+	Toggle "Animate breadcrumbs" in the sidebar to compare.
 </p>
 
 <h2 class="mt-8 text-lg font-semibold text-(--color-text-primary)">Basic example</h2>
 <p class="mt-1 text-(--color-text-secondary)">
-	Iterate over the crumbs array, render links for intermediate segments, and mark the last segment
-	as the current page.
+	Link every segment except the last; mark that one as the current page.
 </p>
 <CodeBlock
 	lang="svelte"
+	raw
 	code={`<` +
 		`script lang="ts">
   import { getCrumbs } from 'svelte-crumbs';
@@ -50,12 +48,12 @@
 
 <h2 class="mt-8 text-lg font-semibold text-(--color-text-primary)">With icons</h2>
 <p class="mt-1 text-(--color-text-secondary)">
-	Each crumb can optionally include an
-	<code class="rounded bg-(--color-code-bg) px-1 text-sm">icon</code> — a Svelte component you return
-	from your breadcrumb resolver. Render it alongside the label.
+	A crumb can carry an <code class="rounded bg-(--color-code-bg) px-1 text-sm">icon</code> — a Svelte
+	component returned from the resolver. Render it beside the label.
 </p>
 <CodeBlock
 	lang="svelte"
+	raw
 	code={`<nav aria-label="Breadcrumbs" class="flex items-center gap-2 text-sm">
   {#each crumbs as crumb, i (crumb.url)}
     {#if i > 0}
@@ -78,10 +76,11 @@
 
 <h2 class="mt-8 text-lg font-semibold text-(--color-text-primary)">Custom separators</h2>
 <p class="mt-1 text-(--color-text-secondary)">
-	Since you own the markup, use any separator you like — arrows, chevrons, dots, or custom SVGs.
+	You own the markup: arrows, chevrons, dots, custom SVGs.
 </p>
 <CodeBlock
 	lang="svelte"
+	raw
 	code={`{#each crumbs as crumb, i (crumb.url)}
   {#if i > 0}
     <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none"
@@ -94,9 +93,10 @@
 />
 
 <h2 class="mt-8 text-lg font-semibold text-(--color-text-primary)">The crumbs array</h2>
-<p class="mt-1 text-(--color-text-secondary)">Each entry in the array has the following shape:</p>
+<p class="mt-1 text-(--color-text-secondary)">Each entry has this shape:</p>
 <CodeBlock
 	lang="ts"
+	raw
 	code={`type Breadcrumb = {
   label: string;       // resolved display text
   url: string;         // the URL path for this segment

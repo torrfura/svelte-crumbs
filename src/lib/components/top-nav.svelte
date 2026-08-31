@@ -17,7 +17,7 @@
 </script>
 
 <header
-	class="fixed top-0 right-0 left-0 z-40 flex h-20 items-center justify-between border-b border-(--color-border) bg-(--color-bg-nav) px-4"
+	class="fixed top-0 right-0 left-0 z-40 flex h-16 items-center justify-between border-b border-(--color-border) bg-(--color-bg-nav) px-4 lg:px-6"
 >
 	<div class="flex items-center gap-3">
 		<button
@@ -43,18 +43,19 @@
 		</button>
 		<a
 			href={resolve('/')}
-			class="flex items-center [&_svg]:h-12 [&_svg]:w-auto [&_svg]:rounded-md"
+			class="flex items-center gap-2.5 [&_svg]:h-6 [&_svg]:w-auto [&_svg]:rounded"
 			aria-label="svelte-crumbs home"
 		>
 			<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 			{@html logo}
+			<span class="font-mono text-[13px] font-medium tracking-tight text-(--color-text-primary)"
+				>svelte-crumbs</span
+			>
 		</a>
-		<span class="rounded-full bg-(--color-code-bg) px-2 py-0.5 text-xs text-(--color-text-muted)"
-			>v{appVersion}</span
-		>
+		<span class="font-mono text-[11px] text-(--color-accent)">v{appVersion}</span>
 	</div>
 
-	<div class="hidden lg:flex flex-1 mx-4 lg:pl-50 justify-center">
+	<div class="mx-4 hidden flex-1 justify-center lg:flex lg:pl-40">
 		<Breadcrumbs {crumbs} {animated} />
 	</div>
 

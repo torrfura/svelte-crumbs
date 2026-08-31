@@ -12,29 +12,24 @@
 
 <h1 class="text-2xl font-bold text-(--color-text-primary)">Animated breadcrumbs</h1>
 <p class="mt-2 text-(--color-text-secondary)">
-	svelte-crumbs is headless — it gives you a reactive
-	<code class="rounded bg-(--color-code-bg) px-1 text-sm">crumbs</code> array and leaves rendering
-	entirely up to you. Below is a suggested approach for rendering breadcrumbs with smooth
-	transitions using Svelte's built-in
-	<code class="rounded bg-(--color-code-bg) px-1 text-sm">crossfade</code>,
-	<code class="rounded bg-(--color-code-bg) px-1 text-sm">fly</code>, and
-	<code class="rounded bg-(--color-code-bg) px-1 text-sm">flip</code>. This is exactly what powers
-	the breadcrumb bar in this demo site — toggle "Animate breadcrumbs" in the sidebar to see it in
-	action.
+	Render the <code class="rounded bg-(--color-code-bg) px-1 text-sm">crumbs</code> array with
+	Svelte's built-in <code class="rounded bg-(--color-code-bg) px-1 text-sm">crossfade</code>,
+	<code class="rounded bg-(--color-code-bg) px-1 text-sm">fly</code> and
+	<code class="rounded bg-(--color-code-bg) px-1 text-sm">flip</code>. This is what drives the
+	breadcrumb bar above — toggle "Animate breadcrumbs" in the sidebar to watch it.
 </p>
 
 <h2 class="mt-8 text-lg font-semibold text-(--color-text-primary)">Full example</h2>
 <p class="mt-1 text-(--color-text-secondary)">
-	The key idea is to render crumbs in a CSS grid (one column per crumb) so that Svelte's
-	<code class="rounded bg-(--color-code-bg) px-1 text-sm">flip</code> animation can smoothly
-	reposition crumbs that stay visible, while
-	<code class="rounded bg-(--color-code-bg) px-1 text-sm">crossfade</code> pairs entering and
-	leaving crumbs. A staggered
-	<code class="rounded bg-(--color-code-bg) px-1 text-sm">fly</code> fallback handles crumbs that have
-	no matching counterpart.
+	Crumbs sit in a CSS grid, one column each, so
+	<code class="rounded bg-(--color-code-bg) px-1 text-sm">flip</code> can reposition the ones that
+	stay while <code class="rounded bg-(--color-code-bg) px-1 text-sm">crossfade</code> pairs those
+	entering and leaving. A staggered
+	<code class="rounded bg-(--color-code-bg) px-1 text-sm">fly</code> fallback covers crumbs with no counterpart.
 </p>
 <CodeBlock
 	lang="svelte"
+	raw
 	code={`<` +
 		`script lang="ts">
   import { crossfade, fly } from 'svelte/transition';
@@ -104,22 +99,20 @@
 <h2 class="mt-8 text-lg font-semibold text-(--color-text-primary)">How it works</h2>
 <ul class="mt-2 space-y-2 text-(--color-text-secondary)">
 	<li>
-		<strong>Grid layout</strong> — each crumb is pinned to a grid column, so
-		<code class="rounded bg-(--color-code-bg) px-1 text-sm">flip</code> can animate position changes when
-		crumbs are added or removed.
+		<strong>Grid layout</strong> — each crumb is pinned to a column, so
+		<code class="rounded bg-(--color-code-bg) px-1 text-sm">flip</code> animates position changes as crumbs
+		come and go.
 	</li>
 	<li>
-		<strong>Crossfade</strong> — when a crumb exists in both the old and new trail, crossfade morphs
-		it in place. For crumbs without a match, the fallback
-		<code class="rounded bg-(--color-code-bg) px-1 text-sm">fly</code> transition kicks in.
+		<strong>Crossfade</strong> — a crumb in both the old and new trail morphs in place. Unmatched
+		crumbs fall back to <code class="rounded bg-(--color-code-bg) px-1 text-sm">fly</code>.
 	</li>
 	<li>
-		<strong>Staggered timing</strong> — outgoing crumbs fly out with a reverse stagger (last crumb first),
-		then incoming crumbs fly in sequentially. This creates a smooth cascading effect.
+		<strong>Staggered timing</strong> — outgoing crumbs leave last-first, then incoming crumbs arrive
+		in order. The result cascades.
 	</li>
 	<li>
 		<strong>SSR safe</strong> — the
-		<code class="rounded bg-(--color-code-bg) px-1 text-sm">mounted</code> guard ensures transitions only
-		run client-side.
+		<code class="rounded bg-(--color-code-bg) px-1 text-sm">mounted</code> guard keeps transitions client-side.
 	</li>
 </ul>

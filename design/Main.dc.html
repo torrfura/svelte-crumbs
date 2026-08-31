@@ -1,0 +1,534 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<script src="./support.js"></script>
+	</head>
+	<body>
+		<x-dc>
+			<helmet>
+				<link
+					rel="stylesheet"
+					href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&display=swap"
+				/>
+				<style>
+					body {
+						margin: 0;
+					}
+					.page {
+						--bg: #0a0a0a;
+						--panel: #111111;
+						--text-1: #f3f4f6;
+						--text-2: #9ca3af;
+						--text-3: #6b7280;
+						--border: #27272a;
+						--code-bg: #18181b;
+						--on-accent: #0a0a0a;
+						--c-key: #ff7b72;
+						--c-str: #a5d6ff;
+						--c-fn: #d2a8ff;
+						--c-com: #8b949e;
+						--logo-bg: transparent;
+						--logo-frame: transparent;
+						--logo-dot: #fdf8f5;
+						--logo-primary: #f08c4e;
+						--logo-secondary: #e89478;
+					}
+					.page.theme-light {
+						--bg: #ffffff;
+						--panel: #f9fafb;
+						--text-1: #111827;
+						--text-2: #4b5563;
+						--text-3: #9ca3af;
+						--border: #e5e7eb;
+						--code-bg: #f3f4f6;
+						--on-accent: #ffffff;
+						--c-key: #cf222e;
+						--c-str: #0a3069;
+						--c-fn: #8250df;
+						--c-com: #6e7781;
+						--logo-dot: #303c4e;
+						--logo-primary: #ec7f3c;
+						--logo-secondary: #e27d5a;
+					}
+					a {
+						color: var(--text-2);
+						text-decoration: none;
+					}
+					a:hover {
+						color: var(--accent);
+					}
+					.mono {
+						font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+					}
+					.wrap {
+						max-width: 1200px;
+						margin: 0 auto;
+						padding: 0 40px;
+						box-sizing: border-box;
+					}
+				</style>
+			</helmet>
+			<div
+				class="page {{themeClass}}"
+				style="--accent: {{accent}}; background: var(--bg); font-family: Figtree, ui-sans-serif, system-ui, sans-serif; color: var(--text-1); -webkit-font-smoothing: antialiased;"
+			>
+				<!-- nav -->
+				<div style="border-bottom: 1px solid var(--border)">
+					<div
+						class="wrap"
+						style="display: flex; align-items: center; justify-content: space-between; height: 64px"
+					>
+						<div style="display: flex; align-items: center; gap: 10px">
+							<div style="display: flex; width: 24px; height: 24px">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="24"
+									height="24"
+									viewBox="0 0 188 188"
+								>
+									<rect width="188" height="188" fill="var(--logo-bg, #fdf8f5)" />
+									<g>
+										<path
+											d="M 99.00 171.21 C96.53,172.71 92.70,174.15 90.50,174.42 C76.95,176.09 65.66,162.02 70.47,149.45 C72.88,143.12 78.38,140.00 87.09,140.01 C100.00,140.02 107.79,144.72 108.67,153.03 C109.36,159.50 105.08,167.54 99.00,171.21 Z"
+											fill="var(--logo-dot, rgb(48,60,78))"
+										/>
+										<path
+											d="M 92.04 86.55 C79.76,90.84 70.70,89.61 57.72,81.91 C49.01,76.73 42.10,69.87 39.04,63.35 C34.93,54.61 37.67,44.25 46.17,36.42 C51.11,31.86 63.54,23.59 67.11,22.48 C68.42,22.08 71.71,20.63 74.40,19.28 C80.99,15.97 88.91,14.00 95.65,14.00 C100.32,14.00 101.82,14.48 105.00,17.00 C107.08,18.65 109.47,20.00 110.31,20.00 C112.75,20.00 116.86,25.71 118.52,31.42 C120.70,38.91 120.77,50.67 118.67,54.70 C117.75,56.46 117.00,59.21 117.00,60.80 C117.00,66.46 109.92,76.59 102.27,81.88 C100.49,83.10 95.89,85.21 92.04,86.55 Z"
+											fill="var(--logo-primary, rgb(236,127,60))"
+										/>
+										<path
+											d="M 116.76 136.48 C110.59,138.31 108.12,138.31 101.19,136.44 C88.66,133.07 79.00,121.95 79.00,110.90 C79.00,105.95 79.26,105.44 84.25,100.50 C88.13,96.66 91.33,94.62 96.50,92.67 C115.85,85.38 128.58,86.86 133.83,97.00 C135.83,100.87 136.09,102.51 135.66,108.74 C134.71,122.42 127.26,133.36 116.76,136.48 ZM 96.30 14.00 C96.50,14.00 96.70,14.00 96.90,14.00 C102.67,14.00 104.32,14.42 107.82,16.77 C112.03,19.59 115.08,23.13 117.10,27.68 C115.12,23.45 112.21,20.00 110.31,20.00 C109.47,20.00 107.08,18.65 105.00,17.00 C101.97,14.60 100.47,14.05 96.30,14.00 ZM 120.20 44.37 C120.20,44.48 120.20,44.60 120.20,44.71 C120.38,58.06 116.94,67.52 108.72,76.22 C107.65,77.36 106.62,78.37 105.56,79.28 C111.84,73.73 117.00,65.64 117.00,60.80 C117.00,59.21 117.75,56.46 118.67,54.70 C119.72,52.69 120.23,48.75 120.20,44.37 ZM 92.04 86.55 C94.40,85.73 97.05,84.62 99.16,83.60 C97.12,84.64 94.81,85.58 92.04,86.55 ZM 83.14 15.89 C80.11,16.75 77.14,17.90 74.40,19.28 C77.20,17.87 80.12,16.74 83.14,15.89 Z"
+											fill="var(--logo-secondary, rgb(226,125,90))"
+										/>
+										<path
+											d="M 0.00 94.00 L 0.00 0.00 L 94.00 0.00 L 188.00 0.00 L 188.00 94.00 L 188.00 188.00 L 94.00 188.00 L 0.00 188.00 L 0.00 94.00 ZM 99.00 171.21 C105.08,167.54 109.36,159.50 108.67,153.03 C107.79,144.72 100.00,140.02 87.09,140.01 C78.38,140.00 72.88,143.12 70.47,149.45 C65.66,162.02 76.95,176.09 90.50,174.42 C92.70,174.15 96.53,172.71 99.00,171.21 ZM 116.76 136.48 C127.26,133.36 134.71,122.42 135.66,108.74 C136.09,102.51 135.83,100.87 133.83,97.00 C128.58,86.86 115.85,85.38 96.50,92.67 C91.33,94.62 88.13,96.66 84.25,100.50 C79.26,105.44 79.00,105.95 79.00,110.90 C79.00,121.95 88.66,133.07 101.19,136.44 C108.12,138.31 110.59,138.31 116.76,136.48 ZM 92.04 86.55 C99.85,83.83 103.96,81.28 108.72,76.22 C116.94,67.52 120.38,58.06 120.20,44.71 C120.03,30.95 116.25,22.43 107.82,16.77 C104.32,14.42 102.67,14.00 96.90,14.00 C88.99,14.00 81.32,15.80 74.40,19.28 C71.71,20.63 68.42,22.08 67.11,22.48 C63.54,23.59 51.11,31.86 46.17,36.42 C37.67,44.25 34.93,54.61 39.04,63.35 C42.10,69.87 49.01,76.73 57.72,81.91 C70.70,89.61 79.76,90.84 92.04,86.55 Z"
+											fill="var(--logo-frame, rgb(253,248,245))"
+										/>
+									</g>
+								</svg>
+							</div>
+							<div
+								class="mono"
+								style="
+									font-size: 13px;
+									font-weight: 500;
+									letter-spacing: -0.01em;
+									color: var(--text-1);
+								"
+							>
+								svelte-crumbs
+							</div>
+							<div class="mono" style="font-size: 11px; color: var(--accent)">v1.5.0</div>
+						</div>
+						<div
+							class="mono"
+							style="display: flex; align-items: center; gap: 26px; font-size: 12px"
+						>
+							<a href="#">docs</a>
+							<a href="#">api</a>
+							<a href="#">playground</a>
+							<a href="#">github</a>
+						</div>
+					</div>
+				</div>
+
+				<!-- hero -->
+				<div
+					class="wrap"
+					style="
+						display: grid;
+						grid-template-columns: repeat(2, minmax(0, 1fr));
+						gap: 72px;
+						padding-top: 116px;
+					"
+				>
+					<div style="display: flex; flex-direction: column; gap: 26px">
+						<div
+							class="mono"
+							style="
+								font-size: 11px;
+								letter-spacing: 0.14em;
+								text-transform: uppercase;
+								color: var(--accent);
+							"
+						>
+							SvelteKit navigation
+						</div>
+						<div
+							style="
+								font-size: 62px;
+								line-height: 1.04;
+								letter-spacing: -0.038em;
+								font-weight: 700;
+								text-wrap: balance;
+							"
+						>
+							Server-rendered breadcrumbs.
+						</div>
+						<div style="font-size: 17px; line-height: 1.6; color: var(--text-2); max-width: 42ch">
+							Resolved during SSR, reactive after hydration. Zero config.
+						</div>
+						<div style="display: flex; gap: 12px; padding-top: 10px">
+							<a
+								href="#"
+								style="
+									display: flex;
+									align-items: center;
+									height: 46px;
+									padding: 0 20px;
+									border-radius: 8px;
+									background: var(--accent);
+									color: var(--on-accent);
+									font-size: 14px;
+									font-weight: 600;
+								"
+								>Read the docs</a
+							>
+							<div
+								class="mono"
+								style="
+									display: flex;
+									align-items: center;
+									gap: 12px;
+									height: 46px;
+									padding: 0 18px;
+									border: 1px solid var(--border);
+									border-radius: 8px;
+									font-size: 13px;
+									color: var(--text-2);
+								"
+							>
+								<span>npm i svelte-crumbs</span>
+								<svg
+									width="14"
+									height="14"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1.7"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									style="color: var(--text-3)"
+								>
+									<rect x="9" y="9" width="12" height="12" rx="2"></rect>
+									<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+								</svg>
+							</div>
+						</div>
+					</div>
+
+					<div
+						style="
+							display: flex;
+							flex-direction: column;
+							border: 1px solid var(--border);
+							border-radius: 14px;
+							background: var(--panel);
+							overflow: hidden;
+						"
+					>
+						<div
+							style="
+								display: flex;
+								align-items: center;
+								gap: 8px;
+								height: 40px;
+								padding: 0 16px;
+								border-bottom: 1px solid var(--border);
+							"
+						>
+							<span
+								style="width: 9px; height: 9px; border-radius: 999px; background: var(--border)"
+							></span>
+							<span
+								style="width: 9px; height: 9px; border-radius: 999px; background: var(--border)"
+							></span>
+							<span
+								style="width: 9px; height: 9px; border-radius: 999px; background: var(--border)"
+							></span>
+							<span class="mono" style="padding-left: 10px; font-size: 11px; color: var(--text-3)"
+								>+layout.svelte</span
+							>
+						</div>
+						<pre
+							class="mono"
+							style="
+								margin: 0;
+								padding: 22px;
+								font-size: 13px;
+								line-height: 1.9;
+								color: var(--text-1);
+								overflow: hidden;
+							"
+						><span style="color: var(--c-com);">&lt;script lang="ts"&gt;</span>
+  <span style="color: var(--c-key);">import</span> { <span style="color: var(--c-fn);">createBreadcrumbs</span> } <span style="color: var(--c-key);">from</span> <span style="color: var(--c-str);">'svelte-crumbs'</span>;
+
+  <span style="color: var(--c-key);">const</span> get = <span style="color: var(--c-fn);">createBreadcrumbs</span>();
+  <span style="color: var(--c-key);">const</span> crumbs = <span style="color: var(--c-fn);">$derived</span>(<span style="color: var(--c-key);">await</span> <span style="color: var(--c-fn);">get</span>());
+<span style="color: var(--c-com);">&lt;/script&gt;</span></pre>
+						<div
+							style="
+								display: flex;
+								align-items: center;
+								gap: 10px;
+								padding: 18px 22px;
+								border-top: 1px solid var(--border);
+								font-size: 14px;
+							"
+						>
+							<span style="color: var(--text-3)">Home</span>
+							<span style="display: flex; color: var(--border)"
+								><svg
+									width="13"
+									height="13"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1.8"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+								>
+									<path d="m9 18 6-6-6-6"></path></svg
+							></span>
+							<span style="color: var(--text-3)">Products</span>
+							<span style="display: flex; color: var(--border)"
+								><svg
+									width="13"
+									height="13"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1.8"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+								>
+									<path d="m9 18 6-6-6-6"></path></svg
+							></span>
+							<span style="font-weight: 600">Nike Air Max 90</span>
+						</div>
+					</div>
+				</div>
+
+				<!-- facts -->
+				<div class="wrap" style="padding-top: 104px">
+					<div
+						style="
+							display: grid;
+							grid-template-columns: repeat(3, minmax(0, 1fr));
+							gap: 1px;
+							background: var(--border);
+							border: 1px solid var(--border);
+							border-radius: 14px;
+							overflow: hidden;
+						"
+					>
+						<div
+							style="
+								display: flex;
+								flex-direction: column;
+								gap: 8px;
+								padding: 30px;
+								background: var(--bg);
+							"
+						>
+							<div class="mono" style="font-size: 11px; color: var(--accent)">01</div>
+							<div style="font-size: 16px; font-weight: 600">Zero config</div>
+							<div style="font-size: 13px; line-height: 1.6; color: var(--text-2)">
+								No route table. Pages describe themselves.
+							</div>
+						</div>
+						<div
+							style="
+								display: flex;
+								flex-direction: column;
+								gap: 8px;
+								padding: 30px;
+								background: var(--bg);
+							"
+						>
+							<div class="mono" style="font-size: 11px; color: var(--accent)">02</div>
+							<div style="font-size: 16px; font-weight: 600">SSR-ready</div>
+							<div style="font-size: 13px; line-height: 1.6; color: var(--text-2)">
+								Resolves in top-level await. No {#await} blocks, no flash.
+							</div>
+						</div>
+						<div
+							style="
+								display: flex;
+								flex-direction: column;
+								gap: 8px;
+								padding: 30px;
+								background: var(--bg);
+							"
+						>
+							<div class="mono" style="font-size: 11px; color: var(--accent)">03</div>
+							<div style="font-size: 16px; font-weight: 600">Reactive</div>
+							<div style="font-size: 13px; line-height: 1.6; color: var(--text-2)">
+								Remote functions and optimistic queries, tracked.
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- one export per page -->
+				<div
+					class="wrap"
+					style="display: flex; flex-direction: column; gap: 32px; padding-top: 104px"
+				>
+					<div style="display: flex; flex-direction: column; gap: 18px">
+						<div
+							style="font-size: 34px; line-height: 1.15; letter-spacing: -0.028em; font-weight: 700"
+						>
+							One export per page.
+						</div>
+						<div style="font-size: 15px; line-height: 1.7; color: var(--text-2); max-width: 40ch">
+							Return a label from anything you can await — load data, a remote function, a query.
+						</div>
+					</div>
+					<div
+						style="
+							display: flex;
+							flex-direction: column;
+							border: 1px solid var(--border);
+							border-radius: 14px;
+							background: var(--panel);
+							overflow: hidden;
+						"
+					>
+						<div
+							style="
+								display: flex;
+								align-items: center;
+								height: 40px;
+								padding: 0 16px;
+								border-bottom: 1px solid var(--border);
+							"
+						>
+							<span class="mono" style="font-size: 11px; color: var(--text-3)"
+								>products/[id]/+page.svelte</span
+							>
+						</div>
+						<pre
+							class="mono"
+							style="
+								margin: 0;
+								padding: 22px;
+								font-size: 13px;
+								line-height: 1.9;
+								color: var(--text-1);
+								overflow: hidden;
+							"
+						><span style="color: var(--c-com);">&lt;script module lang="ts"&gt;</span>
+  <span style="color: var(--c-key);">import type</span> { BreadcrumbMeta } <span style="color: var(--c-key);">from</span> <span style="color: var(--c-str);">'svelte-crumbs'</span>;
+
+  <span style="color: var(--c-key);">export const</span> breadcrumb: BreadcrumbMeta = <span style="color: var(--c-key);">async</span> (page) =&gt; ({
+    label: page.data.product.name
+  });
+<span style="color: var(--c-com);">&lt;/script&gt;</span></pre>
+					</div>
+				</div>
+
+				<!-- routes -->
+				<div
+					class="wrap"
+					style="display: flex; flex-direction: column; gap: 18px; padding-top: 104px"
+				>
+					<div
+						class="mono"
+						style="
+							font-size: 11px;
+							letter-spacing: 0.14em;
+							text-transform: uppercase;
+							color: var(--text-3);
+						"
+					>
+						Live routes
+					</div>
+					<div style="display: flex; flex-wrap: wrap; gap: 10px">
+						<a
+							class="mono"
+							href="#"
+							style="
+								padding: 9px 15px;
+								border: 1px solid var(--border);
+								border-radius: 8px;
+								font-size: 13px;
+							"
+							>/products/42</a
+						>
+						<a
+							class="mono"
+							href="#"
+							style="
+								padding: 9px 15px;
+								border: 1px solid var(--border);
+								border-radius: 8px;
+								font-size: 13px;
+							"
+							>/docs/getting-started</a
+						>
+						<a
+							class="mono"
+							href="#"
+							style="
+								padding: 9px 15px;
+								border: 1px solid var(--border);
+								border-radius: 8px;
+								font-size: 13px;
+							"
+							>/spread/users/42/settings</a
+						>
+						<a
+							class="mono"
+							href="#"
+							style="
+								padding: 9px 15px;
+								border: 1px solid var(--border);
+								border-radius: 8px;
+								font-size: 13px;
+							"
+							>/playground</a
+						>
+					</div>
+				</div>
+
+				<!-- footer -->
+				<div class="wrap" style="padding-top: 104px">
+					<div
+						class="mono"
+						style="
+							display: flex;
+							align-items: center;
+							justify-content: space-between;
+							padding: 26px 0 52px;
+							border-top: 1px solid var(--border);
+							font-size: 12px;
+							color: var(--text-3);
+						"
+					>
+						<div>MIT © 2026 svelte-crumbs</div>
+						<div style="display: flex; gap: 22px">
+							<a href="#">npm</a>
+							<a href="#">github</a>
+							<a href="#">changelog</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</x-dc>
+		<script
+			data-dc-script
+			data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"accent":{"editor":"color","default":"#f08c4e","options":["#f08c4e","#ec7f3c","#60a5fa","#e89478"]},"$preview":{"width":1440,"height":1500}}'
+		>
+			class Component extends DCLogic {
+				renderVals() {
+					return {
+						themeClass: this.props.theme === 'light' ? 'theme-light' : '',
+						accent: this.props.accent ?? '#f08c4e'
+					};
+				}
+			}
+		</script>
+	</body>
+</html>
