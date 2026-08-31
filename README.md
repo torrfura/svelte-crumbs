@@ -345,10 +345,11 @@ type Breadcrumb = BreadcrumbData & { url: string };
 1. `import.meta.glob('/src/routes/**/+page.svelte')` provides the route file **keys** — building the index is synchronous, no modules load yet
 2. Each file path is converted to a route id, with `(group)` segments stripped
 3. On navigation, SvelteKit's own `page.route.id` and the concrete pathname are walked in parallel, producing one level per route segment — matching is exact Map lookups against route-id prefixes, no pattern matching
-4. Only the page modules along the current path (~one per depth level) are loaded, each at most once; their `breadcrumb` exports register resolvers (`eager: true` loads everything instead)
-5. Concrete-pathname keys from `{ routes }` win over route-id keys at the same level
-6. Matched resolvers run in parallel; `undefined` results and throwing resolvers are skipped, producing the final breadcrumb array
-7. On SSR, top-level `await` ensures breadcrumbs are in the initial HTML; on the client, `$derived` re-evaluates when the route changes
+4. Only the page modules along the current path (~one per depth level) block resolution, each loading at most once; their `breadcrumb` exports register resolvers (`eager: true` loads everything up front instead)
+5. After hydration, an idle-time warmup loads the remaining breadcrumb modules in the background and re-runs the trail once — from then on resolution is fully synchronous, so reactive reads inside resolvers (remote queries, optimistic overrides) stay tracked
+6. Concrete-pathname keys from `{ routes }` win over route-id keys at the same level
+7. Matched resolvers run in parallel; `undefined` results and throwing resolvers are skipped, producing the final breadcrumb array
+8. On SSR, top-level `await` ensures breadcrumbs are in the initial HTML; on the client, `$derived` re-evaluates when the route changes
 
 Because SvelteKit already decided which route matched, optional params, matchers, compound segments, rest params, and `paths.base` all behave exactly as they do in your app's routing.
 

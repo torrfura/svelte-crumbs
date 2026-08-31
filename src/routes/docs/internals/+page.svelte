@@ -149,7 +149,14 @@
 	lazy loader references. To be clear about the cost: when a trail resolves, the modules it imports
 	are the <code class="rounded bg-(--color-code-bg) px-1 text-sm">+page.svelte</code> modules
 	<em>along the current path</em> — the same chunks SvelteKit's router loads to render those pages anyway.
-	Routes you never visit and that never appear in a trail cost nothing: their modules are never requested.
+	Nothing else blocks first paint.
+</p>
+<p class="text-(--color-text-secondary)">
+	After hydration, an idle-time <strong>warmup</strong> quietly loads the remaining breadcrumb
+	modules in the background and re-runs the trail once, warm — from then on every resolution is
+	fully synchronous, which is what keeps reactive reads <em>inside</em> resolvers (remote queries, optimistic
+	overrides) tracked. Off the critical path by design: the warmup competes with nothing and never delays
+	a navigation.
 </p>
 
 <h3 class="text-(--color-text-primary)">Runtime cost</h3>
