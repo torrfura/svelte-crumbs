@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 
-vi.mock('$app/environment', () => ({ dev: false, browser: false }));
+vi.mock('$app/env', () => ({ dev: false, browser: false }));
 vi.mock('$app/state', () => ({ page: {} }));
 vi.mock('$app/paths', () => ({ resolve: (path: string) => path }));
 

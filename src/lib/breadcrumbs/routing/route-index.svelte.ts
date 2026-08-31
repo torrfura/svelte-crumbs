@@ -1,4 +1,4 @@
-import { dev } from '$app/environment';
+import { dev } from '$app/env';
 import type { BreadcrumbMeta, BreadcrumbResolver } from '../types.js';
 
 /** Record of page-module loaders as produced by `import.meta.glob(..., { import: 'breadcrumb' })`. */

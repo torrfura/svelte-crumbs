@@ -12,7 +12,7 @@ const { pageMock, pathsMock } = vi.hoisted(() => ({
 	pathsMock: { base: '', hashRouting: false }
 }));
 
-vi.mock('$app/environment', () => ({ dev: false, browser: false }));
+vi.mock('$app/env', () => ({ dev: false, browser: false }));
 vi.mock('$app/state', () => ({ page: pageMock }));
 // Mirrors kit's own resolve: `base + (hashRouting ? '#' : '') + path`.
 vi.mock('$app/paths', () => ({

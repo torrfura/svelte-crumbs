@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 
-vi.mock('$app/environment', () => ({ dev: false, browser: false }));
+vi.mock('$app/env', () => ({ dev: false, browser: false }));
 
 import { RouteIndex, filePathToRouteId, stripGroups } from './route-index.svelte.js';
 import type { BreadcrumbMeta, BreadcrumbResolver } from '../types.js';
