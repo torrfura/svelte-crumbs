@@ -46,12 +46,12 @@ function stripBase(pathname: string): string {
  * Re-prepends `paths.base` to a crumb URL so links resolve correctly, and adds
  * the `#` marker when the app uses hash routing.
  *
- * `resolve` throws on anything that is not an absolute path, so non-absolute
- * input is passed through instead — a malformed crumb url should degrade the
- * trail, not break the page, the same way resolver errors are isolated.
+ * `resolve` is built for route ids, so it rejects non-absolute input and reads
+ * `[` as a dynamic segment needing params. Neither can reach here: crumb urls
+ * come from `walkRoute`, which slices the concrete pathname and always yields
+ * an absolute, already-substituted path.
  */
 function withBase(url: string): string {
-	if (!url.startsWith('/')) return url;
 	return resolvePath(url);
 }
 
