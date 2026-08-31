@@ -1,5 +1,16 @@
 # svelte-crumbs
 
+## [2.0.0](https://github.com/torrfura/svelte-crumbs/compare/svelte-crumbs-v1.6.0...svelte-crumbs-v2.0.0) (2026-08-31)
+
+
+### ⚠ BREAKING CHANGES
+
+* buildBreadcrumbMap, BreadcrumbLookup, filePathToRoute, matchDynamicRoutePattern, getResolversForRoute and the BreadcrumbMap type are no longer exported; peer deps raised to svelte ^5.39 and @sveltejs/kit ^2.12; error pages without a matched route render no crumbs; { routes } keys targeting unrelated routes require eager: true.
+
+### Features
+
+* v2 — route-id matching, lazy loading, getCrumbs() ([#21](https://github.com/torrfura/svelte-crumbs/issues/21)) ([7868bec](https://github.com/torrfura/svelte-crumbs/commit/7868bec00c801670133426e485d1ba4351ff12a5))
+
 ## [1.6.0](https://github.com/torrfura/svelte-crumbs/compare/svelte-crumbs-v1.5.0...svelte-crumbs-v1.6.0) (2026-08-31)
 
 
