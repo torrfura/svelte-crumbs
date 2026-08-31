@@ -13,10 +13,9 @@
 	const layoutSnippet =
 		`<` +
 		`script lang="ts">
-  import { createBreadcrumbs } from 'svelte-crumbs';
+  import { getCrumbs } from 'svelte-crumbs';
 
-  const get = createBreadcrumbs();
-  const crumbs = $derived(await get());
+  const crumbs = $derived(await getCrumbs());
 </` +
 		`script>`;
 

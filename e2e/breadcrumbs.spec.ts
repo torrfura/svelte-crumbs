@@ -70,6 +70,43 @@ test.describe('Dynamic resolvers', () => {
 		}).toPass({ timeout: 5000 });
 		await expect(nav).toContainText('settings');
 	});
+
+	test('zero-segment rest route shows the Spread crumb on /spread', async ({ page }) => {
+		await page.goto('/spread');
+		const nav = page.locator('nav[aria-label="Breadcrumbs"]').first();
+		await expect(nav).toBeVisible({ timeout: 10000 });
+		await expect(nav).toContainText('Spread');
+	});
+});
+
+test.describe('Optional [[lang]] param (i18n demo)', () => {
+	test('/i18n shows the default-language crumb label', async ({ page }) => {
+		await page.goto('/i18n');
+		const nav = page.locator('nav[aria-label="Breadcrumbs"]').first();
+		await expect(nav).toBeVisible({ timeout: 10000 });
+		await expect(nav).toContainText('Greetings');
+	});
+
+	test('/i18n/sv shows the Swedish crumb label', async ({ page }) => {
+		await page.goto('/i18n/sv');
+		const nav = page.locator('nav[aria-label="Breadcrumbs"]').first();
+		await expect(nav).toBeVisible({ timeout: 10000 });
+		await expect(nav).toContainText('Hälsningar');
+	});
+
+	test('default-language crumb is in the server-rendered HTML on /i18n', async ({ request }) => {
+		const response = await request.get('/i18n');
+		const html = await response.text();
+		expect(html).toContain('aria-label="Breadcrumbs"');
+		expect(html).toContain('Greetings');
+	});
+
+	test('Swedish crumb is in the server-rendered HTML on /i18n/sv', async ({ request }) => {
+		const response = await request.get('/i18n/sv');
+		const html = await response.text();
+		expect(html).toContain('aria-label="Breadcrumbs"');
+		expect(html).toContain('Hälsningar');
+	});
 });
 
 test.describe('Client-side reactivity', () => {
@@ -90,7 +127,22 @@ test.describe('Client-side reactivity', () => {
 });
 
 test.describe('No Svelte runtime warnings', () => {
-	const routes = ['/', '/products', '/products/42', '/docs', '/docs/internals'];
+	const routes = [
+		'/',
+		'/products',
+		'/products/42',
+		'/products/42/edit',
+		'/docs',
+		'/docs/internals',
+		'/docs/getting-started',
+		'/docs/i18n',
+		'/playground',
+		'/spread',
+		'/spread/users/42/settings',
+		'/i18n',
+		'/i18n/sv',
+		'/about'
+	];
 
 	for (const route of routes) {
 		test(`no hydration or waterfall warnings on ${route}`, async ({ page }) => {
