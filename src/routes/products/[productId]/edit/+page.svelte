@@ -17,8 +17,7 @@
 
 <h2 class="mt-8 text-lg font-semibold text-(--color-text-primary)">Nested static breadcrumb</h2>
 <p class="mt-1 text-(--color-text-secondary)">
-	Deeply nested route with a simple fixed label. The parent's dynamic label is resolved
-	independently.
+	A fixed label two levels deep. The parent's dynamic label resolves independently.
 </p>
 <CodeBlock
 	code={`export const breadcrumb: BreadcrumbMeta = async () => ({

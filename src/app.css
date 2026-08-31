@@ -27,7 +27,11 @@ html {
 	--color-text-secondary: #4b5563;
 	--color-text-muted: #9ca3af;
 	--color-border: #e5e7eb;
-	--color-accent: #2563eb;
+	/* Text accent meets AA on white (5.02:1); the brand orange is 2.74:1 and is
+	   only used as a fill, with --color-on-accent sitting on top of it. */
+	--color-accent: #b45309;
+	--color-accent-solid: #ec7f3c;
+	--color-on-accent: #1f1206;
 	--color-code-bg: #f3f4f6;
 
 	--logo-bg: transparent;
@@ -117,7 +121,9 @@ html.dark .shiki span {
 	--color-text-secondary: #9ca3af;
 	--color-text-muted: #6b7280;
 	--color-border: #27272a;
-	--color-accent: #60a5fa;
+	--color-accent: #f08c4e;
+	--color-accent-solid: #f08c4e;
+	--color-on-accent: #0a0a0a;
 	--color-code-bg: #18181b;
 
 	--logo-bg: #1f1d1b;
