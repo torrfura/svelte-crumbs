@@ -1,5 +1,17 @@
 # svelte-crumbs
 
+## [1.6.0](https://github.com/torrfura/svelte-crumbs/compare/svelte-crumbs-v1.5.0...svelte-crumbs-v1.6.0) (2026-08-31)
+
+
+### Features
+
+* **demo:** dark, mono-forward site redesign ([6784c0a](https://github.com/torrfura/svelte-crumbs/commit/6784c0a4aa2b3cfe97d6db8b3d68234894d37fdc))
+
+
+### Bug Fixes
+
+* **lint:** clear all eslint errors ([3c68a5a](https://github.com/torrfura/svelte-crumbs/commit/3c68a5a016ed908afe5bb3a37605358e2f6eb47f))
+
 ## [1.5.0](https://github.com/torrfura/svelte-crumbs/compare/svelte-crumbs-v1.4.1...svelte-crumbs-v1.5.0) (2026-05-28)
 
 
