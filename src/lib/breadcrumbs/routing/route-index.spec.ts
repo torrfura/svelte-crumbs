@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 
 vi.mock('$app/environment', () => ({ dev: false }));
 
-import { RouteIndex, filePathToRouteId, stripGroups } from './route-index.js';
+import { RouteIndex, filePathToRouteId, stripGroups } from './route-index.svelte.js';
 import type { BreadcrumbMeta, BreadcrumbResolver } from '../types.js';
 
 const resolver =
@@ -140,6 +140,34 @@ describe('RouteIndex', () => {
 		expect(index.resolvers.get('/spread')).toBe(spread);
 		expect(index.resolvers.has('/spread/[...operator]')).toBe(true);
 		expect(index.resolvers.has('/extra')).toBe(true);
+	});
+
+	it('returns null from loadPending once everything requested has settled', async () => {
+		const products = loaderOf(resolver('Products'));
+		const index = new RouteIndex({ '/src/routes/products/+page.svelte': products });
+
+		expect(index.loadPending(['/products'])).not.toBeNull();
+		await index.ensureLoaded(['/products']);
+
+		// Warm path must be detectable synchronously — this is what lets
+		// getCrumbs skip its await and keep resolver reads tracked.
+		expect(index.loadPending(['/products'])).toBeNull();
+		expect(index.loadPending(['/missing'])).toBeNull();
+		expect(index.loadPending()).toBeNull();
+	});
+
+	it('leaves version bumps to the consumer — loads never bump, bump() does', async () => {
+		const index = new RouteIndex({
+			'/src/routes/products/+page.svelte': loaderOf(resolver('Products'))
+		});
+
+		expect(index.version).toBe(0);
+		// Loads must NOT invalidate from inside the awaited promise — the
+		// consumer bumps from its own continuation after awaiting.
+		await index.ensureLoaded(['/products']);
+		expect(index.version).toBe(0);
+		index.bump();
+		expect(index.version).toBe(1);
 	});
 
 	it('isolates a throwing loader and keeps the rest', async () => {

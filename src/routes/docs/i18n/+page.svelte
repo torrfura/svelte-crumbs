@@ -24,13 +24,14 @@
 		>/sv/products/42</code
 	>
 	from the route <code class="rounded bg-(--color-code-bg) px-1 text-sm">/products/[id]</code> — the
-	locale prefix exists in the URL but not in the route id, so the pathname and the route no longer line
-	up segment by segment. Pass
-	<code class="rounded bg-(--color-code-bg) px-1 text-sm">transformPath</code> to strip the prefix
-	before matching:
+	locale prefix exists in the URL but not in the route id, so the pathname and the route no longer
+	line up segment by segment. Pass
+	<code class="rounded bg-(--color-code-bg) px-1 text-sm">transformPath</code> to strip the prefix before
+	matching:
 </p>
 <CodeBlock
 	lang="svelte"
+	raw
 	code={`<` +
 		`script lang="ts">
   import { getCrumbs } from 'svelte-crumbs';
@@ -69,8 +70,9 @@
 <p class="text-(--color-text-secondary)">
 	<code class="rounded bg-(--color-code-bg) px-1 text-sm">transformPath</code> gets the same error
 	isolation as resolvers: if it throws, the error is logged and the untransformed pathname is used,
-	so a broken transform degrades the trail instead of breaking the page. A falsy return value
-	(<code class="rounded bg-(--color-code-bg) px-1 text-sm">''</code>) is normalized to
+	so a broken transform degrades the trail instead of breaking the page. A falsy return value (<code
+		class="rounded bg-(--color-code-bg) px-1 text-sm">''</code
+	>) is normalized to
 	<code class="rounded bg-(--color-code-bg) px-1 text-sm">'/'</code>, and a missing leading slash is
 	added for you.
 </p>
@@ -81,12 +83,12 @@
 		class="rounded bg-(--color-code-bg) px-1 text-sm">/i18n/[[lang]]</code
 	>
 	— no options are needed: optional parameters work out of the box. The walk knows a
-	<code class="rounded bg-(--color-code-bg) px-1 text-sm">[[lang]]</code> segment consumes zero or one
-	pathname segments (it checks
+	<code class="rounded bg-(--color-code-bg) px-1 text-sm">[[lang]]</code> segment consumes zero or
+	one pathname segments (it checks
 	<code class="rounded bg-(--color-code-bg) px-1 text-sm">page.params</code>), so both
 	<code class="rounded bg-(--color-code-bg) px-1 text-sm">/i18n</code> and
-	<code class="rounded bg-(--color-code-bg) px-1 text-sm">/i18n/sv</code> produce a correct trail. The
-	resolver reads
+	<code class="rounded bg-(--color-code-bg) px-1 text-sm">/i18n/sv</code> produce a correct trail.
+	The resolver reads
 	<code class="rounded bg-(--color-code-bg) px-1 text-sm">page.params.lang</code> to pick a translated
 	label:
 </p>

@@ -66,6 +66,8 @@ const config = {
 
 No `{#await}` blocks needed. Breadcrumbs resolve during SSR and update reactively on client navigation. You can also inline it: `{#each await getCrumbs() as crumb}`.
 
+> **Don't wrap the trail in a `<svelte:boundary>` with a `pending` snippet** if you want server-rendered crumbs — the server renders the pending snippet instead of awaiting, so the crumbs drop out of the initial HTML. Top-level `await getCrumbs()` in a layout needs no boundary.
+
 ### Rendering without the flag
 
 If you'd rather not enable `compilerOptions.experimental.async`, use a plain `{#await}` block:

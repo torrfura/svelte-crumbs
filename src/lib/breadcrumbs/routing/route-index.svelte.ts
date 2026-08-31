@@ -8,6 +8,7 @@ type IndexEntry = {
 	filePath: string;
 	loader: () => Promise<unknown>;
 	promise?: Promise<void>;
+	loaded?: boolean;
 };
 
 const GROUP_RE = /\/\(.*?\)/g;
@@ -41,22 +42,38 @@ function normalizeKey(key: string): string {
  * Lazy breadcrumb registry keyed by route id.
  *
  * Construction is synchronous — only the glob KEYS are needed to map file
- * paths to route ids. Page modules load on demand: `ensureLoaded(routeIds)`
- * awaits only the loaders whose route id is on the current path, each at most
- * once. Loaded modules register their resolvers into `resolvers`, keyed by
- * route id (function form) or normalized `{ routes }` key.
+ * paths to route ids. Page modules load on demand: `loadPending(routeIds)`
+ * returns a promise for the loaders whose route id is on the current path
+ * (each loads at most once), or `null` when everything needed has already
+ * settled — the null case lets callers stay fully synchronous, which is what
+ * keeps resolver-internal reactive reads (e.g. remote queries) tracked by the
+ * consuming derived.
+ *
+ * `version` is reactive state bumped whenever a module finishes registering.
+ * A caller that reads it before resolving is re-run by Svelte once a cold
+ * load lands, and that re-run takes the synchronous path.
  */
 export class RouteIndex {
+	// Deliberately plain Maps, not SvelteMap: per-entry reactivity is unwanted
+	// overhead — all invalidation flows through the single `version` signal.
+	// eslint-disable-next-line svelte/prefer-svelte-reactivity
 	#entries = new Map<string, IndexEntry>();
-	#all?: Promise<void>;
 
 	/** Registered resolvers: route-id keys and concrete-pathname keys share one namespace. */
+	// eslint-disable-next-line svelte/prefer-svelte-reactivity
 	readonly resolvers = new Map<string, BreadcrumbResolver>();
+
+	version = $state(0);
 
 	constructor(modules: ModuleRecord, routesPrefix = '/src/routes') {
 		for (const [filePath, loader] of Object.entries(modules)) {
 			this.#entries.set(filePathToRouteId(filePath, routesPrefix), { filePath, loader });
 		}
+	}
+
+	/** Reactive read of the index version — call in a tracked (pre-await) context. */
+	track(): void {
+		void this.version;
 	}
 
 	#register(key: string, resolver: BreadcrumbResolver, filePath: string): void {
@@ -70,41 +87,56 @@ export class RouteIndex {
 
 	#load(entry: IndexEntry, routeId: string): Promise<void> {
 		return (entry.promise ??= (async () => {
-			let meta: BreadcrumbMeta | undefined;
 			try {
-				meta = (await entry.loader()) as BreadcrumbMeta | undefined;
+				const meta = (await entry.loader()) as BreadcrumbMeta | undefined;
+				if (!meta) return;
+				if (typeof meta === 'function') {
+					this.#register(routeId, meta, entry.filePath);
+				} else {
+					for (const [key, resolver] of Object.entries(meta.routes)) {
+						this.#register(normalizeKey(key), resolver, entry.filePath);
+					}
+				}
 			} catch (err) {
 				console.warn(`[svelte-crumbs] failed to load breadcrumb from "${entry.filePath}":`, err);
-				return;
-			}
-			if (!meta) return;
-			if (typeof meta === 'function') {
-				this.#register(routeId, meta, entry.filePath);
-			} else {
-				for (const [key, resolver] of Object.entries(meta.routes)) {
-					this.#register(normalizeKey(key), resolver, entry.filePath);
-				}
+			} finally {
+				entry.loaded = true;
 			}
 		})());
 	}
 
 	/**
-	 * Loads the page modules for the given route ids (or every module when
-	 * called without arguments — the `eager` path). Each module loads at most
-	 * once; repeat calls resolve from the memoized promise.
+	 * Bumps the reactive version. Called by consumers AFTER awaiting a cold
+	 * load — in their own continuation, not inside the awaited promise — so
+	 * the invalidation lands once the load has fully settled.
 	 */
-	ensureLoaded(routeIds?: string[]): Promise<void> {
-		if (!routeIds) {
-			return (this.#all ??= Promise.all(
-				Array.from(this.#entries, ([routeId, entry]) => this.#load(entry, routeId))
-			).then(() => {}));
-		}
+	bump(): void {
+		this.version++;
+	}
+
+	/**
+	 * Returns a promise for the not-yet-settled loaders among the given route
+	 * ids (or ALL modules when called without arguments — the `eager` path),
+	 * or `null` when nothing needs loading. Each module loads at most once.
+	 */
+	loadPending(routeIds?: string[]): Promise<void> | null {
 		const pending: Promise<void>[] = [];
-		for (const id of routeIds) {
-			const entry = this.#entries.get(id);
-			if (entry) pending.push(this.#load(entry, id));
+		if (!routeIds) {
+			for (const [routeId, entry] of this.#entries) {
+				if (!entry.loaded) pending.push(this.#load(entry, routeId));
+			}
+		} else {
+			for (const id of routeIds) {
+				const entry = this.#entries.get(id);
+				if (entry && !entry.loaded) pending.push(this.#load(entry, id));
+			}
 		}
-		return Promise.all(pending).then(() => {});
+		return pending.length ? Promise.all(pending).then(() => {}) : null;
+	}
+
+	/** Promise-returning convenience over `loadPending` — mainly for tests. */
+	ensureLoaded(routeIds?: string[]): Promise<void> {
+		return this.loadPending(routeIds) ?? Promise.resolve();
 	}
 }
 

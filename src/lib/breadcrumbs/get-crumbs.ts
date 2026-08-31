@@ -1,7 +1,7 @@
 import { page } from '$app/state';
 import { base } from '$app/paths';
 import type { Page } from '@sveltejs/kit';
-import { getRouteIndex, stripGroups } from './routing/route-index.js';
+import { getRouteIndex, stripGroups } from './routing/route-index.svelte.js';
 import { walkRoute } from './routing/route-walk.js';
 import type {
 	Breadcrumb,
@@ -137,9 +137,14 @@ async function resolveCrumbs(
 export async function getCrumbs(options: GetCrumbsOptions = {}): Promise<Breadcrumb[]> {
 	const index = getRouteIndex(options.modules, options.routesPrefix);
 
-	// All `page` reads MUST stay before the first await: on the server, `page`
+	// All reactive reads MUST stay before the first await: on the server, `page`
 	// is only readable while rendering, and in the consuming async derived only
 	// synchronous reads are guaranteed to be tracked across environments.
+	// `track()` subscribes to the index version so a cold module load re-runs
+	// the consumer once registration lands — and that re-run takes the fully
+	// synchronous path below, which keeps reactive reads INSIDE resolvers
+	// (remote queries, $state) tracked as well.
+	index.track();
 	const routeId = page.route.id;
 	const path = transformPathname(stripBase(page.url.pathname), page.url, options.transformPath);
 	const snap = snapshotPage(page, options.include ?? [], path);
@@ -148,7 +153,16 @@ export async function getCrumbs(options: GetCrumbsOptions = {}): Promise<Breadcr
 	if (routeId === null) return [];
 
 	const levels = walkRoute(stripGroups(routeId), path, snap.params, options.restCrumbs);
-	await index.ensureLoaded(options.eager ? undefined : levels.map((l) => l.routeId));
+
+	// Await ONLY when something actually needs loading. When everything on the
+	// path is warm this stays synchronous through to the resolver calls.
+	const pending = index.loadPending(options.eager ? undefined : levels.map((l) => l.routeId));
+	if (pending) {
+		await pending;
+		// Invalidate from our own continuation (mirrors v1's `loaded` flag):
+		// the consuming derived re-runs and takes the synchronous path.
+		index.bump();
+	}
 
 	// Concrete-pathname keys win over route-id keys at the same level; deeper
 	// levels sharing a URL (absent optional params, zero-segment rest) win

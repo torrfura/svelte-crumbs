@@ -127,7 +127,15 @@ test.describe('Client-side reactivity', () => {
 });
 
 test.describe('No Svelte runtime warnings', () => {
-	const routes = ['/', '/products', '/products/42', '/docs', '/docs/internals', '/i18n', '/i18n/sv'];
+	const routes = [
+		'/',
+		'/products',
+		'/products/42',
+		'/docs',
+		'/docs/internals',
+		'/i18n',
+		'/i18n/sv'
+	];
 
 	for (const route of routes) {
 		test(`no hydration or waterfall warnings on ${route}`, async ({ page }) => {

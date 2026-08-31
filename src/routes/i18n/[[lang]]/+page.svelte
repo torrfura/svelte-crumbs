@@ -27,8 +27,8 @@
 	the locale is an <em>optional</em> route parameter, so the same page serves both
 	<code class="rounded bg-(--color-code-bg) px-1 text-sm">/i18n</code> and
 	<code class="rounded bg-(--color-code-bg) px-1 text-sm">/i18n/sv</code>. The breadcrumb resolver
-	reads <code class="rounded bg-(--color-code-bg) px-1 text-sm">page.params.lang</code> to pick a
-	translated label — no options needed.
+	reads <code class="rounded bg-(--color-code-bg) px-1 text-sm">page.params.lang</code> to pick a translated
+	label — no options needed.
 </p>
 
 <h3 class="mt-6 text-base font-semibold text-(--color-text-primary)">Try both languages</h3>
@@ -63,8 +63,8 @@
 	When the param is absent the crumb still resolves — a <code
 		class="rounded bg-(--color-code-bg) px-1 text-sm">[[lang]]</code
 	>
-	segment consumes zero or one URL segments, and the crumb's URL is the concrete pathname either way, so
-	the trail keeps pointing at the language you are on.
+	segment consumes zero or one URL segments, and the crumb's URL is the concrete pathname either way,
+	so the trail keeps pointing at the language you are on.
 </p>
 <CodeBlock
 	code={`const labels: Record<string, string> = {
