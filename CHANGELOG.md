@@ -1,5 +1,12 @@
 # svelte-crumbs
 
+## [2.0.1](https://github.com/torrfura/svelte-crumbs/compare/svelte-crumbs-v2.0.0...svelte-crumbs-v2.0.1) (2026-08-31)
+
+
+### Bug Fixes
+
+* resolve base path through resolve() so SvelteKit 3 works ([#24](https://github.com/torrfura/svelte-crumbs/issues/24)) ([fb3acc0](https://github.com/torrfura/svelte-crumbs/commit/fb3acc0cf004a768dab204ba3eefe6b948eaf88f))
+
 ## [2.0.0](https://github.com/torrfura/svelte-crumbs/compare/svelte-crumbs-v1.6.0...svelte-crumbs-v2.0.0) (2026-08-31)
 
 
