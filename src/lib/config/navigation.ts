@@ -18,7 +18,8 @@ export const navigation: NavSection[] = [
 			{ label: 'Introduction', href: resolve('/') },
 			{ label: 'Installation', href: resolve('/docs/[slug]', { slug: 'getting-started' }) },
 			{ label: 'API Reference', href: resolve('/docs/[slug]', { slug: 'api-reference' }) },
-			{ label: 'How it works', href: resolve('/docs/internals') }
+			{ label: 'How it works', href: resolve('/docs/internals') },
+			{ label: 'i18n', href: resolve('/docs/i18n') }
 		]
 	},
 	{
@@ -41,6 +42,8 @@ export const navigation: NavSection[] = [
 			{ label: 'Optimistic Update', href: resolve('/playground') },
 			// A rest parameter with an empty value resolves to the bare `/spread` path.
 			{ label: 'Dynamic routing', href: resolve('/spread/[...operator]', { operator: '' }) },
+			// An absent optional param resolves to the bare `/i18n` path.
+			{ label: 'i18n / Optional Params', href: resolve('/i18n/[[lang]]', {}) },
 			{ label: 'No Breadcrumb', href: resolve('/about') }
 		]
 	},

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import '../app.css';
-	import { createBreadcrumbs } from '$lib/index.js';
+	import { getCrumbs } from '$lib/index.js';
 	import { initTheme } from '$lib/stores/theme.svelte.js';
 	import TopNav from '$lib/components/top-nav.svelte';
 	import Sidebar from '$lib/components/sidebar.svelte';
@@ -10,8 +10,7 @@
 
 	let { children }: { children: Snippet } = $props();
 
-	const getBreadcrumbs = createBreadcrumbs();
-	const crumbs = $derived(await getBreadcrumbs());
+	const crumbs = $derived(await getCrumbs());
 	let sidebarOpen = $state(false);
 	let animated = $state(true);
 

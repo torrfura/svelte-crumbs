@@ -84,9 +84,8 @@
 					lang="svelte"
 					code={`<` +
 						`script>
-  import { createBreadcrumbs } from 'svelte-crumbs';
-  const getBreadcrumbs = createBreadcrumbs();
-  const crumbs = $derived(await getBreadcrumbs());
+  import { getCrumbs } from 'svelte-crumbs';
+  const crumbs = $derived(await getCrumbs());
 </` +
 						`script>
 
@@ -162,7 +161,7 @@
 <!-- ──────────────────────────── DEEP DIVE LINK ───────────────────────────── -->
 <section class="mt-16 mb-8 rounded-xl border border-dashed border-(--color-border) p-6 text-center">
 	<p class="text-sm text-(--color-text-secondary)">
-		Curious about the internals — module scanning, SSR safety, reactive tracking?
+		Curious about the internals — the route index, lazy loading, SSR safety, reactive tracking?
 	</p>
 	<a
 		href={resolve('/docs/internals')}

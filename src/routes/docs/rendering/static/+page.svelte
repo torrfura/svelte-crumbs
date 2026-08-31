@@ -28,10 +28,9 @@
 	lang="svelte"
 	code={`<` +
 		`script lang="ts">
-  import { createBreadcrumbs } from 'svelte-crumbs';
+  import { getCrumbs } from 'svelte-crumbs';
 
-  const getBreadcrumbs = createBreadcrumbs();
-  const crumbs = $derived(await getBreadcrumbs());
+  const crumbs = $derived(await getCrumbs());
 </` +
 		`script>
 

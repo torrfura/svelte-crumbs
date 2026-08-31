@@ -40,10 +40,9 @@
   import { crossfade, fly } from 'svelte/transition';
   import { flip } from 'svelte/animate';
   import { onMount } from 'svelte';
-  import { createBreadcrumbs } from 'svelte-crumbs';
+  import { getCrumbs } from 'svelte-crumbs';
 
-  const getBreadcrumbs = createBreadcrumbs();
-  const crumbs = $derived(await getBreadcrumbs());
+  const crumbs = $derived(await getCrumbs());
 
   let mounted = $state(false);
   onMount(() => { mounted = true; });
