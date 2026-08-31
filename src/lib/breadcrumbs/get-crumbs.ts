@@ -1,5 +1,5 @@
 import { page } from '$app/state';
-import { base } from '$app/paths';
+import { resolve } from '$app/paths';
 import { browser } from '$app/environment';
 import type { Page } from '@sveltejs/kit';
 import { getRouteIndex, stripGroups } from './routing/route-index.svelte.js';
@@ -13,8 +13,28 @@ import type {
 	PathTransform
 } from './types.js';
 
+/**
+ * `resolve` is typed against the app's generated route ids. The paths handled
+ * here are already-resolved pathnames, so the narrow type gets in the way.
+ */
+const resolvePath = resolve as unknown as (path: string) => string;
+
+/**
+ * Reads `config.kit.paths.base`. SvelteKit 3 removed the `base` export from
+ * `$app/paths`, leaving `resolve('/')` — which is `${base}/`, or `${base}#/`
+ * under hash routing — as the way to recover the value.
+ *
+ * Read on every call rather than cached at module scope: during SSR the base
+ * path is relative to the page being rendered, and a value captured at import
+ * time would be stale.
+ */
+function basePath(): string {
+	return resolvePath('/').replace(/#?\/$/, '');
+}
+
 /** Removes `paths.base` from a pathname so matching runs in route space. */
 function stripBase(pathname: string): string {
+	const base = basePath();
 	if (base && pathname.startsWith(base)) {
 		const rest = pathname.slice(base.length);
 		return rest.startsWith('/') ? rest : `/${rest}`;
@@ -22,10 +42,17 @@ function stripBase(pathname: string): string {
 	return pathname;
 }
 
-/** Re-prepends `paths.base` to a crumb URL so links resolve correctly. */
+/**
+ * Re-prepends `paths.base` to a crumb URL so links resolve correctly, and adds
+ * the `#` marker when the app uses hash routing.
+ *
+ * `resolve` throws on anything that is not an absolute path, so non-absolute
+ * input is passed through instead — a malformed crumb url should degrade the
+ * trail, not break the page, the same way resolver errors are isolated.
+ */
 function withBase(url: string): string {
-	if (!base) return url;
-	return url === '/' ? `${base}/` : base + url;
+	if (!url.startsWith('/')) return url;
+	return resolvePath(url);
 }
 
 /**

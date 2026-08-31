@@ -9,14 +9,15 @@ const { pageMock, pathsMock } = vi.hoisted(() => ({
 		route: { id: '/' as string | null },
 		data: {} as Record<string, unknown>
 	},
-	pathsMock: { base: '' }
+	pathsMock: { base: '', hashRouting: false }
 }));
 
 vi.mock('$app/environment', () => ({ dev: false, browser: false }));
 vi.mock('$app/state', () => ({ page: pageMock }));
+// Mirrors kit's own resolve: `base + (hashRouting ? '#' : '') + path`.
 vi.mock('$app/paths', () => ({
-	get base() {
-		return pathsMock.base;
+	resolve(path: string) {
+		return pathsMock.base + (pathsMock.hashRouting ? '#' : '') + path;
 	}
 }));
 
@@ -26,6 +27,7 @@ beforeEach(() => {
 	pageMock.route = { id: '/' };
 	pageMock.data = {};
 	pathsMock.base = '';
+	pathsMock.hashRouting = false;
 });
 
 type ModuleLoaderMock = Mock<() => Promise<BreadcrumbMeta | undefined>>;
@@ -226,6 +228,23 @@ describe('getCrumbs base path handling', () => {
 		expect(crumbs).toEqual([
 			{ label: 'Home', url: '/app/' },
 			{ label: 'Products', url: '/app/products' }
+		]);
+	});
+
+	it('does not mistake the hash-routing marker for part of the base path', async () => {
+		pathsMock.base = '/app';
+		pathsMock.hashRouting = true;
+		const modules = modulesOf({
+			'/': async () => ({ label: 'Home' }),
+			'/products': async () => ({ label: 'Products' })
+		});
+		visit('/products', '/app/products');
+
+		const crumbs = await getCrumbs({ modules });
+
+		expect(crumbs).toEqual([
+			{ label: 'Home', url: '/app#/' },
+			{ label: 'Products', url: '/app#/products' }
 		]);
 	});
 });
