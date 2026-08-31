@@ -7,6 +7,7 @@
 </script>
 
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import CodeBlock from '$lib/components/code-block.svelte';
 	import BrandMark from '$lib/components/brand-mark.svelte';
 </script>
@@ -23,7 +24,7 @@
 
 	<div class="mt-18 flex flex-wrap items-center justify-center gap-3">
 		<a
-			href="/docs/getting-started"
+			href={resolve('/docs/[slug]', { slug: 'getting-started' })}
 			class="inline-flex items-center gap-2 rounded-lg bg-(--logo-dot) px-5 py-2.5 text-sm font-semibold text-(--color-bg) shadow-sm transition hover:opacity-90"
 		>
 			Get started
@@ -126,21 +127,21 @@
 
 	<div class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
 		<a
-			href="/products/42"
+			href={resolve('/products/[productId]', { productId: '42' })}
 			class="group rounded-xl border border-(--color-border) p-4 transition hover:border-(--logo-primary)"
 		>
 			<div class="text-sm font-mono text-(--color-text-secondary)">/products/42</div>
 			<div class="mt-1 text-sm text-(--color-text-muted)">Dynamic label from load data</div>
 		</a>
 		<a
-			href="/docs/getting-started"
+			href={resolve('/docs/[slug]', { slug: 'getting-started' })}
 			class="group rounded-xl border border-(--color-border) p-4 transition hover:border-(--logo-primary)"
 		>
 			<div class="text-sm font-mono text-(--color-text-secondary)">/docs/getting-started</div>
 			<div class="mt-1 text-sm text-(--color-text-muted)">Remote function resolver</div>
 		</a>
 		<a
-			href="/spread/users/42/settings"
+			href={resolve('/spread/[...operator]', { operator: 'users/42/settings' })}
 			class="group rounded-xl border border-(--color-border) p-4 transition hover:border-(--logo-primary)"
 		>
 			<div class="text-sm font-mono text-(--color-text-secondary)">/spread/users/42/settings</div>
@@ -149,7 +150,7 @@
 			</div>
 		</a>
 		<a
-			href="/playground"
+			href={resolve('/playground')}
 			class="group rounded-xl border border-(--color-border) p-4 transition hover:border-(--logo-primary)"
 		>
 			<div class="text-sm font-mono text-(--color-text-secondary)">/playground</div>
@@ -164,7 +165,7 @@
 		Curious about the internals — module scanning, SSR safety, reactive tracking?
 	</p>
 	<a
-		href="/docs/internals"
+		href={resolve('/docs/internals')}
 		class="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-(--color-accent) hover:underline"
 	>
 		Read how it works

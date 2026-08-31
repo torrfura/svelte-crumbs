@@ -30,15 +30,14 @@
 >
 	<nav class="flex flex-col h-full">
 		<div class="flex-1">
-			{#each navigation as section}
+			{#each navigation as section (section.title)}
 				<div class="mb-6">
 					<h4 class="mb-2 text-xs font-semibold tracking-wider text-(--color-text-muted) uppercase">
 						{section.title}
 					</h4>
 					<ul class="space-y-1">
-						{#each section.items as item}
+						{#each section.items as item (item.href)}
 							<li>
-								<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 								<a
 									href={item.href}
 									onclick={onClose}
