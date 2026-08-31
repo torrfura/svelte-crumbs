@@ -22,7 +22,7 @@
 	<p class="mt-1 text-(--color-text-secondary)">
 		Install <code class="rounded bg-(--color-code-bg) px-1 text-sm">svelte-crumbs</code> as a dependency:
 	</p>
-	<CodeBlock lang="bash" raw code={`pnpm install svelte-crumbs`} />
+	<CodeBlock lang="bash" raw code="pnpm install svelte-crumbs" />
 	<h3 class="mt-6 text-lg font-semibold text-(--color-text-primary)">Root layout</h3>
 	<p class="mt-1 text-(--color-text-secondary)">
 		Call <code class="rounded bg-(--color-code-bg) px-1 text-sm">createBreadcrumbs()</code> once in your

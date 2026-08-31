@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import { toggleTheme, getTheme } from '$lib/stores/theme.svelte.js';
 	import Breadcrumbs from '$lib/components/breadcrumbs.svelte';
 	import type { Breadcrumb } from '$lib/breadcrumbs/types.js';
@@ -40,9 +41,8 @@
 				<line x1="3" y1="18" x2="21" y2="18" />
 			</svg>
 		</button>
-		<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 		<a
-			href="/"
+			href={resolve('/')}
 			class="flex items-center [&_svg]:h-12 [&_svg]:w-auto [&_svg]:rounded-md"
 			aria-label="svelte-crumbs home"
 		>

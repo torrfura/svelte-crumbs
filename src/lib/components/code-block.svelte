@@ -27,5 +27,7 @@
 </script>
 
 <div class="mt-4 overflow-x-auto rounded-lg border border-(--color-border) text-sm [&_pre]:p-4">
+	<!-- Shiki markup, generated from repo-authored samples — never user input. -->
+	<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 	{@html html}
 </div>

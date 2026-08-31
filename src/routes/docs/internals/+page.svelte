@@ -7,6 +7,7 @@
 </script>
 
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import CodeBlock from '$lib/components/code-block.svelte';
 </script>
 
@@ -154,7 +155,10 @@
 <p class="text-(--color-text-secondary)">
 	Read the label from <code class="rounded bg-(--color-code-bg) px-1 text-sm">page.data</code>
 	populated by a layout's load function. See
-	<a href="/products/42" class="text-(--color-accent) hover:underline">Product #42</a>.
+	<a
+		href={resolve('/products/[productId]', { productId: '42' })}
+		class="text-(--color-accent) hover:underline">Product #42</a
+	>.
 </p>
 <CodeBlock
 	code={`export const breadcrumb: BreadcrumbMeta = async (page) => ({
@@ -180,7 +184,7 @@ export const breadcrumb: BreadcrumbMeta = async (page) => ({
 	<code class="rounded bg-(--color-code-bg) px-1 text-sm">command</code> +
 	<code class="rounded bg-(--color-code-bg) px-1 text-sm">.withOverride()</code> for instant
 	client-side updates — no round-trip. See
-	<a href="/playground" class="text-(--color-accent) hover:underline">Playground</a>.
+	<a href={resolve('/playground')} class="text-(--color-accent) hover:underline">Playground</a>.
 </p>
 <CodeBlock
 	code={`export const breadcrumb: BreadcrumbMeta = async () => ({
@@ -198,7 +202,9 @@ setNickname(value).updates(getNickname().withOverride(() => value));`}
 	<code class="rounded bg-(--color-code-bg) px-1 text-sm">[...rest]</code> page. The second argument
 	(<code class="rounded bg-(--color-code-bg) px-1 text-sm">url</code>) is the breadcrumb's own path,
 	not the full URL. See
-	<a href="/spread/users/42/settings" class="text-(--color-accent) hover:underline">Spread routes</a
+	<a
+		href={resolve('/spread/[...operator]', { operator: 'users/42/settings' })}
+		class="text-(--color-accent) hover:underline">Spread routes</a
 	>.
 </p>
 <CodeBlock
@@ -215,7 +221,7 @@ setNickname(value).updates(getNickname().withOverride(() => value));`}
 <h3 class="text-(--color-text-primary)">No breadcrumb</h3>
 <p class="text-(--color-text-secondary)">
 	Omit the export entirely — the route is silently skipped in the breadcrumb trail. See <a
-		href="/about"
+		href={resolve('/about')}
 		class="text-(--color-accent) hover:underline">About</a
 	>.
 </p>

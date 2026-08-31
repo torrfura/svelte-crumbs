@@ -1,6 +1,9 @@
+import { resolve } from '$app/paths';
+import type { ResolvedPathname } from '$app/types';
+
 export interface NavItem {
 	label: string;
-	href: string;
+	href: ResolvedPathname;
 }
 
 export interface NavSection {
@@ -12,37 +15,41 @@ export const navigation: NavSection[] = [
 	{
 		title: 'Getting Started',
 		items: [
-			{ label: 'Introduction', href: '/' },
-			{ label: 'Installation', href: '/docs/getting-started' },
-			{ label: 'API Reference', href: '/docs/api-reference' },
-			{ label: 'How it works', href: '/docs/internals' }
+			{ label: 'Introduction', href: resolve('/') },
+			{ label: 'Installation', href: resolve('/docs/[slug]', { slug: 'getting-started' }) },
+			{ label: 'API Reference', href: resolve('/docs/[slug]', { slug: 'api-reference' }) },
+			{ label: 'How it works', href: resolve('/docs/internals') }
 		]
 	},
 	{
 		title: 'Rendering',
 		items: [
-			{ label: 'Animated', href: '/docs/rendering/animated' },
-			{ label: 'Static', href: '/docs/rendering/static' }
+			{ label: 'Animated', href: resolve('/docs/rendering/animated') },
+			{ label: 'Static', href: resolve('/docs/rendering/static') }
 		]
 	},
 	{
 		title: 'Patterns',
 		items: [
-			{ label: 'Static Label', href: '/products' },
-			{ label: 'Dynamic from Load Data', href: '/products/42' },
-			{ label: 'Nested Static', href: '/products/42/edit' },
-			{ label: 'Remote Function', href: '/docs/getting-started' },
-			{ label: 'Optimistic Update', href: '/playground' },
-			{ label: 'Dynamic routing', href: '/spread' },
-			{ label: 'No Breadcrumb', href: '/about' }
+			{ label: 'Static Label', href: resolve('/products') },
+			{
+				label: 'Dynamic from Load Data',
+				href: resolve('/products/[productId]', { productId: '42' })
+			},
+			{ label: 'Nested Static', href: resolve('/products/[productId]/edit', { productId: '42' }) },
+			{ label: 'Remote Function', href: resolve('/docs/[slug]', { slug: 'getting-started' }) },
+			{ label: 'Optimistic Update', href: resolve('/playground') },
+			// A rest parameter with an empty value resolves to the bare `/spread` path.
+			{ label: 'Dynamic routing', href: resolve('/spread/[...operator]', { operator: '' }) },
+			{ label: 'No Breadcrumb', href: resolve('/about') }
 		]
 	},
 	{
 		title: 'Examples',
 		items: [
-			{ label: 'Products', href: '/products' },
-			{ label: 'Documentation', href: '/docs' },
-			{ label: 'Reactive Updates', href: '/playground' }
+			{ label: 'Products', href: resolve('/products') },
+			{ label: 'Documentation', href: resolve('/docs') },
+			{ label: 'Reactive Updates', href: resolve('/playground') }
 		]
 	}
 ];

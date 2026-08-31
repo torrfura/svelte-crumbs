@@ -7,6 +7,7 @@
 </script>
 
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import CodeBlock from '$lib/components/code-block.svelte';
 
 	let { data } = $props();
@@ -15,8 +16,9 @@
 <h1 class="text-2xl font-bold text-(--color-text-primary)">{data.product.name}</h1>
 <p class="mt-2 text-(--color-text-secondary)">Product ID: {data.product.id}</p>
 <p class="mt-2">
-	<a href="/products/{data.product.id}/edit" class="text-(--color-accent) hover:underline"
-		>Edit this product</a
+	<a
+		href={resolve('/products/[productId]/edit', { productId: data.product.id })}
+		class="text-(--color-accent) hover:underline">Edit this product</a
 	>
 </p>
 

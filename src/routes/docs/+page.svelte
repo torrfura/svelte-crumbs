@@ -7,17 +7,23 @@
 </script>
 
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import CodeBlock from '$lib/components/code-block.svelte';
 </script>
 
 <h1 class="text-2xl font-bold text-(--color-text-primary)">Documentation</h1>
 <ul class="mt-4 space-y-1">
 	<li>
-		<a href="/docs/getting-started" class="text-(--color-accent) hover:underline">Getting Started</a
+		<a
+			href={resolve('/docs/[slug]', { slug: 'getting-started' })}
+			class="text-(--color-accent) hover:underline">Getting Started</a
 		>
 	</li>
 	<li>
-		<a href="/docs/api-reference" class="text-(--color-accent) hover:underline">API Reference</a>
+		<a
+			href={resolve('/docs/[slug]', { slug: 'api-reference' })}
+			class="text-(--color-accent) hover:underline">API Reference</a
+		>
 	</li>
 </ul>
 
