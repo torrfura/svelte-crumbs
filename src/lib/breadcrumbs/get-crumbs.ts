@@ -1,6 +1,6 @@
 import { page } from '$app/state';
 import { resolve } from '$app/paths';
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import type { Page } from '@sveltejs/kit';
 import { getRouteIndex, stripGroups } from './routing/route-index.svelte.js';
 import { walkRoute } from './routing/route-walk.js';
