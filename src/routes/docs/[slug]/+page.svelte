@@ -24,18 +24,18 @@
 	<CodeBlock lang="bash" raw code="pnpm install svelte-crumbs" />
 	<h3 class="mt-6 text-lg font-semibold text-(--color-text-primary)">Root layout</h3>
 	<p class="mt-1 text-(--color-text-secondary)">
-		Call <code class="rounded bg-(--color-code-bg) px-1 text-sm">createBreadcrumbs()</code> once in your
-		root layout. It scans your pages and returns a reactive array of crumbs for the current route.
+		Call <code class="rounded bg-(--color-code-bg) px-1 text-sm">getCrumbs()</code> in your root layout.
+		It matches the current route against your pages and returns the resolved breadcrumb trail as a reactive
+		array.
 	</p>
 	<CodeBlock
 		lang="svelte"
 		raw
 		code={`<` +
 			`script lang="ts">
-  import { createBreadcrumbs } from 'svelte-crumbs';
+  import { getCrumbs } from 'svelte-crumbs';
 
-  const getBreadcrumbs = createBreadcrumbs();
-  const crumbs = $derived(await getBreadcrumbs());
+  const crumbs = $derived(await getCrumbs());
 </` +
 			`script>`}
 	/>
