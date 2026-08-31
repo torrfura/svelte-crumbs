@@ -41,6 +41,11 @@
 	});
 </script>
 
+<!--
+	`crumb.url` is a prefix of `page.url.pathname`, so it already carries the app's
+	base path. Passing it through `resolve()` would prefix the base a second time.
+-->
+<!-- eslint-disable svelte/no-navigation-without-resolve -->
 {#if animated}
 	<nav
 		aria-label="Breadcrumbs"
@@ -86,7 +91,6 @@
 				<Icon />
 			{/if}
 			{#if i < crumbs.length - 1 || crumbs.length === 1}
-				<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 				<a
 					href={crumb.url}
 					class="text-(--color-text-secondary) hover:text-(--color-text-primary) hover:underline"

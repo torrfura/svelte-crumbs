@@ -1,7 +1,3 @@
-<script lang="ts">
-	import CodeBlock from '$lib/components/code-block.svelte';
-</script>
-
 <h1 class="text-2xl font-bold text-(--color-text-primary)">About</h1>
 <p class="mt-2 text-(--color-text-secondary)">
 	This page has no breadcrumb export, demonstrating gap handling.

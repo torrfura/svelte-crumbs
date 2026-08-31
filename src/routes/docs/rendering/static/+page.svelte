@@ -15,7 +15,7 @@
 	svelte-crumbs is headless — it gives you a reactive
 	<code class="rounded bg-(--color-code-bg) px-1 text-sm">crumbs</code> array and leaves rendering
 	entirely up to you. The simplest approach is a plain
-	<code class="rounded bg-(--color-code-bg) px-1 text-sm">{'{'}#each{'}'}</code> loop with no transitions.
+	<code class="rounded bg-(--color-code-bg) px-1 text-sm">&#123;#each&#125;</code> loop with no transitions.
 	Toggle "Animate breadcrumbs" in the sidebar to compare with the animated version.
 </p>
 

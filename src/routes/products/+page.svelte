@@ -7,13 +7,24 @@
 </script>
 
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import CodeBlock from '$lib/components/code-block.svelte';
 </script>
 
 <h1 class="text-2xl font-bold text-(--color-text-primary)">Products</h1>
 <ul class="mt-4 space-y-1">
-	<li><a href="/products/42" class="text-(--color-accent) hover:underline">Product #42</a></li>
-	<li><a href="/products/99" class="text-(--color-accent) hover:underline">Product #99</a></li>
+	<li>
+		<a
+			href={resolve('/products/[productId]', { productId: '42' })}
+			class="text-(--color-accent) hover:underline">Product #42</a
+		>
+	</li>
+	<li>
+		<a
+			href={resolve('/products/[productId]', { productId: '99' })}
+			class="text-(--color-accent) hover:underline">Product #99</a
+		>
+	</li>
 </ul>
 
 <h2 class="mt-8 text-lg font-semibold text-(--color-text-primary)">Static breadcrumb</h2>

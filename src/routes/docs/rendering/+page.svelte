@@ -6,6 +6,10 @@
 	});
 </script>
 
+<script lang="ts">
+	import { resolve } from '$app/paths';
+</script>
+
 <h1 class="text-2xl font-bold text-(--color-text-primary)">Rendering</h1>
 <p class="mt-2 text-(--color-text-secondary)">
 	svelte-crumbs is a headless library — it resolves breadcrumb data into a reactive array and leaves
@@ -15,13 +19,17 @@
 
 <ul class="mt-4 space-y-2">
 	<li>
-		<a href="/docs/rendering/animated" class="text-(--color-accent) hover:underline">Animated</a>
+		<a href={resolve('/docs/rendering/animated')} class="text-(--color-accent) hover:underline"
+			>Animated</a
+		>
 		<span class="text-(--color-text-muted)"
 			>— smooth crossfade + flip transitions between navigation states</span
 		>
 	</li>
 	<li>
-		<a href="/docs/rendering/static" class="text-(--color-accent) hover:underline">Static</a>
+		<a href={resolve('/docs/rendering/static')} class="text-(--color-accent) hover:underline"
+			>Static</a
+		>
 		<span class="text-(--color-text-muted)"
 			>— simple flex row, no transitions, fully customizable markup</span
 		>

@@ -14,6 +14,7 @@
 
 <script lang="ts">
 	import { page } from '$app/state';
+	import { resolve } from '$app/paths';
 	import CodeBlock from '$lib/components/code-block.svelte';
 
 	const segments = $derived((page.params.operator ?? '').split('/').filter(Boolean));
@@ -27,14 +28,28 @@
 
 <h3 class="mt-6 text-base font-semibold text-(--color-text-primary)">Try these routes</h3>
 <ul class="mt-4 space-y-1">
-	<li><a href="/spread" class="text-(--color-accent) hover:underline">/spread</a></li>
-	<li><a href="/spread/users" class="text-(--color-accent) hover:underline">/spread/users</a></li>
 	<li>
-		<a href="/spread/users/42" class="text-(--color-accent) hover:underline">/spread/users/42</a>
+		<a
+			href={resolve('/spread/[...operator]', { operator: '' })}
+			class="text-(--color-accent) hover:underline">/spread</a
+		>
 	</li>
 	<li>
-		<a href="/spread/users/42/settings" class="text-(--color-accent) hover:underline"
-			>/spread/users/42/settings</a
+		<a
+			href={resolve('/spread/[...operator]', { operator: 'users' })}
+			class="text-(--color-accent) hover:underline">/spread/users</a
+		>
+	</li>
+	<li>
+		<a
+			href={resolve('/spread/[...operator]', { operator: 'users/42' })}
+			class="text-(--color-accent) hover:underline">/spread/users/42</a
+		>
+	</li>
+	<li>
+		<a
+			href={resolve('/spread/[...operator]', { operator: 'users/42/settings' })}
+			class="text-(--color-accent) hover:underline">/spread/users/42/settings</a
 		>
 	</li>
 </ul>
