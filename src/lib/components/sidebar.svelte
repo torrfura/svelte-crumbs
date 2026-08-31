@@ -24,7 +24,7 @@
 {/if}
 
 <aside
-	class="fixed top-20 bottom-0 z-50 w-64 overflow-y-auto border-r border-(--color-border) bg-(--color-bg-sidebar) p-4 transition-transform duration-200 lg:z-30 lg:translate-x-0"
+	class="fixed top-16 bottom-0 z-50 w-64 overflow-y-auto border-r border-(--color-border) bg-(--color-bg-sidebar) p-4 transition-transform duration-200 lg:z-30 lg:translate-x-0"
 	class:max-lg:-translate-x-full={!open}
 	class:max-lg:translate-x-0={open}
 >
@@ -32,7 +32,9 @@
 		<div class="flex-1">
 			{#each navigation as section (section.title)}
 				<div class="mb-6">
-					<h4 class="mb-2 text-xs font-semibold tracking-wider text-(--color-text-muted) uppercase">
+					<h4
+						class="mb-2 font-mono text-[11px] tracking-[0.14em] text-(--color-text-muted) uppercase"
+					>
 						{section.title}
 					</h4>
 					<ul class="space-y-1">

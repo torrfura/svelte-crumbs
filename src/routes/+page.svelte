@@ -9,166 +9,183 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import CodeBlock from '$lib/components/code-block.svelte';
-	import BrandMark from '$lib/components/brand-mark.svelte';
-</script>
 
-<!-- ────────────────────────────────── HERO ────────────────────────────────── -->
-<section class="mx-auto flex flex-col items-center pt-12 pb-16 text-center">
-	<BrandMark />
-
-	<p class="mt-20 max-w-xl text-lg text-(--color-text-secondary)">
-		Automatic, SSR-ready breadcrumbs for SvelteKit.
-		<br />
-		<span class="text-(--color-text-muted)">Zero config. Async-aware. Fully reactive.</span>
-	</p>
-
-	<div class="mt-18 flex flex-wrap items-center justify-center gap-3">
-		<a
-			href={resolve('/docs/[slug]', { slug: 'getting-started' })}
-			class="inline-flex items-center gap-2 rounded-lg bg-(--logo-dot) px-5 py-2.5 text-sm font-semibold text-(--color-bg) shadow-sm transition hover:opacity-90"
-		>
-			Get started
-			<span aria-hidden="true">→</span>
-		</a>
-		<a
-			href="https://github.com/torrfura/svelte-crumbs"
-			target="_blank"
-			rel="noopener noreferrer"
-			class="inline-flex items-center gap-2 rounded-lg border border-(--color-border) px-5 py-2.5 text-sm font-semibold text-(--color-text-primary) transition hover:bg-(--color-code-bg)"
-		>
-			GitHub
-		</a>
-	</div>
-</section>
-
-<!-- ────────────────────────────── FEATURE CARDS ────────────────────────────── -->
-<section class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-	<div class="rounded-xl border border-(--color-border) p-5">
-		<div class="text-2xl">🪄</div>
-		<h3 class="mt-3 text-base font-semibold text-(--color-text-primary)">Zero config</h3>
-		<p class="mt-1 text-sm text-(--color-text-secondary)">
-			Drop in, export a <code class="rounded bg-(--color-code-bg) px-1 text-xs">breadcrumb</code> from
-			any page, and you're done.
-		</p>
-	</div>
-	<div class="rounded-xl border border-(--color-border) p-5">
-		<div class="text-2xl">⚡</div>
-		<h3 class="mt-3 text-base font-semibold text-(--color-text-primary)">SSR-ready</h3>
-		<p class="mt-1 text-sm text-(--color-text-secondary)">
-			Resolves during top-level <code class="rounded bg-(--color-code-bg) px-1 text-xs">await</code
-			>. No
-			<code class="rounded bg-(--color-code-bg) px-1 text-xs">{`{#await}`}</code> blocks, no flashes.
-		</p>
-	</div>
-	<div class="rounded-xl border border-(--color-border) p-5">
-		<div class="text-2xl">🔁</div>
-		<h3 class="mt-3 text-base font-semibold text-(--color-text-primary)">Reactive</h3>
-		<p class="mt-1 text-sm text-(--color-text-secondary)">
-			Async resolvers, remote functions, optimistic queries — all tracked.
-		</p>
-	</div>
-</section>
-
-<!-- ───────────────────────────── 30-SECOND DEMO ──────────────────────────── -->
-<section class="mt-28">
-	<h2 class="text-xl font-semibold text-(--color-text-primary)">In 30 seconds</h2>
-	<p class="mt-2 text-(--color-text-secondary)">One line in your layout. One export per page.</p>
-
-	<div class="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
-		<div>
-			<div class="text-xs font-semibold tracking-wide text-(--color-text-muted) uppercase">
-				+layout.svelte
-			</div>
-			<div class="mt-1">
-				<CodeBlock
-					lang="svelte"
-					code={`<` +
-						`script>
+	const layoutSnippet =
+		`<` +
+		`script lang="ts">
   import { createBreadcrumbs } from 'svelte-crumbs';
-  const getBreadcrumbs = createBreadcrumbs();
-  const crumbs = $derived(await getBreadcrumbs());
+
+  const get = createBreadcrumbs();
+  const crumbs = $derived(await get());
 </` +
-						`script>
+		`script>`;
 
-{#each crumbs as crumb, i}
-  {#if i > 0} / {/if}
-  <a href={crumb.url}>{crumb.label}</a>
-{/each}`}
-				/>
-			</div>
-		</div>
+	const pageSnippet =
+		`<` +
+		`script module lang="ts">
+  import type { BreadcrumbMeta } from 'svelte-crumbs';
 
-		<div>
-			<div class="text-xs font-semibold tracking-wide text-(--color-text-muted) uppercase">
-				any +page.svelte
-			</div>
-			<div class="mt-1">
-				<CodeBlock
-					lang="svelte"
-					code={`<` +
-						`script module>
-  export const breadcrumb = async (page) => ({
+  export const breadcrumb: BreadcrumbMeta = async (page) => ({
     label: page.data.product.name
   });
 </` +
-						`script>`}
-				/>
-			</div>
+		`script>`;
+
+	const facts = [
+		{ n: '01', title: 'Zero config', body: 'No route table. Pages describe themselves.' },
+		{
+			n: '02',
+			title: 'SSR-ready',
+			body: 'Resolves in top-level await. No {#await} blocks, no flash.'
+		},
+		{ n: '03', title: 'Reactive', body: 'Remote functions and optimistic queries, tracked.' }
+	];
+
+	const routes = [
+		{ label: '/products/42', href: resolve('/products/[productId]', { productId: '42' }) },
+		{ label: '/docs/getting-started', href: resolve('/docs/[slug]', { slug: 'getting-started' }) },
+		{
+			label: '/spread/users/42/settings',
+			href: resolve('/spread/[...operator]', { operator: 'users/42/settings' })
+		},
+		{ label: '/playground', href: resolve('/playground') }
+	];
+</script>
+
+<!-- ────────────────────────────────── HERO ────────────────────────────────── -->
+<section class="grid grid-cols-1 gap-12 pt-16 xl:grid-cols-2 xl:gap-10 2xl:gap-16">
+	<div class="flex flex-col gap-6">
+		<p class="font-mono text-[11px] tracking-[0.14em] text-(--color-accent) uppercase">
+			SvelteKit navigation
+		</p>
+		<h1 class="text-5xl leading-[1.04] font-bold tracking-[-0.038em] text-balance lg:text-[62px]">
+			Server-rendered breadcrumbs.
+		</h1>
+		<p class="max-w-[42ch] text-[17px] leading-relaxed text-(--color-text-secondary)">
+			Resolved during SSR, reactive after hydration. Zero config.
+		</p>
+		<div class="flex flex-wrap items-center gap-3 pt-2">
+			<a
+				href={resolve('/docs/[slug]', { slug: 'getting-started' })}
+				class="inline-flex h-[46px] w-full items-center justify-center rounded-lg bg-(--color-accent-solid) px-5 text-sm font-semibold text-(--color-on-accent) transition hover:opacity-90 sm:w-auto"
+			>
+				Read the docs
+			</a>
+			<span
+				class="inline-flex h-[46px] w-full items-center gap-3 rounded-lg border border-(--color-border) px-[18px] font-mono text-[13px] text-(--color-text-secondary) sm:w-auto"
+			>
+				npm i svelte-crumbs
+				<svg
+					aria-hidden="true"
+					width="14"
+					height="14"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1.7"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					class="text-(--color-text-muted)"
+				>
+					<rect x="9" y="9" width="12" height="12" rx="2" />
+					<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+				</svg>
+			</span>
+		</div>
+	</div>
+
+	<div
+		class="flex flex-col overflow-hidden rounded-[14px] border border-(--color-border) bg-(--color-bg-sidebar)"
+	>
+		<div class="flex h-10 items-center gap-2 border-b border-(--color-border) px-4">
+			<span class="size-[9px] rounded-full bg-(--color-border)"></span>
+			<span class="size-[9px] rounded-full bg-(--color-border)"></span>
+			<span class="size-[9px] rounded-full bg-(--color-border)"></span>
+			<span class="pl-2.5 font-mono text-[11px] text-(--color-text-muted)">+layout.svelte</span>
+		</div>
+		<CodeBlock lang="svelte" raw code={layoutSnippet} bare />
+		<div
+			aria-hidden="true"
+			class="flex items-center gap-2.5 border-t border-(--color-border) px-[22px] py-[18px] text-sm"
+		>
+			<span class="text-(--color-text-muted)">Home</span>
+			<svg
+				width="13"
+				height="13"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="1.8"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				class="text-(--color-border)"
+			>
+				<path d="m9 18 6-6-6-6" />
+			</svg>
+			<span class="text-(--color-text-muted)">Products</span>
+			<svg
+				width="13"
+				height="13"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="1.8"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				class="text-(--color-border)"
+			>
+				<path d="m9 18 6-6-6-6" />
+			</svg>
+			<span class="font-semibold">Nike Air Max 90</span>
 		</div>
 	</div>
 </section>
 
-<!-- ───────────────────────────── TRY IT LIVE ─────────────────────────────── -->
-<section class="mt-16">
-	<h2 class="text-xl font-semibold text-(--color-text-primary)">Try it live</h2>
-	<p class="mt-2 text-(--color-text-secondary)">
-		Click through these routes and watch the breadcrumbs above update in real time.
-	</p>
+<!-- ─────────────────────────────── THREE FACTS ────────────────────────────── -->
+<section
+	class="mt-26 grid grid-cols-1 gap-px overflow-hidden rounded-[14px] border border-(--color-border) bg-(--color-border) sm:grid-cols-3"
+>
+	{#each facts as fact (fact.n)}
+		<div class="flex flex-col gap-2 bg-(--color-bg) p-[30px]">
+			<div class="font-mono text-[11px] text-(--color-accent)">{fact.n}</div>
+			<h2 class="text-base font-semibold">{fact.title}</h2>
+			<p class="text-[13px] leading-relaxed text-(--color-text-secondary)">{fact.body}</p>
+		</div>
+	{/each}
+</section>
 
-	<div class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
-		<a
-			href={resolve('/products/[productId]', { productId: '42' })}
-			class="group rounded-xl border border-(--color-border) p-4 transition hover:border-(--logo-primary)"
-		>
-			<div class="text-sm font-mono text-(--color-text-secondary)">/products/42</div>
-			<div class="mt-1 text-sm text-(--color-text-muted)">Dynamic label from load data</div>
-		</a>
-		<a
-			href={resolve('/docs/[slug]', { slug: 'getting-started' })}
-			class="group rounded-xl border border-(--color-border) p-4 transition hover:border-(--logo-primary)"
-		>
-			<div class="text-sm font-mono text-(--color-text-secondary)">/docs/getting-started</div>
-			<div class="mt-1 text-sm text-(--color-text-muted)">Remote function resolver</div>
-		</a>
-		<a
-			href={resolve('/spread/[...operator]', { operator: 'users/42/settings' })}
-			class="group rounded-xl border border-(--color-border) p-4 transition hover:border-(--logo-primary)"
-		>
-			<div class="text-sm font-mono text-(--color-text-secondary)">/spread/users/42/settings</div>
-			<div class="mt-1 text-sm text-(--color-text-muted)">
-				Catch-all <code>[...rest]</code> route
-			</div>
-		</a>
-		<a
-			href={resolve('/playground')}
-			class="group rounded-xl border border-(--color-border) p-4 transition hover:border-(--logo-primary)"
-		>
-			<div class="text-sm font-mono text-(--color-text-secondary)">/playground</div>
-			<div class="mt-1 text-sm text-(--color-text-muted)">Optimistic updates</div>
-		</a>
+<!-- ──────────────────────────── ONE EXPORT PER PAGE ───────────────────────── -->
+<section class="mt-26 flex flex-col gap-8">
+	<div class="flex flex-col gap-4">
+		<h2 class="text-[34px] leading-tight font-bold tracking-[-0.028em]">One export per page.</h2>
+		<p class="max-w-[40ch] text-[15px] leading-relaxed text-(--color-text-secondary)">
+			Return a label from anything you can await — load data, a remote function, a query.
+		</p>
+	</div>
+	<div
+		class="flex flex-col overflow-hidden rounded-[14px] border border-(--color-border) bg-(--color-bg-sidebar)"
+	>
+		<div class="flex h-10 items-center border-b border-(--color-border) px-4">
+			<span class="font-mono text-[11px] text-(--color-text-muted)">products/[id]/+page.svelte</span
+			>
+		</div>
+		<CodeBlock lang="svelte" raw code={pageSnippet} bare />
 	</div>
 </section>
 
-<!-- ──────────────────────────── DEEP DIVE LINK ───────────────────────────── -->
-<section class="mt-16 mb-8 rounded-xl border border-dashed border-(--color-border) p-6 text-center">
-	<p class="text-sm text-(--color-text-secondary)">
-		Curious about the internals — module scanning, SSR safety, reactive tracking?
-	</p>
-	<a
-		href={resolve('/docs/internals')}
-		class="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-(--color-accent) hover:underline"
-	>
-		Read how it works
-		<span aria-hidden="true">→</span>
-	</a>
+<!-- ────────────────────────────── LIVE ROUTES ─────────────────────────────── -->
+<section class="mt-26 flex flex-col gap-4">
+	<h2 class="font-mono text-[11px] tracking-[0.14em] text-(--color-text-muted) uppercase">
+		Live routes
+	</h2>
+	<div class="flex flex-wrap gap-2.5">
+		{#each routes as route (route.href)}
+			<a
+				href={route.href}
+				class="rounded-lg border border-(--color-border) px-[15px] py-2.5 font-mono text-[13px] text-(--color-text-secondary) transition hover:border-(--color-accent) hover:text-(--color-accent)"
+			>
+				{route.label}
+			</a>
+		{/each}
+	</div>
 </section>
