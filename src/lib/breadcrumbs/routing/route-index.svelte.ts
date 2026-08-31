@@ -105,13 +105,34 @@ export class RouteIndex {
 		})());
 	}
 
+	#warmupStarted = false;
+
 	/**
-	 * Bumps the reactive version. Called by consumers AFTER awaiting a cold
-	 * load — in their own continuation, not inside the awaited promise — so
-	 * the invalidation lands once the load has fully settled.
+	 * Loads every remaining module in the background and then bumps the
+	 * reactive version — from the idle task, deliberately OUTSIDE any derived
+	 * run. Consumers that read the version re-run once, take the synchronous
+	 * path, and from then on reactive reads inside resolvers (remote queries,
+	 * $state) are tracked. Invalidating from within a consumer's own run
+	 * instead strands in-flight navigations and trips await_waterfall.
+	 *
+	 * Off the critical path by design: first paint still loads only the
+	 * current route's modules.
 	 */
-	bump(): void {
-		this.version++;
+	scheduleWarmup(): Promise<void> {
+		if (this.#warmupStarted) return Promise.resolve();
+		this.#warmupStarted = true;
+		return new Promise((resolve) => {
+			const idle =
+				typeof requestIdleCallback === 'function'
+					? requestIdleCallback
+					: (cb: () => void) => setTimeout(cb, 250);
+			idle(() => {
+				Promise.resolve(this.loadPending() ?? undefined).then(() => {
+					this.version++;
+					resolve();
+				});
+			});
+		});
 	}
 
 	/**

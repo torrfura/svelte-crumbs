@@ -12,7 +12,7 @@ const { pageMock, pathsMock } = vi.hoisted(() => ({
 	pathsMock: { base: '' }
 }));
 
-vi.mock('$app/environment', () => ({ dev: false }));
+vi.mock('$app/environment', () => ({ dev: false, browser: false }));
 vi.mock('$app/state', () => ({ page: pageMock }));
 vi.mock('$app/paths', () => ({
 	get base() {

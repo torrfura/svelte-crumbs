@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 
-vi.mock('$app/environment', () => ({ dev: false }));
+vi.mock('$app/environment', () => ({ dev: false, browser: false }));
 
 import { RouteIndex, filePathToRouteId, stripGroups } from './route-index.svelte.js';
 import type { BreadcrumbMeta, BreadcrumbResolver } from '../types.js';
@@ -156,17 +156,26 @@ describe('RouteIndex', () => {
 		expect(index.loadPending()).toBeNull();
 	});
 
-	it('leaves version bumps to the consumer — loads never bump, bump() does', async () => {
+	it('never bumps version from loads — only the warmup does, exactly once', async () => {
+		const products = loaderOf(resolver('Products'));
+		const about = loaderOf(resolver('About'));
 		const index = new RouteIndex({
-			'/src/routes/products/+page.svelte': loaderOf(resolver('Products'))
+			'/src/routes/products/+page.svelte': products,
+			'/src/routes/about/+page.svelte': about
 		});
 
 		expect(index.version).toBe(0);
-		// Loads must NOT invalidate from inside the awaited promise — the
-		// consumer bumps from its own continuation after awaiting.
+		// Loads must NOT invalidate consumers mid-run — that strands in-flight
+		// navigations and trips await_waterfall.
 		await index.ensureLoaded(['/products']);
 		expect(index.version).toBe(0);
-		index.bump();
+
+		await index.scheduleWarmup();
+		expect(index.version).toBe(1);
+		expect(about).toHaveBeenCalledOnce();
+
+		// Repeat schedules are no-ops.
+		await index.scheduleWarmup();
 		expect(index.version).toBe(1);
 	});
 

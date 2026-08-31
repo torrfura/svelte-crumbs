@@ -131,10 +131,17 @@ test.describe('No Svelte runtime warnings', () => {
 		'/',
 		'/products',
 		'/products/42',
+		'/products/42/edit',
 		'/docs',
 		'/docs/internals',
+		'/docs/getting-started',
+		'/docs/i18n',
+		'/playground',
+		'/spread',
+		'/spread/users/42/settings',
 		'/i18n',
-		'/i18n/sv'
+		'/i18n/sv',
+		'/about'
 	];
 
 	for (const route of routes) {

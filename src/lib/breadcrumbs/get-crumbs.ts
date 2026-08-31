@@ -1,5 +1,6 @@
 import { page } from '$app/state';
 import { base } from '$app/paths';
+import { browser } from '$app/environment';
 import type { Page } from '@sveltejs/kit';
 import { getRouteIndex, stripGroups } from './routing/route-index.svelte.js';
 import { walkRoute } from './routing/route-walk.js';
@@ -140,10 +141,9 @@ export async function getCrumbs(options: GetCrumbsOptions = {}): Promise<Breadcr
 	// All reactive reads MUST stay before the first await: on the server, `page`
 	// is only readable while rendering, and in the consuming async derived only
 	// synchronous reads are guaranteed to be tracked across environments.
-	// `track()` subscribes to the index version so a cold module load re-runs
-	// the consumer once registration lands — and that re-run takes the fully
-	// synchronous path below, which keeps reactive reads INSIDE resolvers
-	// (remote queries, $state) tracked as well.
+	// `track()` subscribes to the index version, bumped once by the background
+	// warmup — that re-run takes the fully synchronous path below, which keeps
+	// reactive reads INSIDE resolvers (remote queries, $state) tracked as well.
 	index.track();
 	const routeId = page.route.id;
 	const path = transformPathname(stripBase(page.url.pathname), page.url, options.transformPath);
@@ -154,15 +154,16 @@ export async function getCrumbs(options: GetCrumbsOptions = {}): Promise<Breadcr
 
 	const levels = walkRoute(stripGroups(routeId), path, snap.params, options.restCrumbs);
 
-	// Await ONLY when something actually needs loading. When everything on the
-	// path is warm this stays synchronous through to the resolver calls.
+	// Kick off the background warmup on the client (no-op after the first
+	// call). Once it completes it bumps the index version from the idle task —
+	// deliberately outside any derived run — re-running consumers on the
+	// synchronous path so resolver-internal reactive reads become tracked.
+	if (browser) index.scheduleWarmup();
+
+	// Await ONLY when something on the current path actually needs loading —
+	// correct data either way; tracking arrives with the warmup re-run.
 	const pending = index.loadPending(options.eager ? undefined : levels.map((l) => l.routeId));
-	if (pending) {
-		await pending;
-		// Invalidate from our own continuation (mirrors v1's `loaded` flag):
-		// the consuming derived re-runs and takes the synchronous path.
-		index.bump();
-	}
+	if (pending) await pending;
 
 	// Concrete-pathname keys win over route-id keys at the same level; deeper
 	// levels sharing a URL (absent optional params, zero-segment rest) win
