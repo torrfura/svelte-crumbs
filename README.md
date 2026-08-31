@@ -2,7 +2,7 @@
 
 Automatic, SSR-ready breadcrumbs for SvelteKit via route-level metadata exports. Zero config, fully reactive, matched against SvelteKit's own routing.
 
-**Svelte 5 + SvelteKit 2 only. Data layer only — bring your own rendering.**
+**Svelte 5 + SvelteKit 2.26 or 3. Data layer only — bring your own rendering.**
 
 **[Documentation & Live Demo](https://svelte-crumbs.vercel.app/)**
 
@@ -129,7 +129,7 @@ Matching is now keyed by SvelteKit's own `page.route.id` instead of a custom pat
 
 ### Peer requirements
 
-v2 declares **Svelte >= 5.39** (experimental async SSR) and **@sveltejs/kit >= 2.12** (`$app/state`). These were de-facto required by v1 already — v2 just says so.
+v2 declares **Svelte >= 5.39** (experimental async SSR) and **@sveltejs/kit >= 2.26 or >= 3** (`$app/state`, `$app/paths` `resolve`). SvelteKit 3 removed the `base` export from `$app/paths`, so base-path handling goes through `resolve()`, which landed in 2.26.
 
 ## Examples
 
@@ -356,7 +356,8 @@ Because SvelteKit already decided which route matched, optional params, matchers
 ## Requirements
 
 - **Svelte >= 5.39** — `compilerOptions.experimental.async: true` is needed for the server-rendered `$derived(await ...)` pattern; the `{#await}` pattern works without the flag
-- **SvelteKit >= 2.12** — relies on `$app/state` and `import.meta.glob`
+- **SvelteKit >= 2.26, or >= 3** — relies on `$app/state`, `import.meta.glob`, and `resolve()` from `$app/paths`
+- Hash routing is supported — crumb urls are resolved through kit, so they carry the `#` marker
 - Route groups (`(group)`) are stripped from paths
 
 ## License
