@@ -39,16 +39,26 @@ jobs:
         with:
           version: 10
 
+      # No registry-url on purpose: it makes setup-node write an
+      # `_authToken=${NODE_AUTH_TOKEN}` line into .npmrc, and npm then treats
+      # auth as already configured and never performs the OIDC exchange.
+      # The default registry is registry.npmjs.org anyway.
+      # Caching is off because npm advises against restoring caches in a job
+      # that holds publish rights.
       - uses: actions/setup-node@v7
         with:
           node-version: 22
-          cache: pnpm
-          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+
+      # Trusted publishing needs npm >= 11.5.1; Node 22 ships npm 10.x.
+      - name: Upgrade npm for trusted publishing
+        run: npm install --global npm@latest
 
       - run: pnpm install --frozen-lockfile
 
       - run: pnpm run build
 
+      # Authenticates over OIDC using the id-token permission above, against
+      # the trusted publisher configured for svelte-crumbs on npmjs.com.
+      # Provenance attestations are generated automatically. No NPM_TOKEN.
       - run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
