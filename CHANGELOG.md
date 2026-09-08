@@ -1,5 +1,12 @@
 # svelte-crumbs
 
+## [2.0.2](https://github.com/torrfura/svelte-crumbs/compare/svelte-crumbs-v2.0.1...svelte-crumbs-v2.0.2) (2026-08-31)
+
+
+### Bug Fixes
+
+* read env flags from $app/env instead of $app/environment ([#26](https://github.com/torrfura/svelte-crumbs/issues/26)) ([6f00d82](https://github.com/torrfura/svelte-crumbs/commit/6f00d82dba1295f33b3195495710a7e49ad8f958))
+
 ## [2.0.1](https://github.com/torrfura/svelte-crumbs/compare/svelte-crumbs-v2.0.0...svelte-crumbs-v2.0.1) (2026-08-31)
 
 
