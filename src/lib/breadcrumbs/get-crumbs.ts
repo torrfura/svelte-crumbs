@@ -8,6 +8,7 @@ import type {
 	Breadcrumb,
 	BreadcrumbPage,
 	BreadcrumbResolver,
+	CrumbRoute,
 	GetCrumbsOptions,
 	OptionalPageField,
 	PathTransform
@@ -17,7 +18,10 @@ import type {
  * `resolve` is typed against the app's generated route ids. The paths handled
  * here are already-resolved pathnames, so the narrow type gets in the way.
  */
-const resolvePath = resolve as unknown as (path: string) => string;
+const resolvePath = resolve as unknown as (
+	path: string,
+	params?: Partial<Record<string, string>>
+) => string;
 
 /**
  * Reads `config.kit.paths.base`. SvelteKit 3 removed the `base` export from
@@ -90,8 +94,14 @@ function transformPathname(
  * `pathname` is the already-transformed path. When it differs from the live
  * one, the clone is rebuilt around it so `href`, `pathname`, and everything
  * derived from them stay consistent with what resolvers are matched against.
+ * `route`, when given, replaces the page's route id and params.
  */
-function snapshotPage(p: Page, include: OptionalPageField[], pathname: string): BreadcrumbPage {
+function snapshotPage(
+	p: Page,
+	include: OptionalPageField[],
+	pathname: string,
+	route?: CrumbRoute
+): BreadcrumbPage {
 	const url =
 		pathname === p.url.pathname
 			? new URL(p.url.href)
@@ -99,8 +109,8 @@ function snapshotPage(p: Page, include: OptionalPageField[], pathname: string): 
 
 	const snap: BreadcrumbPage = {
 		url: url as Page['url'],
-		params: { ...p.params },
-		route: { id: p.route.id },
+		params: { ...(route ? route.params : p.params) },
+		route: { id: (route ? route.id : p.route.id) as Page['route']['id'] },
 		data: p.data
 	};
 
@@ -168,29 +178,36 @@ export async function getCrumbs(options: GetCrumbsOptions = {}): Promise<Breadcr
 	// All reactive reads MUST stay before the first await: on the server, `page`
 	// is only readable while rendering, and in the consuming async derived only
 	// synchronous reads are guaranteed to be tracked across environments.
-	// `track()` subscribes to the index version, bumped once by the background
-	// warmup — that re-run takes the fully synchronous path below, which keeps
+	// `track()` subscribes to the index version, bumped from an idle task
+	// once modules have loaded — that re-run takes the fully synchronous path below, which keeps
 	// reactive reads INSIDE resolvers (remote queries, $state) tracked as well.
 	index.track();
-	const routeId = page.route.id;
-	const path = transformPathname(stripBase(page.url.pathname), page.url, options.transformPath);
-	const snap = snapshotPage(page, options.include ?? [], path);
+	const route = options.route && { id: options.route.id, params: options.route.params ?? {} };
+	const routeId = route ? route.id : page.route.id;
+	const path = route
+		? stripBase(resolvePath(route.id, route.params))
+		: transformPathname(stripBase(page.url.pathname), page.url, options.transformPath);
+	const snap = snapshotPage(page, options.include ?? [], path, route);
 
 	// No matched route (error page rendered without a route) — no trail.
 	if (routeId === null) return [];
 
 	const levels = walkRoute(stripGroups(routeId), path, snap.params, options.restCrumbs);
 
-	// Kick off the background warmup on the client (no-op after the first
-	// call). Once it completes it bumps the index version from the idle task —
-	// deliberately outside any derived run — re-running consumers on the
-	// synchronous path so resolver-internal reactive reads become tracked.
-	if (browser) index.scheduleWarmup();
-
 	// Await ONLY when something on the current path actually needs loading —
-	// correct data either way; tracking arrives with the warmup re-run.
+	// correct data either way. On the client, a version bump from an idle task
+	// — deliberately outside any derived run — then re-runs consumers on the
+	// synchronous path so resolver-internal reactive reads become tracked.
+	// With the default full warmup that bump comes once, after every module
+	// has loaded; with `warmup: 'visited'` it follows each cold load.
+	const warmupAll = (options.warmup ?? 'all') === 'all';
+	if (browser && warmupAll) index.scheduleWarmup();
+
 	const pending = index.loadPending(options.eager ? undefined : levels.map((l) => l.routeId));
-	if (pending) await pending;
+	if (pending) {
+		if (browser && !warmupAll) void index.settle(pending);
+		await pending;
+	}
 
 	// Concrete-pathname keys win over route-id keys at the same level; deeper
 	// levels sharing a URL (absent optional params, zero-segment rest) win

@@ -39,6 +39,32 @@
 </` +
 			`script>`}
 	/>
+	<h3 class="mt-6 text-lg font-semibold text-(--color-text-primary)">Vite plugin (recommended)</h3>
+	<p class="mt-1 text-(--color-text-secondary)">
+		Add <code class="rounded bg-(--color-code-bg) px-1 text-sm">crumbs()</code> before
+		<code class="rounded bg-(--color-code-bg) px-1 text-sm">sveltekit()</code>. Loading a crumb then
+		fetches only the page's
+		<code class="rounded bg-(--color-code-bg) px-1 text-sm">&lt;script module&gt;</code>, a few
+		hundred bytes, instead of the whole page and its dependencies.
+	</p>
+	<CodeBlock
+		raw
+		code={`// vite.config.ts
+import { sveltekit } from '@sveltejs/kit/vite';
+import { crumbs } from 'svelte-crumbs/vite';
+import { defineConfig } from 'vite';
+
+export default defineConfig({ plugins: [crumbs(), sveltekit()] });`}
+	/>
+	<p class="mt-2 text-(--color-text-secondary)">
+		A page whose module script holds state (<code class="rounded bg-(--color-code-bg) px-1 text-sm"
+			>let</code
+		>, <code class="rounded bg-(--color-code-bg) px-1 text-sm">$state</code>,
+		<code class="rounded bg-(--color-code-bg) px-1 text-sm">new Map()</code>) or runs code at load
+		isn't split, because the split copy wouldn't share that state with the component. The build
+		warns and loads that page whole. Move the state into its own
+		<code class="rounded bg-(--color-code-bg) px-1 text-sm">.svelte.ts</code> file to split it.
+	</p>
 	<p class="mt-4 text-(--color-text-secondary)">
 		Source code and issues on
 		<a
@@ -136,6 +162,19 @@ setNickname(value).updates(getNickname().withOverride(() => value));`}
     })
   }
 };`}
+	/>
+
+	<h3 class="mt-6 text-base font-semibold text-(--color-text-primary)">Another route's trail</h3>
+	<p class="mt-1 text-(--color-text-secondary)">
+		Pass <code class="rounded bg-(--color-code-bg) px-1 text-sm">route</code> to walk a route other than
+		the current one, for a view that shows another route's content, such as a modal or a preview. Resolvers
+		receive that route's id and params.
+	</p>
+	<CodeBlock
+		raw
+		code={`const crumbs = $derived(
+  await getCrumbs({ route: { id: '/products/[productId]', params: { productId: '42' } } })
+);`}
 	/>
 
 	<h3 class="mt-6 text-base font-semibold text-(--color-text-primary)">No breadcrumb</h3>

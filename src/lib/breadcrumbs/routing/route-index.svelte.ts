@@ -1,5 +1,6 @@
 import { dev } from '$app/env';
 import type { BreadcrumbMeta, BreadcrumbResolver } from '../types.js';
+import { pageModules } from './page-modules.js';
 
 /** Record of page-module loaders as produced by `import.meta.glob(..., { import: 'breadcrumb' })`. */
 export type ModuleRecord = Record<string, () => Promise<unknown>>;
@@ -49,10 +50,18 @@ function normalizeKey(key: string): string {
  * keeps resolver-internal reactive reads (e.g. remote queries) tracked by the
  * consuming derived.
  *
- * `version` is reactive state bumped whenever a module finishes registering.
- * A caller that reads it before resolving is re-run by Svelte once a cold
- * load lands, and that re-run takes the synchronous path.
+ * `version` is reactive state bumped (via `settle`) after a cold load lands.
+ * A caller that reads it before resolving is re-run by Svelte, and that
+ * re-run takes the synchronous path.
  */
+/** Resolves on the next idle period (or after a short timeout where unsupported). */
+function idle(): Promise<void> {
+	return new Promise((resolve) => {
+		if (typeof requestIdleCallback === 'function') requestIdleCallback(() => resolve());
+		else setTimeout(resolve, 250);
+	});
+}
+
 export class RouteIndex {
 	// Deliberately plain Maps, not SvelteMap: per-entry reactivity is unwanted
 	// overhead — all invalidation flows through the single `version` signal.
@@ -105,6 +114,28 @@ export class RouteIndex {
 		})());
 	}
 
+	#settleToken = 0;
+
+	/**
+	 * Bumps the reactive version once `pending` has settled — from an idle
+	 * task, deliberately OUTSIDE any derived run. Consumers that read the
+	 * version re-run once, take the synchronous path, and from then on reactive
+	 * reads inside resolvers (remote queries, $state) are tracked. Invalidating
+	 * from within a consumer's own run instead strands in-flight navigations
+	 * and trips await_waterfall.
+	 *
+	 * Used by `warmup: 'visited'`, where no full warmup bumps the version.
+	 * Overlapping calls collapse into a single bump after the latest one.
+	 */
+	settle(pending: Promise<void>): Promise<void> {
+		const token = ++this.#settleToken;
+		return pending.then(() =>
+			idle().then(() => {
+				if (token === this.#settleToken) this.version++;
+			})
+		);
+	}
+
 	#warmupStarted = false;
 
 	/**
@@ -112,27 +143,20 @@ export class RouteIndex {
 	 * reactive version — from the idle task, deliberately OUTSIDE any derived
 	 * run. Consumers that read the version re-run once, take the synchronous
 	 * path, and from then on reactive reads inside resolvers (remote queries,
-	 * $state) are tracked. Invalidating from within a consumer's own run
-	 * instead strands in-flight navigations and trips await_waterfall.
+	 * $state) are tracked. Afterwards every route resolves synchronously, so a
+	 * first visit never shows the previous route's trail.
 	 *
 	 * Off the critical path by design: first paint still loads only the
-	 * current route's modules.
+	 * current route's modules. Runs at most once.
 	 */
 	scheduleWarmup(): Promise<void> {
 		if (this.#warmupStarted) return Promise.resolve();
 		this.#warmupStarted = true;
-		return new Promise((resolve) => {
-			const idle =
-				typeof requestIdleCallback === 'function'
-					? requestIdleCallback
-					: (cb: () => void) => setTimeout(cb, 250);
-			idle(() => {
-				Promise.resolve(this.loadPending() ?? undefined).then(() => {
-					this.version++;
-					resolve();
-				});
+		return idle()
+			.then(() => this.loadPending() ?? undefined)
+			.then(() => {
+				this.version++;
 			});
-		});
 	}
 
 	/**
@@ -165,10 +189,12 @@ let defaultIndex: RouteIndex | undefined;
 const injectedIndexes = new WeakMap<ModuleRecord, RouteIndex>();
 
 /**
- * Returns the shared route index. Without arguments, scans the consuming
- * app's `/src/routes/**` via `import.meta.glob` (memoized for the module
- * lifetime — safe cross-request on the server, the contents are build-static).
- * With an injected `modules` record, memoizes per record identity.
+ * Returns the shared route index. Without arguments, uses the default page
+ * discovery in `page-modules.ts` — a glob over the consuming app's
+ * `/src/routes/**`, which the `svelte-crumbs/vite` plugin swaps for split
+ * breadcrumb modules (memoized for the module lifetime — safe cross-request
+ * on the server, the contents are build-static). With an injected `modules`
+ * record, memoizes per record identity.
  */
 export function getRouteIndex(modules?: ModuleRecord, routesPrefix?: string): RouteIndex {
 	if (modules) {
@@ -179,7 +205,5 @@ export function getRouteIndex(modules?: ModuleRecord, routesPrefix?: string): Ro
 		}
 		return index;
 	}
-	return (defaultIndex ??= new RouteIndex(
-		import.meta.glob('/src/routes/**/+page.svelte', { import: 'breadcrumb' })
-	));
+	return (defaultIndex ??= new RouteIndex(pageModules));
 }

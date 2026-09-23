@@ -156,7 +156,7 @@ describe('RouteIndex', () => {
 		expect(index.loadPending()).toBeNull();
 	});
 
-	it('never bumps version from loads — only the warmup does, exactly once', async () => {
+	it('never bumps version from loads — only settle does, once per burst', async () => {
 		const products = loaderOf(resolver('Products'));
 		const about = loaderOf(resolver('About'));
 		const index = new RouteIndex({
@@ -170,9 +170,30 @@ describe('RouteIndex', () => {
 		await index.ensureLoaded(['/products']);
 		expect(index.version).toBe(0);
 
-		await index.scheduleWarmup();
+		// Overlapping settles collapse into one bump after the latest.
+		const first = index.settle(index.ensureLoaded(['/products']));
+		const second = index.settle(index.ensureLoaded(['/products']));
+		await Promise.all([first, second]);
 		expect(index.version).toBe(1);
+
+		// Settling never loads modules nobody asked for.
+		expect(about).not.toHaveBeenCalled();
+	});
+
+	it('warms every remaining module once, then bumps version', async () => {
+		const products = loaderOf(resolver('Products'));
+		const about = loaderOf(resolver('About'));
+		const index = new RouteIndex({
+			'/src/routes/products/+page.svelte': products,
+			'/src/routes/about/+page.svelte': about
+		});
+
+		await index.ensureLoaded(['/products']);
+		await index.scheduleWarmup();
+
 		expect(about).toHaveBeenCalledOnce();
+		expect(products).toHaveBeenCalledOnce();
+		expect(index.version).toBe(1);
 
 		// Repeat schedules are no-ops.
 		await index.scheduleWarmup();
