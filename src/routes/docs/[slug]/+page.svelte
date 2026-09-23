@@ -138,6 +138,19 @@ setNickname(value).updates(getNickname().withOverride(() => value));`}
 };`}
 	/>
 
+	<h3 class="mt-6 text-base font-semibold text-(--color-text-primary)">Another route's trail</h3>
+	<p class="mt-1 text-(--color-text-secondary)">
+		Pass <code class="rounded bg-(--color-code-bg) px-1 text-sm">route</code> to walk a route other than
+		the current one, for a view that shows another route's content, such as a modal or a preview. Resolvers
+		receive that route's id and params.
+	</p>
+	<CodeBlock
+		raw
+		code={`const crumbs = $derived(
+  await getCrumbs({ route: { id: '/products/[productId]', params: { productId: '42' } } })
+);`}
+	/>
+
 	<h3 class="mt-6 text-base font-semibold text-(--color-text-primary)">No breadcrumb</h3>
 	<p class="mt-1 text-(--color-text-secondary)">
 		Omit the export — the segment is skipped. See <a

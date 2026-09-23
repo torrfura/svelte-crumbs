@@ -14,10 +14,20 @@ const { pageMock, pathsMock } = vi.hoisted(() => ({
 
 vi.mock('$app/env', () => ({ dev: false, browser: false }));
 vi.mock('$app/state', () => ({ page: pageMock }));
-// Mirrors kit's own resolve: `base + (hashRouting ? '#' : '') + path`.
+// Mirrors kit's own resolve: `base + (hashRouting ? '#' : '') + path`, with
+// groups dropped and dynamic segments filled from `params`.
 vi.mock('$app/paths', () => ({
-	resolve(path: string) {
-		return pathsMock.base + (pathsMock.hashRouting ? '#' : '') + path;
+	resolve(path: string, params: Record<string, string | undefined> = {}) {
+		const filled = path
+			.split('/')
+			.filter((seg) => !/^\(.*\)$/.test(seg))
+			.map((seg) => {
+				const m = /^\[{1,2}(?:\.\.\.)?([^\]=]+)(?:=[^\]]+)?\]{1,2}$/.exec(seg);
+				return m ? (params[m[1]] ?? '') : seg;
+			})
+			.filter((seg, i) => i === 0 || seg !== '')
+			.join('/');
+		return pathsMock.base + (pathsMock.hashRouting ? '#' : '') + (filled || '/');
 	}
 }));
 
@@ -336,6 +346,60 @@ describe('getCrumbs transformPath', () => {
 		expect(crumbs).toEqual([{ label: 'Products', url: '/products' }]);
 		expect(warnSpy).toHaveBeenCalled();
 		warnSpy.mockRestore();
+	});
+});
+
+describe('getCrumbs route option', () => {
+	it("walks the given route instead of the current page's", async () => {
+		const modules = modulesOf({
+			'/': async () => ({ label: 'Home' }),
+			'/products': async () => ({ label: 'Products' }),
+			'/products/[productId]': async (page) => ({ label: `Product ${page.params.productId}` })
+		});
+		visit('/about', '/about');
+
+		const crumbs = await getCrumbs({
+			modules,
+			route: { id: '/(app)/products/[productId]', params: { productId: '7' } }
+		});
+
+		expect(crumbs).toEqual([
+			{ label: 'Home', url: '/' },
+			{ label: 'Products', url: '/products' },
+			{ label: 'Product 7', url: '/products/7' }
+		]);
+	});
+
+	it('passes the given route id and params to resolvers', async () => {
+		let seen: BreadcrumbPage | undefined;
+		const modules = modulesOf({
+			'/products/[productId]': async (page) => {
+				seen = page;
+				return { label: 'X' };
+			}
+		});
+		visit('/about', '/about', { lang: 'en' });
+
+		await getCrumbs({
+			modules,
+			route: { id: '/products/[productId]', params: { productId: '7' } }
+		});
+
+		expect(seen?.route.id).toBe('/products/[productId]');
+		expect(seen?.params).toEqual({ productId: '7' });
+		expect(seen?.url.pathname).toBe('/products/7');
+	});
+
+	it('strips the base path and ignores transformPath', async () => {
+		pathsMock.base = '/app';
+		const transformPath = vi.fn<PathTransform>(() => '/elsewhere');
+		const modules = modulesOf({ '/products': async () => ({ label: 'Products' }) });
+		visit('/about', '/app/about');
+
+		const crumbs = await getCrumbs({ modules, transformPath, route: { id: '/products' } });
+
+		expect(crumbs).toEqual([{ label: 'Products', url: '/app/products' }]);
+		expect(transformPath).not.toHaveBeenCalled();
 	});
 });
 

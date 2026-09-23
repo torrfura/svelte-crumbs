@@ -8,6 +8,7 @@ import type {
 	Breadcrumb,
 	BreadcrumbPage,
 	BreadcrumbResolver,
+	CrumbRoute,
 	GetCrumbsOptions,
 	OptionalPageField,
 	PathTransform
@@ -17,7 +18,10 @@ import type {
  * `resolve` is typed against the app's generated route ids. The paths handled
  * here are already-resolved pathnames, so the narrow type gets in the way.
  */
-const resolvePath = resolve as unknown as (path: string) => string;
+const resolvePath = resolve as unknown as (
+	path: string,
+	params?: Partial<Record<string, string>>
+) => string;
 
 /**
  * Reads `config.kit.paths.base`. SvelteKit 3 removed the `base` export from
@@ -90,8 +94,14 @@ function transformPathname(
  * `pathname` is the already-transformed path. When it differs from the live
  * one, the clone is rebuilt around it so `href`, `pathname`, and everything
  * derived from them stay consistent with what resolvers are matched against.
+ * `route`, when given, replaces the page's route id and params.
  */
-function snapshotPage(p: Page, include: OptionalPageField[], pathname: string): BreadcrumbPage {
+function snapshotPage(
+	p: Page,
+	include: OptionalPageField[],
+	pathname: string,
+	route?: CrumbRoute
+): BreadcrumbPage {
 	const url =
 		pathname === p.url.pathname
 			? new URL(p.url.href)
@@ -99,8 +109,8 @@ function snapshotPage(p: Page, include: OptionalPageField[], pathname: string): 
 
 	const snap: BreadcrumbPage = {
 		url: url as Page['url'],
-		params: { ...p.params },
-		route: { id: p.route.id },
+		params: { ...(route ? route.params : p.params) },
+		route: { id: (route ? route.id : p.route.id) as Page['route']['id'] },
 		data: p.data
 	};
 
@@ -172,9 +182,12 @@ export async function getCrumbs(options: GetCrumbsOptions = {}): Promise<Breadcr
 	// warmup — that re-run takes the fully synchronous path below, which keeps
 	// reactive reads INSIDE resolvers (remote queries, $state) tracked as well.
 	index.track();
-	const routeId = page.route.id;
-	const path = transformPathname(stripBase(page.url.pathname), page.url, options.transformPath);
-	const snap = snapshotPage(page, options.include ?? [], path);
+	const route = options.route && { id: options.route.id, params: options.route.params ?? {} };
+	const routeId = route ? route.id : page.route.id;
+	const path = route
+		? stripBase(resolvePath(route.id, route.params))
+		: transformPathname(stripBase(page.url.pathname), page.url, options.transformPath);
+	const snap = snapshotPage(page, options.include ?? [], path, route);
 
 	// No matched route (error page rendered without a route) — no trail.
 	if (routeId === null) return [];

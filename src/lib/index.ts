@@ -7,6 +7,7 @@ export type {
 	BreadcrumbPage,
 	BreadcrumbResolver,
 	CreateBreadcrumbsOptions,
+	CrumbRoute,
 	GetCrumbsOptions,
 	OptionalPageField,
 	PathTransform,
