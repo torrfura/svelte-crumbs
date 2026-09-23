@@ -302,14 +302,35 @@ It reads SvelteKit's reactive `page` state synchronously before awaiting, so cal
 
 #### Options
 
-| Option          | Type                                           | Default         | Description                                                                                                                                                                                                                |
-| --------------- | ---------------------------------------------- | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `include`       | `('status' \| 'error' \| 'form' \| 'state')[]` | `[]`            | Extra `page` fields exposed to resolvers. Off by default so crumbs don't take reactive dependencies on rarely-used properties.                                                                                             |
-| `transformPath` | `({ pathname, url }) => string`                | —               | Rewrites the pathname before route matching. See [Localized paths](#localized-paths-paraglide--friends).                                                                                                                   |
-| `eager`         | `boolean`                                      | `false`         | Load every page module up front instead of only the modules along the current path. Needed only when a `{ routes }` export targets routes unrelated to the declaring page.                                                 |
-| `restCrumbs`    | `'per-segment' \| 'single'`                    | `'per-segment'` | One crumb per `[...rest]` segment, or a single crumb for the whole rest value.                                                                                                                                             |
-| `modules`       | `Record<string, () => Promise<unknown>>`       | auto            | Override page discovery with your own `import.meta.glob(..., { import: 'breadcrumb' })` record — for non-default route directories or tests. Hoist the glob to module scope so the record identity is stable across calls. |
-| `routesPrefix`  | `string`                                       | `'/src/routes'` | File-path prefix stripped when deriving route ids from `modules` keys.                                                                                                                                                     |
+| Option          | Type                                              | Default         | Description                                                                                                                                                                                                                                                          |
+| --------------- | ------------------------------------------------- | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `include`       | `('status' \| 'error' \| 'form' \| 'state')[]`    | `[]`            | Extra `page` fields exposed to resolvers. Off by default so crumbs don't take reactive dependencies on rarely-used properties.                                                                                                                                       |
+| `transformPath` | `({ pathname, url }) => string`                   | —               | Rewrites the pathname before route matching. See [Localized paths](#localized-paths-paraglide--friends).                                                                                                                                                             |
+| `route`         | `{ id: string; params?: Record<string, string> }` | current page    | Walks this route instead of the current page's — for a view that shows another route's content (a modal, a preview). `id` may contain `(group)` segments; resolvers receive this id and these params. `transformPath` is ignored when set.                           |
+| `eager`         | `boolean`                                         | `false`         | Load every page module up front instead of only the modules along the current path. Needed only when a `{ routes }` export targets routes unrelated to the declaring page.                                                                                           |
+| `warmup`        | `'all' \| 'visited'`                              | `'all'`         | Which breadcrumb modules the client loads in the background once idle. `'all'` means a first visit never shows the previous trail. `'visited'` loads only the routes the user opens, which matters without the Vite plugin, where each module is a whole page chunk. |
+| `restCrumbs`    | `'per-segment' \| 'single'`                       | `'per-segment'` | One crumb per `[...rest]` segment, or a single crumb for the whole rest value.                                                                                                                                                                                       |
+| `modules`       | `Record<string, () => Promise<unknown>>`          | auto            | Override page discovery with your own `import.meta.glob(..., { import: 'breadcrumb' })` record — for non-default route directories or tests. Hoist the glob to module scope so the record identity is stable across calls.                                           |
+| `routesPrefix`  | `string`                                          | `'/src/routes'` | File-path prefix stripped when deriving route ids from `modules` keys.                                                                                                                                                                                               |
+
+### Vite plugin: `crumbs()` (recommended)
+
+Without the plugin, `getCrumbs()` finds resolvers by importing `+page.svelte` files, so loading one crumb downloads that page's whole component chunk and its dependencies. The plugin serves each page's `<script module>` as its own small module instead, so the client downloads only breadcrumb code, and only for the routes it visits.
+
+```ts
+// vite.config.ts
+import { sveltekit } from '@sveltejs/kit/vite';
+import { crumbs } from 'svelte-crumbs/vite';
+import { defineConfig } from 'vite';
+
+export default defineConfig({ plugins: [crumbs(), sveltekit()] });
+```
+
+The split module is a second copy of the page's module script, so the plugin only splits pages where a second copy can't change behaviour. If the module script declares `let`/`var`, builds a value at load (`$state(…)`, `new Map()`, a function call), or runs a statement, the plugin warns and loads that page whole, as it would without the plugin. To split such a page, move the state into its own `.svelte.ts` file and import it from the page. Pages whose module script isn't JS/TS, or whose markup only parses after preprocessing, also load whole.
+
+The idle-time warmup (`warmup: 'all'`, the default) loads every route's breadcrumb module in the background. With the plugin that costs a few hundred bytes per route. Without it, the warmup downloads every page in the app; set `warmup: 'visited'` to load only the routes the user opens.
+
+You can also skip the plugin and pass your own `modules` record, for example a glob over `+breadcrumb.ts` files you keep next to your pages.
 
 ### `createBreadcrumbs(options?)` (deprecated)
 
@@ -346,7 +367,7 @@ type Breadcrumb = BreadcrumbData & { url: string };
 2. Each file path is converted to a route id, with `(group)` segments stripped
 3. On navigation, SvelteKit's own `page.route.id` and the concrete pathname are walked in parallel, producing one level per route segment — matching is exact Map lookups against route-id prefixes, no pattern matching
 4. Only the page modules along the current path (~one per depth level) block resolution, each loading at most once; their `breadcrumb` exports register resolvers (`eager: true` loads everything up front instead)
-5. After hydration, an idle-time warmup loads the remaining breadcrumb modules in the background and re-runs the trail once — from then on resolution is fully synchronous, so reactive reads inside resolvers (remote queries, optimistic overrides) stay tracked
+5. After hydration, an idle-time warmup loads the remaining breadcrumb modules in the background and re-runs the trail once. From then on resolution is fully synchronous, so reactive reads inside resolvers (remote queries, optimistic overrides) stay tracked. With `warmup: 'visited'`, the warmup is skipped: routes you haven't opened are never fetched, and the trail re-runs once after each cold load instead
 6. Concrete-pathname keys from `{ routes }` win over route-id keys at the same level
 7. Matched resolvers run in parallel; `undefined` results and throwing resolvers are skipped, producing the final breadcrumb array
 8. On SSR, top-level `await` ensures breadcrumbs are in the initial HTML; on the client, `$derived` re-evaluates when the route changes

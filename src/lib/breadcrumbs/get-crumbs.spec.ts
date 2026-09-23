@@ -1,8 +1,10 @@
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { getCrumbs, createBreadcrumbs } from './get-crumbs.js';
+import { getRouteIndex } from './routing/route-index.svelte.js';
 import type { BreadcrumbMeta, BreadcrumbPage, BreadcrumbResolver, PathTransform } from './types.js';
 
-const { pageMock, pathsMock } = vi.hoisted(() => ({
+const { pageMock, pathsMock, envMock } = vi.hoisted(() => ({
+	envMock: { dev: false, browser: false },
 	pageMock: {
 		url: new URL('http://localhost/'),
 		params: {} as Record<string, string>,
@@ -12,12 +14,22 @@ const { pageMock, pathsMock } = vi.hoisted(() => ({
 	pathsMock: { base: '', hashRouting: false }
 }));
 
-vi.mock('$app/env', () => ({ dev: false, browser: false }));
+vi.mock('$app/env', () => envMock);
 vi.mock('$app/state', () => ({ page: pageMock }));
-// Mirrors kit's own resolve: `base + (hashRouting ? '#' : '') + path`.
+// Mirrors kit's own resolve: `base + (hashRouting ? '#' : '') + path`, with
+// groups dropped and dynamic segments filled from `params`.
 vi.mock('$app/paths', () => ({
-	resolve(path: string) {
-		return pathsMock.base + (pathsMock.hashRouting ? '#' : '') + path;
+	resolve(path: string, params: Record<string, string | undefined> = {}) {
+		const filled = path
+			.split('/')
+			.filter((seg) => !/^\(.*\)$/.test(seg))
+			.map((seg) => {
+				const m = /^\[{1,2}(?:\.\.\.)?([^\]=]+)(?:=[^\]]+)?\]{1,2}$/.exec(seg);
+				return m ? (params[m[1]] ?? '') : seg;
+			})
+			.filter((seg, i) => i === 0 || seg !== '')
+			.join('/');
+		return pathsMock.base + (pathsMock.hashRouting ? '#' : '') + (filled || '/');
 	}
 }));
 
@@ -28,6 +40,7 @@ beforeEach(() => {
 	pageMock.data = {};
 	pathsMock.base = '';
 	pathsMock.hashRouting = false;
+	envMock.browser = false;
 });
 
 type ModuleLoaderMock = Mock<() => Promise<BreadcrumbMeta | undefined>>;
@@ -336,6 +349,110 @@ describe('getCrumbs transformPath', () => {
 		expect(crumbs).toEqual([{ label: 'Products', url: '/products' }]);
 		expect(warnSpy).toHaveBeenCalled();
 		warnSpy.mockRestore();
+	});
+});
+
+describe('getCrumbs route option', () => {
+	it("walks the given route instead of the current page's", async () => {
+		const modules = modulesOf({
+			'/': async () => ({ label: 'Home' }),
+			'/products': async () => ({ label: 'Products' }),
+			'/products/[productId]': async (page) => ({ label: `Product ${page.params.productId}` })
+		});
+		visit('/about', '/about');
+
+		const crumbs = await getCrumbs({
+			modules,
+			route: { id: '/(app)/products/[productId]', params: { productId: '7' } }
+		});
+
+		expect(crumbs).toEqual([
+			{ label: 'Home', url: '/' },
+			{ label: 'Products', url: '/products' },
+			{ label: 'Product 7', url: '/products/7' }
+		]);
+	});
+
+	it('passes the given route id and params to resolvers', async () => {
+		let seen: BreadcrumbPage | undefined;
+		const modules = modulesOf({
+			'/products/[productId]': async (page) => {
+				seen = page;
+				return { label: 'X' };
+			}
+		});
+		visit('/about', '/about', { lang: 'en' });
+
+		await getCrumbs({
+			modules,
+			route: { id: '/products/[productId]', params: { productId: '7' } }
+		});
+
+		expect(seen?.route.id).toBe('/products/[productId]');
+		expect(seen?.params).toEqual({ productId: '7' });
+		expect(seen?.url.pathname).toBe('/products/7');
+	});
+
+	it('strips the base path and ignores transformPath', async () => {
+		pathsMock.base = '/app';
+		const transformPath = vi.fn<PathTransform>(() => '/elsewhere');
+		const modules = modulesOf({ '/products': async () => ({ label: 'Products' }) });
+		visit('/about', '/app/about');
+
+		const crumbs = await getCrumbs({ modules, transformPath, route: { id: '/products' } });
+
+		expect(crumbs).toEqual([{ label: 'Products', url: '/app/products' }]);
+		expect(transformPath).not.toHaveBeenCalled();
+	});
+});
+
+describe('getCrumbs warmup', () => {
+	/** Waits past the idle fallback timeout used outside browsers. */
+	const afterIdle = () => new Promise((r) => setTimeout(r, 400));
+
+	function setup() {
+		envMock.browser = true;
+		const modules = modulesOf({
+			'/products': async () => ({ label: 'Products' }),
+			'/about': async () => ({ label: 'About' })
+		});
+		visit('/products', '/products');
+		return modules;
+	}
+
+	it('loads every route in the background by default, then re-runs once', async () => {
+		const modules = setup();
+		const index = getRouteIndex(modules);
+
+		await getCrumbs({ modules });
+		expect(modules['/src/routes/about/+page.svelte']).not.toHaveBeenCalled();
+		await afterIdle();
+
+		expect(modules['/src/routes/about/+page.svelte']).toHaveBeenCalledOnce();
+		// Same as 2.0.x: one bump after the warmup, none per cold load.
+		expect(index.version).toBe(1);
+	});
+
+	it("loads only visited routes with warmup: 'visited'", async () => {
+		const modules = setup();
+		const index = getRouteIndex(modules);
+
+		await getCrumbs({ modules, warmup: 'visited' });
+		await afterIdle();
+
+		expect(modules['/src/routes/about/+page.svelte']).not.toHaveBeenCalled();
+		// The cold load still re-runs consumers once, so resolver reads get tracked.
+		expect(index.version).toBe(1);
+	});
+
+	it('never warms up on the server', async () => {
+		const modules = setup();
+		envMock.browser = false;
+
+		await getCrumbs({ modules, warmup: 'all' });
+		await afterIdle();
+
+		expect(modules['/src/routes/about/+page.svelte']).not.toHaveBeenCalled();
 	});
 });
 
