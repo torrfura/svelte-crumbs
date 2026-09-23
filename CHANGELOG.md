@@ -1,5 +1,12 @@
 # svelte-crumbs
 
+## [2.1.0](https://github.com/torrfura/svelte-crumbs/compare/svelte-crumbs-v2.0.2...svelte-crumbs-v2.1.0) (2026-09-23)
+
+
+### Features
+
+* split breadcrumb resolvers out of page chunks ([#29](https://github.com/torrfura/svelte-crumbs/issues/29)) ([63bfb53](https://github.com/torrfura/svelte-crumbs/commit/63bfb53ff256458dbc430e18c9845562724c4c0f))
+
 ## [2.0.2](https://github.com/torrfura/svelte-crumbs/compare/svelte-crumbs-v2.0.1...svelte-crumbs-v2.0.2) (2026-08-31)
 
 
