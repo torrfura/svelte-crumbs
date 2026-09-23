@@ -26,6 +26,9 @@ export type CrumbRoute = {
 	params?: Partial<Record<string, string>>;
 };
 
+/** Which breadcrumb modules to load in the background. See `GetCrumbsOptions.warmup`. */
+export type WarmupMode = 'all' | 'visited';
+
 /** Options for `getCrumbs`. */
 export interface GetCrumbsOptions {
 	/** Extra `page` fields to expose to resolvers. Off by default so breadcrumbs don't take reactive dependencies on rarely-used properties. */
@@ -45,6 +48,14 @@ export interface GetCrumbsOptions {
 	 * for routes unrelated to the declaring page.
 	 */
 	eager?: boolean;
+	/**
+	 * Which breadcrumb modules the client loads in the background once idle.
+	 * `'all'` (default) loads every route's, so a first visit never shows the
+	 * previous trail while a module loads. `'visited'` loads only the routes
+	 * the user walks — without the `svelte-crumbs/vite` plugin each module is
+	 * a whole page chunk, so this avoids downloading every page in the app.
+	 */
+	warmup?: WarmupMode;
 	/** One crumb per `[...rest]` segment (default) or a single crumb for the whole rest value. */
 	restCrumbs?: RestCrumbMode;
 	/**

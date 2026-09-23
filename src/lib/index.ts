@@ -11,5 +11,6 @@ export type {
 	GetCrumbsOptions,
 	OptionalPageField,
 	PathTransform,
-	RestCrumbMode
+	RestCrumbMode,
+	WarmupMode
 } from './breadcrumbs/types.js';

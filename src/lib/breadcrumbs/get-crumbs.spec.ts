@@ -1,8 +1,10 @@
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { getCrumbs, createBreadcrumbs } from './get-crumbs.js';
+import { getRouteIndex } from './routing/route-index.svelte.js';
 import type { BreadcrumbMeta, BreadcrumbPage, BreadcrumbResolver, PathTransform } from './types.js';
 
-const { pageMock, pathsMock } = vi.hoisted(() => ({
+const { pageMock, pathsMock, envMock } = vi.hoisted(() => ({
+	envMock: { dev: false, browser: false },
 	pageMock: {
 		url: new URL('http://localhost/'),
 		params: {} as Record<string, string>,
@@ -12,7 +14,7 @@ const { pageMock, pathsMock } = vi.hoisted(() => ({
 	pathsMock: { base: '', hashRouting: false }
 }));
 
-vi.mock('$app/env', () => ({ dev: false, browser: false }));
+vi.mock('$app/env', () => envMock);
 vi.mock('$app/state', () => ({ page: pageMock }));
 // Mirrors kit's own resolve: `base + (hashRouting ? '#' : '') + path`, with
 // groups dropped and dynamic segments filled from `params`.
@@ -38,6 +40,7 @@ beforeEach(() => {
 	pageMock.data = {};
 	pathsMock.base = '';
 	pathsMock.hashRouting = false;
+	envMock.browser = false;
 });
 
 type ModuleLoaderMock = Mock<() => Promise<BreadcrumbMeta | undefined>>;
@@ -400,6 +403,56 @@ describe('getCrumbs route option', () => {
 
 		expect(crumbs).toEqual([{ label: 'Products', url: '/app/products' }]);
 		expect(transformPath).not.toHaveBeenCalled();
+	});
+});
+
+describe('getCrumbs warmup', () => {
+	/** Waits past the idle fallback timeout used outside browsers. */
+	const afterIdle = () => new Promise((r) => setTimeout(r, 400));
+
+	function setup() {
+		envMock.browser = true;
+		const modules = modulesOf({
+			'/products': async () => ({ label: 'Products' }),
+			'/about': async () => ({ label: 'About' })
+		});
+		visit('/products', '/products');
+		return modules;
+	}
+
+	it('loads every route in the background by default, then re-runs once', async () => {
+		const modules = setup();
+		const index = getRouteIndex(modules);
+
+		await getCrumbs({ modules });
+		expect(modules['/src/routes/about/+page.svelte']).not.toHaveBeenCalled();
+		await afterIdle();
+
+		expect(modules['/src/routes/about/+page.svelte']).toHaveBeenCalledOnce();
+		// Same as 2.0.x: one bump after the warmup, none per cold load.
+		expect(index.version).toBe(1);
+	});
+
+	it("loads only visited routes with warmup: 'visited'", async () => {
+		const modules = setup();
+		const index = getRouteIndex(modules);
+
+		await getCrumbs({ modules, warmup: 'visited' });
+		await afterIdle();
+
+		expect(modules['/src/routes/about/+page.svelte']).not.toHaveBeenCalled();
+		// The cold load still re-runs consumers once, so resolver reads get tracked.
+		expect(index.version).toBe(1);
+	});
+
+	it('never warms up on the server', async () => {
+		const modules = setup();
+		envMock.browser = false;
+
+		await getCrumbs({ modules, warmup: 'all' });
+		await afterIdle();
+
+		expect(modules['/src/routes/about/+page.svelte']).not.toHaveBeenCalled();
 	});
 });
 

@@ -145,18 +145,35 @@
 <h3 class="text-(--color-text-primary)">Bundle size</h3>
 <p class="text-(--color-text-secondary)">
 	<code class="rounded bg-(--color-code-bg) px-1 text-sm">import.meta.glob</code> runs
-	<strong>non-eager</strong>, so Vite code-splits each page module as usual and the index holds only
-	lazy loader references. To be clear about the cost: when a trail resolves, the modules it imports
-	are the <code class="rounded bg-(--color-code-bg) px-1 text-sm">+page.svelte</code> modules
-	<em>along the current path</em> — the same chunks SvelteKit's router loads to render those pages anyway.
-	Nothing else blocks first paint.
+	<strong>non-eager</strong>, so the index holds only lazy loader references and nothing else blocks
+	first paint. When a trail resolves, it loads only the modules <em>along the current path</em>.
 </p>
 <p class="text-(--color-text-secondary)">
-	After hydration, an idle-time <strong>warmup</strong> quietly loads the remaining breadcrumb
-	modules in the background and re-runs the trail once, warm — from then on every resolution is
-	fully synchronous, which is what keeps reactive reads <em>inside</em> resolvers (remote queries, optimistic
-	overrides) tracked. Off the critical path by design: the warmup competes with nothing and never delays
-	a navigation.
+	What those modules are depends on the <strong>Vite plugin</strong>. Without it, each loader
+	imports the <code class="rounded bg-(--color-code-bg) px-1 text-sm">+page.svelte</code> itself, so
+	resolving a crumb downloads that page's chunk and its dependencies. With
+	<code class="rounded bg-(--color-code-bg) px-1 text-sm">crumbs()</code>
+	from
+	<code class="rounded bg-(--color-code-bg) px-1 text-sm">svelte-crumbs/vite</code>, each loader
+	imports only the page's
+	<code class="rounded bg-(--color-code-bg) px-1 text-sm">&lt;script module&gt;</code>, served as
+	its own small module next to the page.
+</p>
+
+<h3 class="text-(--color-text-primary)">Warmup</h3>
+<p class="text-(--color-text-secondary)">
+	After hydration, an idle-time <strong>warmup</strong> loads the remaining breadcrumb modules in
+	the background and re-runs the trail once, warm. From then on every resolution is fully
+	synchronous, which is what keeps reactive reads <em>inside</em> resolvers (remote queries, optimistic
+	overrides) tracked, and a first visit to any route updates the trail with no extra request.
+</p>
+<p class="text-(--color-text-secondary)">
+	With the plugin, warming everything costs a few hundred bytes per route. Without it, each module
+	is a whole page chunk, so the warmup downloads every page in the app. To avoid that, add the
+	plugin or set <code class="rounded bg-(--color-code-bg) px-1 text-sm">warmup: 'visited'</code>.
+	Then only the routes the user walks are loaded, and the trail re-runs once after each cold load
+	instead. The catch: on a first visit, the previous trail stays up until that route's modules
+	arrive.
 </p>
 
 <h3 class="text-(--color-text-primary)">Runtime cost</h3>
