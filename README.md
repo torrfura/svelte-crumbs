@@ -19,17 +19,23 @@ npm install svelte-crumbs
 Svelte's experimental `async` compiler option enables `await` inside `$derived` and in templates. It is required **only** for the server-rendered pattern shown below (`$derived(await ...)`). If you don't want to enable the flag, see [Rendering without the flag](#rendering-without-the-flag).
 
 ```js
-// svelte.config.js
-const config = {
-	compilerOptions: {
-		experimental: {
-			async: true
-		}
-	}
-};
+// vite.config.js (SvelteKit 3)
+export default defineConfig({
+	plugins: [
+		sveltekit({
+			compilerOptions: {
+				experimental: {
+					async: true
+				}
+			}
+		})
+	]
+});
 ```
 
-> **Using remote functions in resolvers?** If your breadcrumb resolvers call [remote functions](https://svelte.dev/docs/kit/remote-functions), also add `kit.experimental.remoteFunctions: true`. This is optional and unrelated to breadcrumbs themselves.
+On SvelteKit 2, set the same `compilerOptions` in `svelte.config.js`.
+
+> **Using remote functions in resolvers?** If your breadcrumb resolvers call [remote functions](https://svelte.dev/docs/kit/remote-functions), also add `experimental.remoteFunctions: true` (`kit.experimental.remoteFunctions` on SvelteKit 2). This is optional and unrelated to breadcrumbs themselves.
 
 ### 3. Export breadcrumbs from your routes
 
@@ -178,7 +184,7 @@ export async function load({ params }) {
 
 ### From a remote function
 
-Breadcrumb resolvers can call [remote functions](https://svelte.dev/docs/kit/remote-functions) that run on the server (requires `kit.experimental.remoteFunctions: true`):
+Breadcrumb resolvers can call [remote functions](https://svelte.dev/docs/kit/remote-functions) that run on the server (requires `experimental.remoteFunctions: true`, or `kit.experimental.remoteFunctions` on SvelteKit 2):
 
 ```ts
 // src/lib/products.remote.ts

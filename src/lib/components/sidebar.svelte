@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { navigation } from '$lib/config/navigation.js';
+	import { navigation } from '#lib/config/navigation.js';
 
 	let {
 		open = false,

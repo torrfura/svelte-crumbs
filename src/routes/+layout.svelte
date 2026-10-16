@@ -1,10 +1,10 @@
 <script lang="ts">
 	import '../app.css';
-	import { getCrumbs } from '$lib/index.js';
-	import { initTheme } from '$lib/stores/theme.svelte.js';
-	import TopNav from '$lib/components/top-nav.svelte';
-	import Sidebar from '$lib/components/sidebar.svelte';
-	import Footer from '$lib/components/footer.svelte';
+	import { getCrumbs } from '#lib/index.js';
+	import { initTheme } from '#lib/stores/theme.svelte.js';
+	import TopNav from '#lib/components/top-nav.svelte';
+	import Sidebar from '#lib/components/sidebar.svelte';
+	import Footer from '#lib/components/footer.svelte';
 	import type { Snippet } from 'svelte';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';

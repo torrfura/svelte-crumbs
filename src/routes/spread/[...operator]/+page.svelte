@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import type { BreadcrumbMeta } from '$lib/index.js';
+	import type { BreadcrumbMeta } from '#lib/index.js';
 
 	export const breadcrumb: BreadcrumbMeta = {
 		routes: {
@@ -15,7 +15,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { resolve } from '$app/paths';
-	import CodeBlock from '$lib/components/code-block.svelte';
+	import CodeBlock from '#lib/components/code-block.svelte';
 
 	const segments = $derived((page.params.operator ?? '').split('/').filter(Boolean));
 </script>

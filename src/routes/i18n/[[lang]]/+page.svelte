@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import type { BreadcrumbMeta } from '$lib/index.js';
+	import type { BreadcrumbMeta } from '#lib/index.js';
 
 	const labels: Record<string, string> = {
 		en: 'Greetings',
@@ -14,8 +14,8 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { resolve } from '$app/paths';
-	import { getCrumbs } from '$lib/index.js';
-	import CodeBlock from '$lib/components/code-block.svelte';
+	import { getCrumbs } from '#lib/index.js';
+	import CodeBlock from '#lib/components/code-block.svelte';
 
 	const lang = $derived(page.params.lang ?? 'en');
 	const crumbs = $derived(await getCrumbs());
