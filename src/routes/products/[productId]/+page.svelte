@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import type { BreadcrumbMeta } from '$lib/index.js';
+	import type { BreadcrumbMeta } from '#lib/index.js';
 
 	export const breadcrumb: BreadcrumbMeta = async (page) => ({
 		label: page.data.product.name
@@ -8,7 +8,7 @@
 
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import CodeBlock from '$lib/components/code-block.svelte';
+	import CodeBlock from '#lib/components/code-block.svelte';
 
 	let { data } = $props();
 </script>

@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import { toggleTheme, getTheme } from '$lib/stores/theme.svelte.js';
-	import Breadcrumbs from '$lib/components/breadcrumbs.svelte';
-	import type { Breadcrumb } from '$lib/breadcrumbs/types.js';
+	import { toggleTheme, getTheme } from '#lib/stores/theme.svelte.js';
+	import Breadcrumbs from '#lib/components/breadcrumbs.svelte';
+	import type { Breadcrumb } from '#lib/breadcrumbs/types.js';
 	import logo from '../../../static/svelte-crumbs-v2.svg?raw';
 
 	const appVersion: string = __APP_VERSION__;

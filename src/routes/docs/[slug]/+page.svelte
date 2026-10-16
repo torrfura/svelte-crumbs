@@ -1,6 +1,6 @@
 <script lang="ts" module>
-	import type { BreadcrumbMeta } from '$lib/index.js';
-	import { getDocTitle } from '$lib/demo/docs.remote.js';
+	import type { BreadcrumbMeta } from '#lib/index.js';
+	import { getDocTitle } from '#lib/demo/docs.remote.js';
 
 	export const breadcrumb: BreadcrumbMeta = async (page) => ({
 		label: await getDocTitle(page.params.slug ?? '')
@@ -10,7 +10,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { resolve } from '$app/paths';
-	import CodeBlock from '$lib/components/code-block.svelte';
+	import CodeBlock from '#lib/components/code-block.svelte';
 
 	const title = $derived(await getDocTitle(page.params.slug ?? ''));
 	const slug = $derived(page.params.slug);
@@ -192,7 +192,7 @@ setNickname(value).updates(getNickname().withOverride(() => value));`}
 	never reach load data.
 </p>
 <CodeBlock
-	code={`import { getDocTitle } from '$lib/demo/docs.remote.js';
+	code={`import { getDocTitle } from '#lib/demo/docs.remote.js';
 
 export const breadcrumb: BreadcrumbMeta = async (page) => ({
   label: await getDocTitle(page.params.slug ?? '')

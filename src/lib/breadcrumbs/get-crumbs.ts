@@ -1,7 +1,6 @@
 import { page } from '$app/state';
 import { resolve } from '$app/paths';
 import { browser } from '$app/env';
-import type { Page } from '@sveltejs/kit';
 import { getRouteIndex, stripGroups } from './routing/route-index.svelte.js';
 import { walkRoute } from './routing/route-walk.js';
 import type {
@@ -13,6 +12,9 @@ import type {
 	OptionalPageField,
 	PathTransform
 } from './types.js';
+
+// SvelteKit 3 no longer exports a `Page` type; `typeof page` is the same shape in 2 and 3.
+type Page = typeof page;
 
 /**
  * `resolve` is typed against the app's generated route ids. The paths handled
@@ -67,7 +69,7 @@ function withBase(url: string): string {
  */
 function transformPathname(
 	pathname: string,
-	url: URL,
+	url: Page['url'],
 	transformPath: PathTransform | undefined
 ): string {
 	if (!transformPath) return pathname;

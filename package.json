@@ -40,6 +40,10 @@
 	"svelte": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"type": "module",
+	"imports": {
+		"#lib": "./src/lib/index.js",
+		"#lib/*": "./src/lib/*"
+	},
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
@@ -58,9 +62,9 @@
 		"@eslint/compat": "^2.1.1",
 		"@eslint/js": "^10.0.1",
 		"@playwright/test": "^1.64.1",
-		"@sveltejs/adapter-auto": "^7.0.1",
-		"@sveltejs/kit": "^2.70.3",
-		"@sveltejs/package": "^2.5.8",
+		"@sveltejs/adapter-auto": "^8.0.0",
+		"@sveltejs/kit": "^3.1.0",
+		"@sveltejs/package": "^3.0.1",
 		"@sveltejs/vite-plugin-svelte": "^7.3.1",
 		"@tailwindcss/vite": "^4.3.3",
 		"@twinkleplop/bash": "^0.1.7",

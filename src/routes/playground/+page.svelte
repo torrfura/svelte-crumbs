@@ -1,6 +1,6 @@
 <script lang="ts" module>
-	import type { BreadcrumbMeta } from '$lib/index.js';
-	import { getNickname } from '$lib/demo/greeting.remote.js';
+	import type { BreadcrumbMeta } from '#lib/index.js';
+	import { getNickname } from '#lib/demo/greeting.remote.js';
 
 	export const breadcrumb: BreadcrumbMeta = async () => {
 		return {
@@ -10,8 +10,8 @@
 </script>
 
 <script lang="ts">
-	import { setNickname } from '$lib/demo/greeting.remote.js';
-	import CodeBlock from '$lib/components/code-block.svelte';
+	import { setNickname } from '#lib/demo/greeting.remote.js';
+	import CodeBlock from '#lib/components/code-block.svelte';
 
 	let input = $state('');
 
@@ -60,7 +60,7 @@
 	a server-side query faking a database read.
 </p>
 <CodeBlock
-	code={`import { getNickname } from '$lib/demo/greeting.remote.js';
+	code={`import { getNickname } from '#lib/demo/greeting.remote.js';
 
 export const breadcrumb: BreadcrumbMeta = async () => ({
   label: await getNickname()
