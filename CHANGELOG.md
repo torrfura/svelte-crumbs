@@ -5,21 +5,21 @@
 
 ### Features
 
-* split breadcrumb resolvers out of page chunks ([#29](https://github.com/torrfura/svelte-crumbs/issues/29)) ([63bfb53](https://github.com/torrfura/svelte-crumbs/commit/63bfb53ff256458dbc430e18c9845562724c4c0f))
+* split breadcrumb resolvers out of page chunks ([#29](https://github.com/torrfura/svelte-crumbs/issues/29)) ([e5d5800](https://github.com/torrfura/svelte-crumbs/commit/e5d5800a178cae5906dd82bee856fe60e5b09a5c))
 
 ## [2.0.2](https://github.com/torrfura/svelte-crumbs/compare/svelte-crumbs-v2.0.1...svelte-crumbs-v2.0.2) (2026-08-31)
 
 
 ### Bug Fixes
 
-* read env flags from $app/env instead of $app/environment ([#26](https://github.com/torrfura/svelte-crumbs/issues/26)) ([6f00d82](https://github.com/torrfura/svelte-crumbs/commit/6f00d82dba1295f33b3195495710a7e49ad8f958))
+* read env flags from $app/env instead of $app/environment ([#26](https://github.com/torrfura/svelte-crumbs/issues/26)) ([8f8e5e4](https://github.com/torrfura/svelte-crumbs/commit/8f8e5e46f8cef0b2a1d010e9c18eb78a8fe2c582))
 
 ## [2.0.1](https://github.com/torrfura/svelte-crumbs/compare/svelte-crumbs-v2.0.0...svelte-crumbs-v2.0.1) (2026-08-31)
 
 
 ### Bug Fixes
 
-* resolve base path through resolve() so SvelteKit 3 works ([#24](https://github.com/torrfura/svelte-crumbs/issues/24)) ([fb3acc0](https://github.com/torrfura/svelte-crumbs/commit/fb3acc0cf004a768dab204ba3eefe6b948eaf88f))
+* resolve base path through resolve() so SvelteKit 3 works ([#24](https://github.com/torrfura/svelte-crumbs/issues/24)) ([10e2c2e](https://github.com/torrfura/svelte-crumbs/commit/10e2c2ee8ef52688887defb565f6a79e38a700b8))
 
 ## [2.0.0](https://github.com/torrfura/svelte-crumbs/compare/svelte-crumbs-v1.6.0...svelte-crumbs-v2.0.0) (2026-08-31)
 
@@ -30,84 +30,84 @@
 
 ### Features
 
-* v2 — route-id matching, lazy loading, getCrumbs() ([#21](https://github.com/torrfura/svelte-crumbs/issues/21)) ([7868bec](https://github.com/torrfura/svelte-crumbs/commit/7868bec00c801670133426e485d1ba4351ff12a5))
+* v2 — route-id matching, lazy loading, getCrumbs() ([#21](https://github.com/torrfura/svelte-crumbs/issues/21)) ([dadb5b7](https://github.com/torrfura/svelte-crumbs/commit/dadb5b7b014739a5e88b8e7f3a1bfeccdc7ee269))
 
 ## [1.6.0](https://github.com/torrfura/svelte-crumbs/compare/svelte-crumbs-v1.5.0...svelte-crumbs-v1.6.0) (2026-08-31)
 
 
 ### Features
 
-* **demo:** dark, mono-forward site redesign ([6784c0a](https://github.com/torrfura/svelte-crumbs/commit/6784c0a4aa2b3cfe97d6db8b3d68234894d37fdc))
+* **demo:** dark, mono-forward site redesign ([9a78303](https://github.com/torrfura/svelte-crumbs/commit/9a7830377aa2a0eb408c6b59c4f8b85b58b50f10))
 
 
 ### Bug Fixes
 
-* **lint:** clear all eslint errors ([3c68a5a](https://github.com/torrfura/svelte-crumbs/commit/3c68a5a016ed908afe5bb3a37605358e2f6eb47f))
+* **lint:** clear all eslint errors ([6660377](https://github.com/torrfura/svelte-crumbs/commit/66603772c1eaf9ea63166cf341907e3a86eed499))
 
 ## [1.5.0](https://github.com/torrfura/svelte-crumbs/compare/svelte-crumbs-v1.4.1...svelte-crumbs-v1.5.0) (2026-05-28)
 
 
 ### Features
 
-* **demo:** figtree font, brand-mark component, redesigned landing ([2a5ba78](https://github.com/torrfura/svelte-crumbs/commit/2a5ba78d577d279f171ab0d72a6fb8e296bb4f2a))
+* **demo:** figtree font, brand-mark component, redesigned landing ([8a18695](https://github.com/torrfura/svelte-crumbs/commit/8a1869527eb1b46ac089fcfad3d5af26cb428a5e))
 
 
 ### Performance Improvements
 
-* **breadcrumbs:** memoize map, isolate errors, faster lookup ([eb98110](https://github.com/torrfura/svelte-crumbs/commit/eb981105ecc0e3b8870c0dce9222d761489e5429))
+* **breadcrumbs:** memoize map, isolate errors, faster lookup ([6464d9d](https://github.com/torrfura/svelte-crumbs/commit/6464d9dd785c3b70822f229662a9dda0ea4239f8))
 
 ## [1.4.1](https://github.com/torrfura/svelte-crumbs/compare/svelte-crumbs-v1.4.0...svelte-crumbs-v1.4.1) (2026-04-21)
 
 
 ### Bug Fixes
 
-* **breadcrumbs:** make loaded flag reactive so crumbs refresh after async ready ([f363e0c](https://github.com/torrfura/svelte-crumbs/commit/f363e0ce6d0fdfd2a9aef05c212d8d60d63975c9))
+* **breadcrumbs:** make loaded flag reactive so crumbs refresh after async ready ([9e921ef](https://github.com/torrfura/svelte-crumbs/commit/9e921ef4bfa034608dc17a9626315cebabb92d98))
 
 ## [1.4.0](https://github.com/torrfura/svelte-crumbs/compare/svelte-crumbs-v1.3.0...svelte-crumbs-v1.4.0) (2026-03-12)
 
 ### Features
 
-- **breadcrumbs:** refactor reactive logic, add e2e tests, and upgrade dependencies ([fe0b6ae](https://github.com/torrfura/svelte-crumbs/commit/fe0b6aebbf87742812cd838c0ec542afa7ec8d8d))
-- **docs:** add new rendering page and enhance breadcrumb animations ([7ae6f05](https://github.com/torrfura/svelte-crumbs/commit/7ae6f05a04ca6cc7e9ef56eda2e0f081a7a24bef))
+- **breadcrumbs:** refactor reactive logic, add e2e tests, and upgrade dependencies ([dada378](https://github.com/torrfura/svelte-crumbs/commit/dada37858dcac6e50f877c69b005d194f99b37f0))
+- **docs:** add new rendering page and enhance breadcrumb animations ([8e37a1b](https://github.com/torrfura/svelte-crumbs/commit/8e37a1b2eae6aa6848bf93257a34a2c7d5716794))
 
 ## [1.3.0](https://github.com/torrfura/svelte-crumbs/compare/svelte-crumbs-v1.2.1...svelte-crumbs-v1.3.0) (2026-02-25)
 
 ### Features
 
-- **breadcrumbs:** introduce optional page fields and enhance snapshot handling ([632b4bf](https://github.com/torrfura/svelte-crumbs/commit/632b4bf1cadaffc7f0d60aee6e09f2a2adf131af))
+- **breadcrumbs:** introduce optional page fields and enhance snapshot handling ([c643590](https://github.com/torrfura/svelte-crumbs/commit/c643590f58521107ba40cf3ac61122d9e5b82c4a))
 
 ### Bug Fixes
 
-- **breadcrumbs:** add support for spread routes and improve resolver API ([a3efd78](https://github.com/torrfura/svelte-crumbs/commit/a3efd78d19ee53b7d8efead2f720a9f853cbec7f))
-- **breadcrumbs:** enhance comments and documentation, cleanup obsolete code ([32ca60f](https://github.com/torrfura/svelte-crumbs/commit/32ca60fb0c20b04480599f39bbd6087b6dc1e77f))
+- **breadcrumbs:** add support for spread routes and improve resolver API ([cd60d15](https://github.com/torrfura/svelte-crumbs/commit/cd60d151afc32b342eb43cdd725bd41bf5972b97))
+- **breadcrumbs:** enhance comments and documentation, cleanup obsolete code ([1809437](https://github.com/torrfura/svelte-crumbs/commit/18094370ca318ea82fecee5f8faa7da217eceb81))
 
 ## [1.2.1](https://github.com/torrfura/svelte-crumbs/compare/svelte-crumbs-v1.2.0...svelte-crumbs-v1.2.1) (2026-02-25)
 
 ### Bug Fixes
 
-- **breadcrumbs:** improve type definitions and streamline resolver logic ([aa932e7](https://github.com/torrfura/svelte-crumbs/commit/aa932e7ce5b0f5d15ac2703b78cd1300c0fedb19))
+- **breadcrumbs:** improve type definitions and streamline resolver logic ([c858cf2](https://github.com/torrfura/svelte-crumbs/commit/c858cf2cec136be45b39b9e3a0c3b15afb72fd70))
 
 ## [1.2.0](https://github.com/torrfura/svelte-crumbs/compare/svelte-crumbs-v1.1.0...svelte-crumbs-v1.2.0) (2026-02-23)
 
 ### Features
 
-- implement global theme support and migrate Tailwind classes to CSS variables ([907a9d7](https://github.com/torrfura/svelte-crumbs/commit/907a9d78461f58b3682942160c4c05252e2308b6))
-- inject app version as global constant and refactor version display ([e3e3c00](https://github.com/torrfura/svelte-crumbs/commit/e3e3c00e4e3e263385295a599c98fcdad8e7c62a))
+- implement global theme support and migrate Tailwind classes to CSS variables ([c4e90c3](https://github.com/torrfura/svelte-crumbs/commit/c4e90c3eaaedc213f74e5bc7d126d9ab9793c9f4))
+- inject app version as global constant and refactor version display ([7c14307](https://github.com/torrfura/svelte-crumbs/commit/7c143072118b16b250690459448a2dda142deead))
 
 ### Bug Fixes
 
-- update GitHub URL in `TopNav` component link ([26a8a46](https://github.com/torrfura/svelte-crumbs/commit/26a8a461e17bc250a1bd3716e4bb78c57bfaa89d))
+- update GitHub URL in `TopNav` component link ([c68c12d](https://github.com/torrfura/svelte-crumbs/commit/c68c12dd92b68791fd2ce06684bd96a2144e5d08))
 
 ## [1.1.0](https://github.com/torrfura/svelte-crumbs/compare/svelte-crumbs-v1.0.3...svelte-crumbs-v1.1.0) (2026-02-23)
 
 ### Features
 
-- add animated Breadcrumbs component ([ec04e27](https://github.com/torrfura/svelte-crumbs/commit/ec04e270bc704ba9a1d4e7a8a3e27a3dc3726ed7))
+- add animated Breadcrumbs component ([13fea28](https://github.com/torrfura/svelte-crumbs/commit/13fea2888abb5e21a9203beeb594efca6dec2ac4))
 - add initial project setup for svelte-breadcrumbs (master) ([2768dfd](https://github.com/torrfura/svelte-crumbs/commit/2768dfd71bc626a2569f0ca8303ca0ef24cd4183))
 
 ### Bug Fixes
 
-- **ci:** configure release-please manifest mode with config file ([07e2a8a](https://github.com/torrfura/svelte-crumbs/commit/07e2a8a30cfba5f9c77f411b6a254ac57f09a374))
+- **ci:** configure release-please manifest mode with config file ([3dcb001](https://github.com/torrfura/svelte-crumbs/commit/3dcb001a700cb28a52cd006d8f943101f908b57d))
 - **ci:** separate build step from changeset publish ([bf71588](https://github.com/torrfura/svelte-crumbs/commit/bf71588e9c573d0588fc667afef28fd77462d438))
 
 ## 1.0.2
