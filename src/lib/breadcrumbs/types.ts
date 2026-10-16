@@ -1,5 +1,8 @@
 import type { Component } from 'svelte';
-import type { Page } from '@sveltejs/kit';
+import type { page } from '$app/state';
+
+// SvelteKit 3 no longer exports a `Page` type; `typeof page` is the same shape in 2 and 3.
+type Page = typeof page;
 
 /** Optional page fields that are not tracked by default. */
 export type OptionalPageField = 'status' | 'error' | 'form' | 'state';
@@ -13,7 +16,7 @@ export type BreadcrumbPage = Pick<Page, 'url' | 'params' | 'route' | 'data'> &
  * (with `paths.base` already stripped) and the untransformed page URL.
  * Useful for stripping i18n locale prefixes (Paraglide & friends).
  */
-export type PathTransform = (context: { pathname: string; url: URL }) => string;
+export type PathTransform = (context: { pathname: string; url: Page['url'] }) => string;
 
 /** How `[...rest]` segments are turned into crumbs. */
 export type RestCrumbMode = 'per-segment' | 'single';
